@@ -1,0 +1,29 @@
+{
+  "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
+  "name": "lia-plugins",
+  "description": "Lia Creative's Claude Code tooling. The home for everything the team installs to prototype and build — start with the prototyping pair.",
+  "owner": {
+    "name": "Lia Creative"
+  },
+  "plugins": [
+    {
+      "name": "squeaks",
+      "description": "Scaffold and drive deliberately-rough, copy-first lo-fi prototypes. Describe an idea, get a clickable wireframe. Use when the thinking isn't finished yet.",
+      "category": "design",
+      "source": "./squeaks",
+      "homepage": "https://github.com/Lia-Creative/squeaks"
+    },
+    {
+      "name": "design-and-refine",
+      "description": "Generate distinct UI variations in an existing repo, compare side-by-side, collect feedback, and synthesize a refined version. Use for hi-fi work on real components.",
+      "category": "design",
+      "source": {
+        "source": "git-subdir",
+        "url": "https://github.com/Lia-Creative/design-plugin.git",
+        "path": "design-and-refine",
+        "ref": "main"
+      },
+      "homepage": "https://github.com/Lia-Creative/design-plugin"
+    }
+  ]
+}
