@@ -20,6 +20,17 @@ Squeaks exists to keep the *thinking* ahead of the *polish*. Whiteboard sketches
 3. **Click through it** in the browser (http://localhost:5173) and iterate by describing what's wrong, not by polishing.
 4. **Version directions via URL prefixes** — `/v1/dashboard`, `/v2/dashboard` — so two ideas can be compared by clicking between them.
 
+## Running an exploration (the methodology)
+
+Squeaks is at its best as a **provocation engine**, not a convergence tool. The goal is not to find "the right UI" — it's to make many rough concepts real enough to click, so they trigger lateral ideas you wouldn't have reasoned your way to.
+
+1. **Feed your thinking first.** Before generating anything, give Claude the actual argument/context you're exploring — the problem, the constraints, the half-formed ideas, references from adjacent domains. The quality of the provocations tracks the quality of the context you load.
+2. **Diverge wide, cheap, and rough.** Generate several distinct concepts as separate versioned routes (`/v1`, `/v2`, `/v3`…). Don't refine yet. Each one is a disposable prompt for your own thinking. Borrow framings from other domains — a different domain's solved version of your problem is often the best provocation.
+3. **Triage one by one.** Walk the concepts singly, not as a wall of options — less to look at, eyes not darting to decide. Kill, keep, or fork each. Throwing most away is the expected outcome, not failure.
+4. **Then hand the survivor to `design-and-refine`** for the hi-fi, on-brand pass. Squeaks decides *what*; design-and-refine decides *how it should look*.
+
+Corollary worth keeping: a piece of thinking lands harder when it ships with a clickable prototype than as prose alone. If you're explaining an idea, consider squeaking it.
+
 ## Tech (already wired in the template)
 
 Vite + React 19 + TypeScript, React Router, Tailwind v4, shadcn UI primitives (button, card, table, dialog, form), Comic Neue. No backend. Don't add a backend, auth, a database, or a component library — if a prototype needs those, it has outgrown Squeaks.
