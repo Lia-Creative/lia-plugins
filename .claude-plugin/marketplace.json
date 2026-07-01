@@ -24,6 +24,13 @@
         "ref": "main"
       },
       "homepage": "https://github.com/Lia-Creative/design-plugin"
+    },
+    {
+      "name": "ticket-builder",
+      "description": "How Lia builds Linear tickets and epics properly — ticket/epic shapes, priority-and-dependency ordering, blocked-by sequencing, vault-grounded sources, team/label/status conventions, and the doc-vs-ticket line. Use when breaking work into Linear issues.",
+      "category": "productivity",
+      "source": "./ticket-builder",
+      "homepage": "https://github.com/Lia-Creative/lia-plugins"
     }
   ]
 }
