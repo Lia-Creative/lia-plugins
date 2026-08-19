@@ -1,10 +1,10 @@
 ---
 name: ticket-builder
 slug: ticket-builder
-description: How Lia builds Linear tickets and epics properly. The principles a good ticket holds to, the epic and ticket shapes (matched to the project's siblings), plain no-number titles ordered by priority and dependency, blocked-by sequencing, grounding every ticket in real vault sources with links kept in the relation field, the team/status/label/priority conventions, the doc-vs-ticket line, the Linear MCP mechanics, and the wrap-up rules (logging, cross-founder courtesy, project-description sync). Use whenever creating, restructuring, or breaking work into Linear issues for the Lia team.
-version: 0.3.1
+description: How Lia builds Linear tickets and epics properly. The principles a good ticket holds to, the epic and ticket shapes (matched to the project's siblings), plain no-number titles ordered by priority and dependency, blocked-by sequencing, grounding every ticket in real vault sources with links kept in the relation field and the reasoning kept in the description, the same context bar for projects and milestones (not just issues), the team/status/label/priority conventions, the doc-vs-ticket line, the Linear MCP mechanics, and the wrap-up rules (logging, cross-founder courtesy, project-description sync). Use whenever creating, restructuring, or breaking work into Linear issues, projects or milestones for the Lia team.
+version: 0.4.0
 created: 2026-06-03
-updated: 2026-06-25
+updated: 2026-08-05
 status: active
 maintainer: dan
 reviewed_by: chris (2026-06-24/25, LIA-388)
@@ -37,12 +37,13 @@ companions:
 Before the procedure, the feel. If a principle and a step ever disagree, the principle wins — the steps are just the usual way of getting here.
 
 1. **Grounded.** It's anchored in something real — the actual strategy doc, wiki page, design-system state, or sibling ticket — found *before* writing. Record the link as a relation, not as chips smeared through the prose. A ticket with nothing real behind it is either too early, or it's a doc and not a ticket.
-2. **One job.** A ticket makes *one* thing true. If the goal needs an "and," it's probably two tickets. Honest scope beats a tidy-looking pile.
-3. **Reads in thirty seconds.** What it is, who it's for, when it's done — without a meeting or a DM.
-4. **The board tells the truth.** Status and blocked-by reflect reality. If a ticket is blocked, its upstream genuinely isn't done. A glance at the board should be an honest picture of the work — not aspiration. **And a parent never runs ahead of its children:** don't move an epic — or any ticket with sub-issues — into Review or QA until all its sub-issues are Done or Cancelled. A parent in a review state while its children are still open is the board lying.
-5. **Human-first, not spec-first.** An epic reads like a job to be done for a real person — outcome and value up front. A ticket reads like a user story with a clear "done." Plain language. If a human can't grasp it at a glance, it's agent-mush — rewrite it. Mechanics (links, IDs, dependencies) live in Linear's relation fields and the sidebar, not sprinkled through the prose.
+2. **It carries its own context.** The *link* lives in the relation panel; the *thinking* lives in the description. A reader in three months, who wasn't in the room and can't see the chat, should get why this exists, what was considered and dropped, and what's still unresolved — without opening anything else. Quote the real words from the meeting where they're better than a paraphrase. **This is not in tension with "link-light" below** — that rule is about `LIAB-xx` chips, never about reasoning. A tidy ticket that lost the argument behind it has failed at the only job it had.
+3. **One job.** A ticket makes *one* thing true. If the goal needs an "and," it's probably two tickets. Honest scope beats a tidy-looking pile.
+4. **Reads in thirty seconds.** What it is, who it's for, when it's done — without a meeting or a DM.
+5. **The board tells the truth.** Status and blocked-by reflect reality. If a ticket is blocked, its upstream genuinely isn't done. A glance at the board should be an honest picture of the work — not aspiration. **And a parent never runs ahead of its children:** don't move an epic — or any ticket with sub-issues — into Review or QA until all its sub-issues are Done or Cancelled. A parent in a review state while its children are still open is the board lying.
+6. **Human-first, not spec-first.** An epic reads like a job to be done for a real person — outcome and value up front. A ticket reads like a user story with a clear "done." Plain language. If a human can't grasp it at a glance, it's agent-mush — rewrite it. Mechanics (links, IDs, dependencies) live in Linear's relation fields and the sidebar, not sprinkled through the prose.
 
-**The rule the skill was built on (Dan, 2026-06-03):** tickets reference real data and files. Before writing, find the source. The grounding is what makes a ticket real instead of decorative — just keep the *link* in the relation field and the *prose* human (CQ, 2026-06-25).
+**The rule the skill was built on (Dan, 2026-06-03):** tickets reference real data and files. Before writing, find the source. The grounding is what makes a ticket real instead of decorative — just keep the *link* in the relation field and the *prose* human (CQ, 2026-06-25). **"Human" means readable, not thin** (Dan, 2026-08-05): the reasoning, the rejected options and the open questions belong in the description.
 
 Read the Lia Vault `CLAUDE.md` first (founder switcher, write rules, voice, and the canonical Linear conventions). Default lens is Dan's; switch if CQ or Luke is driving.
 
@@ -68,6 +69,22 @@ Two different things, on purpose — they cross-reference, they don't overlap:
 - **`LIA-281` = how an idea *becomes* a shipped product.** The phases (Capture → Discovery & Evidence → Investment case → Build → GTM → Support), the gates, and *which* tickets exist at each phase.
 
 The join: `LIA-281`'s per-phase ticket templates (its sub-issue 7) are written in *this* shape. So — deciding *what work exists and when*? That's `LIA-281`. Writing *the work up well*? That's here. If you find this skill trying to define phases, or `LIA-281` trying to define ticket formatting, something has drifted — pull them back apart.
+
+---
+
+## Projects and milestones are not exempt
+
+This skill is named for tickets, but the same bar applies to **every Linear object you create** — project, milestone, epic, issue. If it exists in Linear, it carries its own context.
+
+- **A project description** says what this is, where it came from (the meeting, the doc, the decision), what the shape is, and what is deliberately not in it.
+- **A milestone description** says why that date is that date. A milestone reading "3 toys launched, 30 Nov" is a marker, not a decision — it should carry what "launched" was agreed to mean, what was considered and dropped, and who said so. Milestones are where context goes to die, because the UI makes them look like they only want a name.
+- **Don't hoard the substance in the parent.** The most common failure is a rich project description with bare children hanging off it. Nobody reads a project description when they open a milestone.
+- **"Set it up in Linear" means tickets.** Projects and milestones are scaffolding. If there is real work, there are issues with owners and a done-state — or you say plainly that you didn't create them and why. Structure without tickets is a board that looks planned and can't be worked.
+
+**Two mechanics worth knowing before you build:**
+
+- **A milestone cannot be moved between projects.** `save_milestone` with an existing `id` and a different `project` silently no-ops — verified 2026-08-05. Moving means recreating, and there is no milestone-delete in the MCP either, so the originals have to be deleted by hand in the UI. Decide which project a milestone belongs to *before* creating it.
+- **Milestones have no URL of their own.** You can only ever link someone to the project. Don't promise a deep link.
 
 ---
 
@@ -226,6 +243,7 @@ Before calling a ticket done, confirm:
 - [ ] It reads in 30 seconds: an epic answers job/user/success/why; a feature ticket has a clear user story + tickable acceptance criteria.
 - [ ] It speaks to a real person, in plain language — no spec-mush.
 - [ ] It's grounded in a real source (found before writing) — and the link lives as a **relation**, not chips in the prose.
+- [ ] **It carries its own context.** Someone reading it cold in three months gets the why, the rejected options, and what's still open — without opening anything else. Quotes used where the real words beat a paraphrase.
 - [ ] Dependencies are wired as blocked-by/related and match reality.
 - [ ] On the right team (software → `Lia Build`; else → `Lia`), valid status, deliberate priority, right type label, assigned to whoever does it.
 - [ ] Title is a plain verb phrase with **no number**; order is carried by priority + blocked-by.
@@ -265,8 +283,10 @@ This is the bar: grounded, one-job, reads like a job for a person, sequenced, lo
 
 ## Changelog
 
-- **0.3.1 (2026-06-25, CQ):** Board-integrity rule — a parent (an epic, or any ticket with sub-issues) must not sit in **Review or QA** until all its sub-issues are **Done/Cancelled**. Added to Principle 4 + the Step 7 checklist.
-- **0.3.0 (2026-06-25, CQ review — LIA-388):** Reshaped around readability after dogfooding the skill on `Epic · Location` (LIAB-312). Epics now lead with **JTBD / User / Success / Why** (a job for a named person), and never list their own sub-features. Step 2 now teaches **two ticket shapes** — Shape A (User story / Why / Acceptance criteria / Scope, for Lia Build features) and Shape B (the six-part, for Lia Creative workstreams) — and says to **match the project's siblings** rather than force one template. **Plain titles, no numbers** (priority + blocked-by drive order). **Links live in relations, not prose.** Added principle 5 (human-first, not spec-first) and an assignee rule (build tickets → the builder). Added worked example B (File Runner location).
+- **0.4.0 (2026-08-05, Dan):** Context is the point. New principle 2 — *it carries its own context* — with the explicit note that "link-light" governs `LIAB-xx` chips, never reasoning; the old "keep the prose human" line had been read as "keep it thin." New section **Projects and milestones are not exempt**: the same bar applies to every Linear object, the substance must not be hoarded in the parent, and "set it up in Linear" means tickets exist or you say why they don't. Two MCP mechanics recorded: a milestone cannot be reparented (`save_milestone` silently no-ops) and milestones have no URL. Principles renumbered 3–6.
+
+- **0.3.1 (2026-06-25, CQ):** Board-integrity rule — a parent (an epic, or any ticket with sub-issues) must not sit in **Review or QA** until all its sub-issues are **Done/Cancelled**. Added to Principle 5 (was 4) + the Step 7 checklist.
+- **0.3.0 (2026-06-25, CQ review — LIA-388):** Reshaped around readability after dogfooding the skill on `Epic · Location` (LIAB-312). Epics now lead with **JTBD / User / Success / Why** (a job for a named person), and never list their own sub-features. Step 2 now teaches **two ticket shapes** — Shape A (User story / Why / Acceptance criteria / Scope, for Lia Build features) and Shape B (the six-part, for Lia Creative workstreams) — and says to **match the project's siblings** rather than force one template. **Plain titles, no numbers** (priority + blocked-by drive order). **Links live in relations, not prose.** Added principle 6 (human-first, not spec-first) and an assignee rule (build tickets → the builder). Added worked example B (File Runner location).
 - **0.2.1 (2026-06-25):** Version/date touch-up.
 - **0.2.0 (2026-06-24, CQ review — LIA-388):** Principles preamble; "Ticket or doc?" + intake; the `LIA-281` seam; two-team Step 0 + post-2026-06-19 workflows (retired `Done Ready`); self-healing coordinates via `CLAUDE.md`; labels/priority/estimates conventions.
 - **0.1.1 (2026-06-10, Dan):** Initial house-style capture from the `social media 1.0` build.

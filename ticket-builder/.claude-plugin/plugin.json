@@ -1,6 +1,6 @@
 {
   "name": "ticket-builder",
-  "version": "0.3.1",
+  "version": "0.4.0",
   "description": "How Lia builds Linear tickets and epics properly — ticket/epic shapes, priority-and-dependency ordering, blocked-by sequencing, grounding in vault sources, team/status/label conventions, the doc-vs-ticket line, Linear MCP mechanics, and wrap-up rules.",
   "author": {
     "name": "Lia Creative"
