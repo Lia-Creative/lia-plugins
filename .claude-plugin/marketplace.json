@@ -26,6 +26,13 @@
       "homepage": "https://github.com/Lia-Creative/design-plugin"
     },
     {
+      "name": "lia-toys",
+      "description": "How Lia builds toys with agents. The orchestrator skill: one long-lived session runs the board, decides the order, writes the dispatches, verifies what comes back and merges it — and never ships code itself. Use when several tickets are in flight or a milestone has a deadline.",
+      "category": "productivity",
+      "source": "./lia-toys",
+      "homepage": "https://github.com/Lia-Creative/lia-plugins"
+    },
+    {
       "name": "ticket-builder",
       "description": "How Lia builds Linear tickets and epics properly — ticket/epic shapes, priority-and-dependency ordering, blocked-by sequencing, vault-grounded sources, team/label/status conventions, and the doc-vs-ticket line. Use when breaking work into Linear issues.",
       "category": "productivity",

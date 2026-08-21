@@ -28,6 +28,15 @@ That's it. New tools added here later show up with a `/plugin marketplace update
 
 **The rule of thumb:** unshaped idea → Squeaks. Real component in a product repo → design-and-refine.
 
+### Building
+
+| Tool | Use it when | Gives you |
+|------|-------------|-----------|
+| **ticket-builder** | Breaking shaped work into Linear issues | The ticket and epic shapes, ordered by priority and dependency |
+| **lia-toys** | Several tickets are in flight, or a milestone has a deadline | `orchestrate` — one session runs the board and hands the work out; it never ships code |
+
+**The rule of thumb:** one ticket → `pickup`. A whole milestone, several agents at once → `orchestrate`.
+
 ## Sources
 
 - `squeaks` plugin lives in this repo (`./squeaks`); it scaffolds from the [Squeaks template](https://github.com/Lia-Creative/squeaks).

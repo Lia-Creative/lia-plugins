@@ -1,0 +1,10 @@
+{
+  "name": "lia-toys",
+  "version": "0.1.0",
+  "description": "How Lia builds toys with agents. Starts with the orchestrator: one long-lived session that runs the board, decides the order, writes the dispatches, verifies what comes back and merges it — and never ships code itself.",
+  "author": {
+    "name": "Lia Creative"
+  },
+  "homepage": "https://github.com/Lia-Creative/lia-plugins",
+  "keywords": ["orchestration", "agents", "linear", "milestone", "workflow", "toys", "lia"]
+}
