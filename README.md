@@ -11,6 +11,7 @@ Lia Creative's Claude Code marketplace — the one place the team installs Lia t
 Then install what you need:
 
 ```
+/plugin install lia-tools@lia-plugins
 /plugin install squeaks@lia-plugins
 /plugin install design-and-refine@lia-plugins
 ```
@@ -18,6 +19,10 @@ Then install what you need:
 That's it. New tools added here later show up with a `/plugin marketplace update lia-plugins`.
 
 ## What's in here
+
+### lia-tools — the build process
+
+Everything an agent needs to build lia.tools products: writing epics, stories and tasks, the ready gate, pickup, orchestration, review and wrap-up. **The `lia-tools/` directory is the source of truth for the skills it carries** — since 26 Aug 2026 ([LIAB-919](https://linear.app/lia-creative/issue/LIAB-919)) canonical lives here, not in the Lia Vault; the vault keeps strategy docs and stopped holding skills. See [lia-tools/README.md](lia-tools/README.md).
 
 ### The prototyping pair
 
