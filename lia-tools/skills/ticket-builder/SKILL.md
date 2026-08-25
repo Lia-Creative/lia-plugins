@@ -2,7 +2,7 @@
 name: ticket-builder
 slug: ticket-builder
 description: The shared mechanics under Lia's ticket writing, and the front door that routes to the writer seats. Shape-writing lives in epic-builder / story-writer / task-writer (tool shop, 26 Aug 2026); this skill owns what they all share — principles, grounding in real sources with links as relations, priority-and-dependency ordering, blocked-by sequencing, team/status/label conventions, the doc-vs-ticket line, the Linear MCP mechanics, the wrap-up rules — plus Shape B for Lia Creative workstream tickets, which the writers don't cover. Use for the mechanics, for Shape B work, or whenever a request to "build tickets" hasn't yet picked a seat.
-version: 0.5.0
+version: 0.5.1
 created: 2026-06-03
 updated: 2026-08-26
 status: active
@@ -46,6 +46,8 @@ Before the procedure, the feel. If a principle and a step ever disagree, the pri
 3. **Reads in thirty seconds.** What it is, who it's for, when it's done — without a meeting or a DM.
 4. **The board tells the truth.** Status and blocked-by reflect reality. If a ticket is blocked, its upstream genuinely isn't done. A glance at the board should be an honest picture of the work — not aspiration. **And a parent never runs ahead of its children:** don't move an epic — or any ticket with sub-issues — into Review or QA until all its sub-issues are Done or Cancelled. A parent in a review state while its children are still open is the board lying.
 5. **Human-first, not spec-first.** An epic reads like a job to be done for a real person — outcome and value up front. A ticket reads like a user story with a clear "done." Plain language. If a human can't grasp it at a glance, it's agent-mush — rewrite it. Mechanics (links, IDs, dependencies) live in Linear's relation fields and the sidebar, not sprinkled through the prose.
+
+**The story's canonical definition is Dan North's** — `Wiki/concepts/user-stories.md` in the vault (LIAB-949, 26 Aug 2026): narrative as *I want / so that*, behavioural ACs as numbered Given/When/Then, Delivery checks split out. The writer seats carry the operational form; this pointer exists so no one reconstructs it from memory here.
 
 **The rule the skill was built on (Dan, 2026-06-03):** tickets reference real data and files. Before writing, find the source. The grounding is what makes a ticket real instead of decorative — just keep the *link* in the relation field and the *prose* human (CQ, 2026-06-25).
 
@@ -252,6 +254,7 @@ This is the bar: grounded, one-job, reads like a job for a person, sequenced, lo
 
 ## Changelog
 
+- **0.5.1 (2026-08-26 pm, LIAB-949)** — concept-page pointer added to the principles (the story's canonical definition; the seats carry the form).
 - **0.5.0 (2026-08-26, CQ voice memos + Fable 5):** **The writing moved into three seats** — `epic-builder` / `story-writer` / `task-writer` (tool shop). This skill becomes the shared mechanics + the router: Shape A and the epic shape are pointers now; Shape B (Lia Creative workstreams) stays here because the seats don't cover it. `gate:*` dropped from the label list (deleted 25 Aug — verdicts are comments). Second canonical pointer added: [Tool shop](https://linear.app/lia-creative/document/tool-shop-how-a-liatools-product-gets-built-4a9cfacc41c8) for how tickets move.
 - **0.4.0 (2026-08-26, CQ):** **Titles name the unit of work** — noun phrase, two to four words, lowercase — replacing the verb-phrase rule from 0.3.0. **Lia-wide**, on CQ's call: *"sub tickets are the breakdown of how we get to the value of the epic… they aren't stories"* and *"every story has a title. The ticket name is the title, and the story itself goes onto the ticket."* The old title becomes the body's Goal / User story line. Carve-outs: Bugs keep the symptom, Decisions name the call, epics carry the value. "Match the siblings" narrowed to **shape**, since sibling titles are now pre-convention. Label block rebuilt: **six types** including `Decision` and `Foundation` (both 25 Aug 2026), `POC` removed, specialist-group exclusivity noted. Added a pointer making [How a Lia Toys ticket is shaped](https://linear.app/lia-creative/document/how-a-lia-toys-ticket-is-shaped-a5d28e39709b) canonical for shape/types/titles, so this skill stops restating what it can only drift from. Worked example B annotated with the conversion rather than rewritten.
 - **0.3.2 (2026-08-19) — logged retroactively on 2026-08-26**, having been shipped without a changelog entry. Two changes, recovered by diffing against the plugin export: **priority is two scales, not one** (CQ, 2026-08-11 — a parent's priority ranks its bucket against other parents, a child's ranks it within its own bucket), and **append log entries at the bottom of `_meta/log.md`, never rewrite the file to insert at the top** (CLAUDE.md housekeeping rule 2, tightened 2026-08-19).

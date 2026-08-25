@@ -1,7 +1,7 @@
 ---
 name: story-writer
 slug: story-writer
-version: 0.1.0
+version: 0.2.0
 created: 2026-08-26
 updated: 2026-08-26
 status: active
@@ -13,8 +13,10 @@ triggers:
   - "story for <capability>"
 companions:
   - epic-builder
+  - scenario-builder
   - task-writer
   - ready-review
+  - acceptance-criteria
   - ticket-builder
 maintainer: cq
 ---
@@ -49,9 +51,14 @@ The sources live as relations, not prose chips.
 
 **Acceptance criteria**
 
-- [ ] In the user's terms: what a person can now do, observably.
-- [ ] Given [context], when [event], then [outcome] — where behaviour needs pinning.
-- [ ] Cover the empty state and the obvious wrong input, still as a person meets them.
+1. Given [context], when [event], then [outcome].
+2. Given [context], when [event], then [outcome].
+3. Given [the empty state / the obvious wrong input, as a person meets it], when [event], then [outcome].
+4. [A judgement call, honestly marked.] [Graded at Review]
+
+**Delivery checks**
+
+1. [Non-behavioural obligations — process attestations, ops steps. Own list, own numbers.]
 
 **Scope / non-goals.** What this story is not, and where that lives instead.
 ```
@@ -59,9 +66,11 @@ The sources live as relations, not prose chips.
 The rules that hold it together:
 
 1. **The narrative is real, not ritual.** *As a* names a person from the discovery material — the adventure chats first; where the cast and a real adventurer disagree, the adventurer wins. *So that* carries the benefit — if you can't finish it honestly, the capability doesn't belong in this version.
-2. **Acceptance criteria are user acceptance criteria.** Success in the person's terms — what they can now do — never implementation ("uses the store's debounced write" is tech notes, and they arrive later, from the orchestrator, *underneath* the user criteria, never instead of them). Still checkable by someone who wasn't in the session — "it feels nice" is not a criterion; "the chart follows the transposed key everywhere it's shown" is.
-3. **Five or six scenarios at most.** More means the story is too big — split it along business lines, by scenario, not by technical layer (North's rule).
-4. **Bugs keep symptom titles, Decisions name the call** — unchanged carve-outs; those aren't stories and don't get narratives bolted on.
+2. **Acceptance criteria are user acceptance criteria, written as numbered Given/When/Then scenarios** (LIAB-949 P2 — numbering preserved, because everything downstream cites them by index). Success in the person's terms — what they can now do — never implementation ("uses the store's debounced write" is tech notes, and they arrive later, from the lead engineer, *underneath* the user criteria, never instead of them). Still checkable by someone who wasn't in the session — "it feels nice" is not a criterion unless it is honestly marked **"[Graded at Review]"**; "the chart follows the transposed key everywhere it's shown" is one.
+3. **Non-behavioural obligations are not acceptance criteria** (P3). Process attestations, ops steps, "recorded either way" notes go under **Delivery checks** — their own numbered list — so the AC list is purely behaviour and the two probes (the missing Given, the forgotten Then) can actually run.
+4. **The narrative-required rule** (P4): user-facing Feature work carries the full narrative with a named face; enabling or infrastructure work may run a Goal line but must name its beneficiary; **a bare one-liner never enters Build** — `ready-review` fails it.
+5. **Five or six scenarios at most.** More means the story is too big — split it along business lines, by scenario, not by technical layer (North's rule; `scenario-builder` walks the flows this cap is counted over).
+6. **Bugs keep symptom titles, Decisions name the call** — unchanged carve-outs; those aren't stories and don't get narratives bolted on.
 
 ## 3. Hand off
 
@@ -76,9 +85,10 @@ Mechanics — `save_issue`, relations, sequencing, priority-in-two-scales, the w
 ## What this seat is not
 
 - **Not the epic.** If you're writing value-and-why-now, you're in `epic-builder`'s seat.
-- **Not the spec.** No component names, no file paths, no API shapes. That's what the design stage and the orchestrator's tech notes are *for* — collapsing them into the story is the failure this whole shop exists to prevent.
+- **Not the spec.** No component names, no file paths, no API shapes. That's what the design stage and the lead engineer's build prep are *for* — collapsing them into the story is the failure this whole shop exists to prevent.
 - **Not the plan.** The builder plans in plan mode and posts it to your story as a comment. Leave room for it.
 
 ## Changelog
 
+- **0.2.0 (2026-08-26, LIAB-949 + Fable 5)** — the Dan North install (P1–P5): behavioural ACs are **numbered Given/When/Then scenarios** with "[Graded at Review]" for the honest judgement calls; the **Delivery-checks split**; the **narrative-required rule**; `scenario-builder` and `acceptance-criteria` named as the seats either side. This carries the brief's item 2, which targeted the vault ticket-builder's Shape A — the shape had moved here the same morning (LIAB-919/920), so the change follows the canon.
 - **0.1.0 (2026-08-26, CQ voice memos + Fable 5)** — first version. The Dan North narrative + user-terms acceptance criteria, name-titles per the 26 Aug title call, scenario cap, and the two clean seams (design, tech notes) that keep a story from becoming a spec.

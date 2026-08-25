@@ -8,25 +8,49 @@ The process the skills implement is written down in [Tool shop — how a lia.too
 
 ## What's in it
 
-**Writing the work**
+**Discovery — before a story is written**
 
 | Skill | The seat |
 |---|---|
+| `problem-definition` | Problems formalised and mapped across the board. |
+| `jtbd` | The job named consistently, requirements mapped — beside the epic. |
 | `epic-builder` | A versioned chunk of value — `charts 1.0`. Scope is read from its stories. |
-| `story-writer` | One capability per story, Dan North shape, acceptance criteria in the user's terms. |
+| `story-writer` | One capability per story, Dan North shape: numbered Given/When/Then ACs + Delivery checks. |
+| `scenario-builder` | A user walked through each flow with concrete inputs — the ACs' raw material. |
 | `task-writer` | The named work that isn't a story. Sparse by design. |
-| `ticket-builder` | The shared mechanics under the three above, Shape B for Lia Creative workstreams, and the old front door — it routes. |
+| `schema-manager` | Entities and variables mapped centrally — the layer that lets tools talk to each other. |
+| `ready-review` | Fresh eyes grading epics and stories on the five checks before anything downstream spends work. |
+| `ticket-builder` | The shared mechanics under the writers, Shape B for Lia Creative workstreams, and the old front door — it routes. |
 | `backlog-grooming` | The maintenance pass for an existing backlog. |
 
-**Gating and moving the work**
+**Management**
 
 | Skill | The seat |
 |---|---|
-| `ready-review` | Fresh eyes on epics and stories before design or build spends work on them. |
-| `pickup` | How a builder takes on work — single tickets, or a whole epic in plan mode. |
-| `orchestrate` | The senior developer: runs the board, preps tech notes, reviews the build in a loop with the builder, merges. |
-| `ticket-review` | The built-work check for standalone tickets, and the checklist the orchestrator's review runs. |
+| `project-manager` | Tickets run front to end: dispatch, statuses kept true, context enforced, human-readable updates. |
+
+**The lead engineer's bench**
+
+| Skill | The seat |
+|---|---|
+| `lead-engineer` | The seat itself — the standing rules, and the routing across this bench. |
+| `architecture` | Docs follow code, patterns stay singular, standards hold. |
+| `acceptance-criteria` | The freeze pass: scenarios → the final numbered Given/When/Then + Delivery checks. |
+| `build-prep` | How to build it — real paths, patterns, traps, resolvable paths — under the criteria. |
+| `ticket-review` | The pre-dispatch check: could an agent start without asking anything? *(Reassigned 26 Aug — built-work review lives in `review-and-merge`.)* |
+| `review-and-merge` | The review loop with the builder, by AC index, then the content-verified merge. |
+| `security` | The compliance shell — six earned rules, grows one real case at a time. |
+
+**Build**
+
+| Skill | The seat |
+|---|---|
+| `build` | The builder's seat: plan mode first, batching, progress, self-check, one PR, the loop. |
+| `polish` | The interface held to the design spec; Toys DS gaps named and routed, never fudged. |
+| `pickup` | The front door for single tickets, and the hand-back path. |
 | `wrap-up` | Landing a session: handover, retro, housekeeping. |
+
+*(`orchestrate` remains as a pointer — the seat split into `project-manager` + `lead-engineer` on 26 Aug 2026.)*
 
 Coming per [LIAB-921](https://linear.app/lia-creative/issue/LIAB-921): the toys nine (`new-toy`, `toy-pickup`, `toy-release`, `toy-status`, `toy-tidy`, `toys-digest`, `toy-jam`, `toy-feedback-ingest`, `adventure-chat-ingest`) and the design pair (`ui-capture`, `ui-teardown`).
 

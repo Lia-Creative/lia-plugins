@@ -23,7 +23,9 @@ triggers:
   - "take the whole epic"
 companions:
   - execution-discipline
-  - orchestrate
+  - build
+  - project-manager
+  - lead-engineer
   - epic-builder
   - story-writer
   - task-writer
