@@ -50,9 +50,30 @@ The process the skills implement is written down in [Tool shop — how a lia.too
 | `pickup` | The front door for single tickets, and the hand-back path. |
 | `wrap-up` | Landing a session: handover, retro, housekeeping. |
 
-*(`orchestrate` remains as a pointer — the seat split into `project-manager` + `lead-engineer` on 26 Aug 2026.)*
+**The toys nine** — the product line's own process:
 
-Coming per [LIAB-921](https://linear.app/lia-creative/issue/LIAB-921): the toys nine (`new-toy`, `toy-pickup`, `toy-release`, `toy-status`, `toy-tidy`, `toys-digest`, `toy-jam`, `toy-feedback-ingest`, `adventure-chat-ingest`) and the design pair (`ui-capture`, `ui-teardown`).
+| Skill | The seat |
+|---|---|
+| `toy-pickup` | The toys front door — tight context load before any toys session. |
+| `new-toy` | Scaffold a toy to the line convention. |
+| `toy-release` | Version a toy and run a promotion after the founder gate. |
+| `toy-status` | One-glance state of the line. Read-only. |
+| `toy-tidy` | The folder manager — report first, mechanical fixes only. |
+| `toys-digest` | The weekly #toys movement draft. Never posts. |
+| `toy-jam` | The jam agenda in, the decisions landed and ticketed out. |
+| `toy-feedback-ingest` | A feedback video → notes, summaries, tickets. |
+| `adventure-chat-ingest` | An adventure chat → the discovery backbone. |
+
+**Design + the judgment layer**
+
+| Skill | The seat |
+|---|---|
+| `design-handoff` | How a design reaches a builder — the `.dc.html` folder, how to read it, artefact beats prose. |
+| `ui-capture` | Screens captured to a consistent standard, with a coverage score. |
+| `ui-teardown` | The UX + feature teardown, every claim cited to a shot. |
+| `execution-discipline` | Load first, every run — ground truth, stop conditions, done-means-evidence. |
+
+*(`orchestrate` remains as a pointer — the seat split into `project-manager` + `lead-engineer` on 26 Aug 2026.)*
 
 ## What doesn't belong here
 
