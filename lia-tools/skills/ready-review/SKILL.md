@@ -1,7 +1,8 @@
 ---
 name: ready-review
 slug: ready-review
-version: 0.1.0
+description: "Gate epics and stories before design or build spend work on them — a fresh session grades every story on the five checks (Title/Narrative/Scenarios/Completeness/Scope) with quoted evidence, plus the vault-dependence test; verdict as one comment. Use when asked if an epic or its stories are ready."
+version: 0.2.0
 created: 2026-08-26
 updated: 2026-08-26
 status: active
@@ -16,7 +17,8 @@ companions:
   - story-writer
   - task-writer
   - ticket-review
-  - orchestrate
+  - lead-engineer
+  - project-manager
 maintainer: cq
 ---
 
@@ -45,12 +47,19 @@ Read the epic and every child first, then the [shape doc](https://linear.app/lia
 - [ ] **Grounded.** At least one real source wired as a relation or link — and it says what the epic claims it says.
 - [ ] **Doesn't re-derive a settled call.** Check the register; an epic quietly reversing a recorded decision fails here, loudly.
 
-## 2. What to check — every story
+## 2. What to check — every story: the five checks, evidence quoted
 
-- [ ] **Name title** (two to four words, sayable), narrative in the body: *As a [named person], I want…, so that…* — and the person is real (adventure chats first; the adventurer beats the cast).
-- [ ] **Acceptance criteria in the user's terms** — what a person can now do, observably; checkable by someone who wasn't in the session. Technical specs in the ACs fail the story: that's design's or the tech-notes' layer arriving early.
-- [ ] **Sized as one goal.** Six scenarios or fewer; splits along business lines.
-- [ ] **The vault-dependence test — the load-bearing one.** Read the story as a build agent with Linear and this plugin and *nothing else*. **If understanding it needs the vault, it isn't ready** — name exactly what has to travel onto the ticket. This is the test most tickets fail first.
+Since 26 Aug (LIAB-949), stories are graded on the **five-check rubric** — one check per part of the anatomy, **pass / partial / fail with a quoted line of evidence for each**. The full rubric with fail-tells lives in the vault (`Operations/Processes/user-stories-assessment-and-proposal-2026-08-26.md` §3 — read it when mounted; it stays a document, not a skill, until it has run at 2–3 real gates). The five:
+
+1. **Title** — a name, two to four words, sayable in a standup; not a sentence, not a number.
+2. **Narrative** — *As a [role], I want [feature], so that [benefit]*, all three present and honest: a consultable named role (never "the user"), a capability (not a smuggled design), a non-circular benefit the feature would actually deliver. The applicability rule: user-facing Feature = full narrative; enabling work = Goal + named beneficiary; a bare one-liner passes nothing.
+3. **Scenarios** — each behavioural AC a numbered Given/When/Then, decidable without judgement (or honestly marked *[Graded at Review]*); implementation instructions, process notes and understanding-statements are not AC — Delivery checks or gone.
+4. **Completeness** — the two probes: the **missing Given** (could two outcomes both be true under this context?) and the **forgotten Then** (every material outcome verified?); one event per scenario.
+5. **Scope & size** — non-goals present (≥2), at most 5–7 scenarios, split along user value never technical layers.
+
+Plus the check that predates the rubric and still fails tickets first:
+
+- [ ] **The vault-dependence test — the load-bearing one.** Read the story as a build agent with Linear and this plugin and *nothing else*. **If understanding it needs the vault, it isn't ready** — name exactly what has to travel onto the ticket.
 
 ## 3. What to check — tasks
 
@@ -65,7 +74,7 @@ One comment, on the epic, in this shape — **verdicts are comments, never label
 **Ready review — <date>, fresh session**
 
 **Epic:** ready | not ready — <the specific gap, quoted or named>
-**<story name>:** ready | not ready — <gap> → fix is <epic-builder / story-writer / task-writer / a decision, whose>
+**<story name>:** Title ✓/~/✗ · Narrative ✓/~/✗ · Scenarios ✓/~/✗ · Completeness ✓/~/✗ · Scope ✓/~/✗ — <the quoted evidence line for anything not ✓> → fix is <which seat, whose>
 …one line per child…
 
 **Verdict:** ready for design | not ready — <n> gaps above.
@@ -87,4 +96,5 @@ Three rules for it:
 
 ## Changelog
 
+- **0.2.0 (2026-08-26, LIAB-949 + Fable 5)** — stories graded on the five-check rubric with quoted evidence per check; the verdict line carries the five marks. The rubric stays a vault document run by hand at real gates (the brief's own rule — no story-eval skill yet); this seat is where it runs.
 - **0.1.0 (2026-08-26, CQ voice memos + Fable 5)** — first version. The entry gate: shape, grounding, user-terms ACs, sizing, the vault-dependence test, and a verdict format with named fixes. Working name — renaming is Chris's.

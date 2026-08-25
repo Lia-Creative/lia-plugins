@@ -1,7 +1,8 @@
 ---
 name: epic-builder
 slug: epic-builder
-version: 0.1.0
+description: "Shape a versioned chunk of value into an epic — charts 1.0, scope read from its stories, value/why-now/what-it-is-not/how-you'd-know body, no ACs on the parent. Use when opening a piece of work, shaping the next version of a tool, or asked 'epic: <name>'."
+version: 0.2.0
 created: 2026-08-26
 updated: 2026-08-26
 status: active
@@ -13,6 +14,8 @@ triggers:
   - "new epic for <toy/feature>"
   - "what should charts 1.0 be"
 companions:
+  - jtbd
+  - problem-definition
   - story-writer
   - task-writer
   - ready-review
@@ -40,7 +43,7 @@ Three rules that follow, each load-bearing:
 
 ## 2. Ground it before you write it
 
-The epic answers *what changes for a person* — so find the person first:
+The epic answers *what changes for a person* — and since the discovery seats landed (26 Aug pm), it stands on their output: a `problem-definition` brief says what hurts, and `jtbd` names the job being hired for — **cite the job; don't re-derive it.** Then find the person:
 
 - **The adventure chats are the guide** (`Products/Lia Toys/02 discovery/` when the vault is mounted; the discovery material linked from the project otherwise). Where the who-we-serve cast and a real adventurer disagree, **the adventurer wins** (register, 25 Aug).
 - **Check the [Decisions register](https://linear.app/lia-creative/document/decisions-register-lia-toys-34348df61a5f) before shaping** — the call you're about to re-derive is probably in it.
@@ -60,7 +63,7 @@ The canonical parent shape (shape doc, 25 Aug) — four beats, in the epic's bod
 **How you'd know it worked.** The outcome observable from outside — not a feature list.
 ```
 
-Think it through as JTBD → user → success → why (the discovery lens); **write it down** as the four beats above. Then:
+The JTBD → user → success → why thinking now lives in the `jtbd` seat — consume its statement; **write it down** as the four beats above. Then:
 
 - **No acceptance criteria on the epic.** They belong to the stories.
 - **No type label.** An epic is a position — top-level with children. Routing labels (`infra`, `design-system`, `human:chris`) are fine; type labels are not.
@@ -87,4 +90,5 @@ Mechanics — team routing, `save_issue`, relations, sequencing, the wrap-up —
 
 ## Changelog
 
+- **0.2.0 (2026-08-26 pm, Fable 5)** — the discovery seats land upstream: the epic cites `jtbd`'s job statement and `problem-definition`'s brief instead of carrying the JTBD lens itself. Shape unchanged.
 - **0.1.0 (2026-08-26, CQ voice memos + Fable 5)** — first version. Carved out of `ticket-builder` 0.4.0's epic half (the JTBD/User/Success/Why thinking survives as the discovery lens; the written shape follows the 25 Aug shape doc). New here: the version in the name, scope-read-from-stories, next-version-is-a-new-epic, and the not-too-chunky rule sized to one build run.

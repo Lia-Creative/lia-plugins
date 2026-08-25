@@ -1,7 +1,8 @@
 ---
 name: pickup
 slug: pickup
-version: 0.7.0
+description: "How anyone takes on a Linear ticket — the dispatch rule (a prompt is a pointer), the reading order (ticket, parents, blockers, context doc), what each status means, and the hand-back path for rejected work. Use when picking up or handing back a single ticket; a whole epic loads build instead."
+version: 0.8.0
 created: 2026-08-12
 updated: 2026-08-26
 status: active
@@ -23,7 +24,9 @@ triggers:
   - "take the whole epic"
 companions:
   - execution-discipline
-  - orchestrate
+  - build
+  - project-manager
+  - lead-engineer
   - epic-builder
   - story-writer
   - task-writer
@@ -52,24 +55,15 @@ Everything the agent needs is already where it belongs: the ticket (the spec), t
 
 **Choosing what to work when no ticket is named:** unblocked (nothing unfinished in blocked-by) and highest priority in your lane. **The order lives in Linear — priority and blocked-by — never in a doc, a prompt, or a memory of a conversation.** A run-order written anywhere else is a cached copy of the board, and it's stale the moment anyone moves a ticket.
 
-Who does what, so dispatch stays this small: the writers (`epic-builder` / `story-writer` / `task-writer`) make the work ready · `ready-review` gates it · this skill is how it's picked up · the orchestrator (or `ticket-review`, for standalone work) is how the result gets checked.
+Who does what, so dispatch stays this small: the writers (`epic-builder` / `story-writer` / `task-writer`) make the work ready · `ready-review` gates it · the `project-manager` dispatches it · this skill is how it's picked up (`build` for a whole epic) · the lead engineer's `review-and-merge` is how the result gets checked.
 
 ---
 
-## 0.5 Epic mode — the whole epic, one branch, one PR (added 26 Aug 2026)
+## 0.5 Taking a whole epic — load `build` (moved 26 Aug 2026, same day it landed here)
 
-When the dispatch names an **epic** — *"/pickup LIAB-950 — the whole epic"* — you're not taking one ticket, you're taking the version. The flow, in order:
+When the dispatch names an **epic** — *"the whole epic"* — you're taking the version, not a ticket, and the builder's seat is its own skill now: **load `build`.** It carries what briefly lived here as §0.5 (plan mode first, the plan posted to the tickets, story-by-story on one branch, one PR, the hold for the review loop) plus the seat's full discipline: the four-part context map, **question batching**, progress comments in user terms, and the indexed self-check before Review.
 
-1. **Read everything first** (§1–§3 below, for the epic and every child). The epic is the goal; the stories are the increments; the orchestrator's tech notes are the technical layer. You should need nothing else — if you do, that's a hand-back (§5), not a workaround.
-2. **Plan in plan mode before building anything.** The plan is where task-grain thinking happens — Linear deliberately doesn't hold it.
-3. **Post the plan to the tickets it plans** — a comment per story, the epic-wide shape on the epic. This is the record the review loop and the next session read; a plan that lives only in your session dies with it.
-4. **One branch, the epic's Linear branch name. Build story by story**, in dependency order, conventional commits scoped per ticket. Move each story's status as it becomes true.
-5. **One PR at the end, for the epic.** Move the epic to **Review** and hold.
-6. **The loop: the orchestrator reviews and feeds back to you, in this session.** Fix, recommit, answer with what changed and the evidence — the loop runs on the new head until the review passes. **The orchestrator merges and moves tickets to Done; you never do either.**
-
-**A mid-build discovery** — a bug found, a decision needed — goes through `task-writer` shape onto the board (typed, parented), not silently into the PR. If it blocks a story, say so on that story and keep building what isn't blocked.
-
-**Single-ticket mode is unchanged** — everything below this section works ticket-at-a-time, one ticket one PR, exactly as before. Epic mode wraps it; it doesn't replace it.
+**Single-ticket mode is this skill, unchanged** — everything below works ticket-at-a-time, one ticket one PR, exactly as before.
 
 ---
 
@@ -149,7 +143,7 @@ What you're usually after:
 
 - Load `execution-discipline` first. It's the judgment layer and it isn't restated here.
 - Move the ticket to the status that's true. **Never close your own work** — if you built or reviewed it, that's the approver's.
-- **Open a PR and hold at Review.** In epic mode, the orchestrator reviews and loops with you, then merges (§0.5). Standalone, a fresh review checks it — and who clicks merge is the standing rule of the repo you're in (the orchestrator where one is running; see `LIAB-861` for the written form). **Either way it is never you.**
+- **Open a PR and hold at Review.** In epic mode (`build`), the lead engineer reviews and loops with you, then merges. Standalone, a fresh review checks it — and who clicks merge is the standing rule of the repo you're in (the orchestrator where one is running; see `LIAB-861` for the written form). **Either way it is never you.**
 - Append a retro entry before you finish — as a comment on the ticket you were dispatched at; to the product's retro-log too when the vault is mounted. `product-retro` owns the shape.
 
 ---
@@ -197,11 +191,12 @@ Comment on the ticket, then move to another one. A blocked ticket said out loud 
 
 | Skill | Owns |
 |---|---|
-| **pickup** | Taking on a ticket — or a whole epic — and handing one back. The ticket is the unit of exchange in both directions. |
+| **pickup** | Taking on a ticket and handing one back. The ticket is the unit of exchange in both directions. |
+| `build` | The builder's seat for a whole epic — plan mode, batching, self-check, the loop. |
 | `epic-builder` / `story-writer` / `task-writer` | Writing the work in the first place. |
 | `ready-review` | Gating it ready before anything downstream spends work on it. |
-| `orchestrate` | The other end of epic mode: tech notes before you start, the review loop when you hold, the merge. |
-| `ticket-review` | The review discipline — run by a fresh session on standalone work, by the orchestrator on epic builds. |
+| `project-manager` | The dispatch and the board — the seat that sent you this ticket. |
+| `lead-engineer` (`build-prep` · `ticket-review` · `review-and-merge`) | The other end: prep before you start, the pickability check at dispatch, the review loop and the merge when you hold. |
 | `wrap-up` | Ending a session and resuming your own thread later. Different axis: across time, same person. |
 | `execution-discipline` | How to execute anything well once you've started. |
 | `product-retro` | The mandatory retro entry. |
@@ -210,6 +205,7 @@ Comment on the ticket, then move to another one. A blocked ticket said out loud 
 
 ## Changelog
 
+- **0.8.0 (2026-08-26, CQ voice memos + Fable 5)** — epic mode moves to the new `build` seat the same day it arrived; §0.5 becomes the pointer. Seam table updated for the orchestrator split (`project-manager` + `lead-engineer`); the hand-back and single-ticket flows unchanged.
 - **0.7.0 (2026-08-26, CQ voice memos + Fable 5)** — **epic mode** (§0.5): a builder takes a whole designed epic — plan mode first, the plan posted to the tickets, story-by-story commits on one branch, one PR, then the review loop with the orchestrator, who merges. **The vault posture reverses:** *never require the vault* — the ticket has to suffice, and a ticket that doesn't is handed back, not guessed around (§3 becomes depth-when-mounted). Retro lands on the dispatch ticket (vault log too when mounted). `gate:fail` reference removed — the `gate:*` labels were deleted 25 Aug. Seam table gains the writers, `ready-review` and `orchestrate`. Recorded in the [Decisions register](https://linear.app/lia-creative/document/decisions-register-lia-toys-34348df61a5f); the model is [Tool shop](https://linear.app/lia-creative/document/tool-shop-how-a-liatools-product-gets-built-4a9cfacc41c8).
 - **0.6.0 (2026-08-20, Dan) — logged retroactively on 2026-08-26**, having shipped without a changelog entry; recovered from §3.5's own dated revision note: you may close a ticket you neither built nor reviewed, but only against a verified merge, never a report.
 - **0.5.0 (2026-08-13, CQ + Cowork)** — added §3.5 *what each status means*. **Review = the PR is up; Done = it's on `main`.** Written the day four problems hid behind that conflation: a ticket Done with an open PR, two Done with their work stranded on a stacked branch (so CI ran against a trunk with no workflow for a day), and one Done with an unmeetable AC. Plus the split rule for ACs blocked on something outside the work, and *check the branch, not the board*. CQ: *"thats good to know re status. how do we fix that?"*
