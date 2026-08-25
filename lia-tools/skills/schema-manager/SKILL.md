@@ -24,7 +24,7 @@ maintainer: cq
 
 **Why it exists.** CQ, 26 Aug 2026: *"incredibly important for building tools/toys that talk to each other… it will essentially manage a big schema map of all data moving around the product and inform all other parts of the process."* Without it, every feature re-derives its entities and the seams between tools become guesswork — and the seams are where pipelines fail.
 
-**The map lives in Linear** — the *Schema map — lia.tools* document in the Lia Toys project — because every seat including a vault-less build agent must be able to read it. (Created with this skill; if it doesn't exist yet, create it from §3's shape and link it from the tool shop doc.)
+**The map lives in Linear** — [Schema map — lia.tools](https://linear.app/lia-creative/document/schema-map-liatools-7c33b96fb34b) in the Lia Toys project — because every seat including a vault-less build agent must be able to read it. Its header carries its own rules; they match §3 below.
 
 ## The seam that keeps it honest — read this first
 
