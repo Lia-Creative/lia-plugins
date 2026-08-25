@@ -1,6 +1,7 @@
 ---
 name: pickup
 slug: pickup
+description: "How anyone takes on a Linear ticket — the dispatch rule (a prompt is a pointer), the reading order (ticket, parents, blockers, context doc), what each status means, and the hand-back path for rejected work. Use when picking up or handing back a single ticket; a whole epic loads build instead."
 version: 0.8.0
 created: 2026-08-12
 updated: 2026-08-26

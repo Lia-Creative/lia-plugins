@@ -1,6 +1,7 @@
 ---
 name: security
 slug: security
+description: "Check work against security and data-compliance basics as it moves — no secret toward a client bundle, secrets by location only, RLS discipline, personal data marked and minimal; a shell that grows one real case at a time, gaps named not skipped. Use when a change touches secrets, auth, personal data, a bundle, or a signing path."
 version: 0.1.0
 created: 2026-08-26
 updated: 2026-08-26

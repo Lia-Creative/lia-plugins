@@ -1,6 +1,7 @@
 ---
 name: ticket-review
 slug: ticket-review
+description: "The pre-dispatch pickability check — one question, quickly: could an agent start from this ticket alone, without asking anything? Context, resolvable paths, vault-dependence. Use just before dispatching a ticket to a builder. (Reassigned 26 Aug 2026 — built-work review is review-and-merge.)"
 version: 0.3.0
 created: 2026-08-13
 updated: 2026-08-26

@@ -1,6 +1,7 @@
 ---
 name: review-and-merge
 slug: review-and-merge
+description: "Review built work against its acceptance criteria by index — evidence per criterion, the adversarial pass, feedback looped to the same build session until it passes on the current head — then the content-verified merge and the ticket moves. Use when a PR is up, when asked to review work in Review, or to run a merge."
 version: 0.1.0
 created: 2026-08-26
 updated: 2026-08-26

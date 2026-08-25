@@ -1,6 +1,7 @@
 ---
 name: schema-manager
 slug: schema-manager
+description: "Map the core entities of a problem — work through a scenario, define the variables it touches, record them once in the central schema map (Linear doc; code contracts stay authoritative). Use when a scenario or feature touches data, when toys need to talk to each other, or when asked what data moves where."
 version: 0.1.0
 created: 2026-08-26
 updated: 2026-08-26

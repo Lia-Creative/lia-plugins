@@ -1,6 +1,7 @@
 ---
 name: problem-definition
 slug: problem-definition
+description: "Formalise a problem — one line, evidence cited, a home on the board — and map problems across the board (atom 16 brief shape, atom 20 systemic mapping). Use when a raw observation, complaint, or friction needs to become a formal problem before a job or epic is written, or when asked which problems exist and recur."
 version: 0.1.0
 created: 2026-08-26
 updated: 2026-08-26

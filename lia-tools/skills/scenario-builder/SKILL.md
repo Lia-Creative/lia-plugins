@@ -1,6 +1,7 @@
 ---
 name: scenario-builder
 slug: scenario-builder
+description: "Formally walk a user through each flow with concrete inputs — Given/When/Then scenarios in a standard shape, the missing-Given and forgotten-Then probes, edges as a person meets them. Use when a story needs its scenarios built or the flows walked before criteria are frozen."
 version: 0.1.0
 created: 2026-08-26
 updated: 2026-08-26

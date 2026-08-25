@@ -1,6 +1,7 @@
 ---
 name: project-manager
 slug: project-manager
+description: "Run tickets front to end — sequencing, the three-part dispatch with context enforced on tickets, statuses kept true the moment reality changes, traffic-light updates written for a person. Use when running the board, handing out work, or writing a milestone update."
 version: 0.1.0
 created: 2026-08-26
 updated: 2026-08-26

@@ -1,6 +1,7 @@
 ---
 name: polish
 slug: polish
+description: "Hold the built interface to the design spec (the HTML artefact, which wins over prose) in design-system terms — and where Toys DS can't yet express the spec, name the acceptable gap and leave the note, never silently approximate. Use before calling any story with a design spec done."
 version: 0.1.0
 created: 2026-08-26
 updated: 2026-08-26

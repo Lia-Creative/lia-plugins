@@ -1,6 +1,7 @@
 ---
 name: jtbd
 slug: jtbd
+description: "Define a job-to-be-done consistently — when [situation], [person] wants to [progress], so they can [outcome] — and map its requirements as the bridge to the epic. Use when naming the job behind a problem, before epic-builder cites it, or when asked what someone is actually hiring a tool for."
 version: 0.1.0
 created: 2026-08-26
 updated: 2026-08-26

@@ -1,6 +1,7 @@
 ---
 name: build
 slug: build
+description: "The builder's seat for a whole epic — context from tickets/design/prep-notes/schema-map (never the vault), plan mode first with the plan posted to tickets, story-by-story on one branch, questions batched, progress in user terms, indexed self-check, one PR, hold for the review loop. Use when dispatched at an epic to build."
 version: 0.1.0
 created: 2026-08-26
 updated: 2026-08-26

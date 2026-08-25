@@ -1,6 +1,7 @@
 ---
 name: architecture
 slug: architecture
+description: "Keep architecture honest — docs follow code promptly (code wins), patterns stay singular, standards hold under deadline; breaches become Decision tickets, never quiet exceptions. Use when a merge changes what a strategy doc says, a pattern forks, or a build pushes on a bright line."
 version: 0.1.0
 created: 2026-08-26
 updated: 2026-08-26

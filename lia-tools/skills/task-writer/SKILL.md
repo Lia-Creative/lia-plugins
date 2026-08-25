@@ -1,6 +1,7 @@
 ---
 name: task-writer
 slug: task-writer
+description: "Ticket the named work that isn't a story — typed per the six, under a story or epic, sparse by design; plan-grain detail is refused and routed to plan-mode notes on the ticket. Use when work like 'core security setup' needs a ticket, or when deciding whether something is a task at all."
 version: 0.1.0
 created: 2026-08-26
 updated: 2026-08-26

@@ -1,6 +1,7 @@
 ---
 name: build-prep
 slug: build-prep
+description: "Write the how-to-build notes onto a designed story — real paths verified against the repo, patterns to follow, traps, the full resolvable-path rule (files, services, accounts/connectors with identities) — under the criteria, never instead of them. Use when prepping an epic or story for a build dispatch."
 version: 0.1.0
 created: 2026-08-26
 updated: 2026-08-26

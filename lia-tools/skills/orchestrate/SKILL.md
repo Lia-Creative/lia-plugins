@@ -1,6 +1,7 @@
 ---
 name: orchestrate
 slug: orchestrate
+description: "Superseded pointer (26 Aug 2026): the orchestrator split — load project-manager for the board, dispatch and updates; load lead-engineer for tech prep, review and merges. Use only to find where the orchestrator's jobs went."
 version: 0.3.0
 created: 2026-08-21
 updated: 2026-08-26

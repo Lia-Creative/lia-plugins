@@ -1,6 +1,7 @@
 ---
 name: epic-builder
 slug: epic-builder
+description: "Shape a versioned chunk of value into an epic — charts 1.0, scope read from its stories, value/why-now/what-it-is-not/how-you'd-know body, no ACs on the parent. Use when opening a piece of work, shaping the next version of a tool, or asked 'epic: <name>'."
 version: 0.2.0
 created: 2026-08-26
 updated: 2026-08-26

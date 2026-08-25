@@ -1,6 +1,7 @@
 ---
 name: acceptance-criteria
 slug: acceptance-criteria
+description: "Review discovery and write the final goal-oriented acceptance criteria — numbered Given/When/Then frozen as the contract, [Graded at Review] for judgement calls, Delivery checks split out, 3–7 per story held loudly. Use when scenarios and design are ready and the criteria need freezing before build."
 version: 0.1.0
 created: 2026-08-26
 updated: 2026-08-26

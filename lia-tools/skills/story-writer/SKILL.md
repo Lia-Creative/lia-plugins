@@ -1,6 +1,7 @@
 ---
 name: story-writer
 slug: story-writer
+description: "Write user stories per Dan North — name titles, As-a/I-want/so-that narrative with a named face, numbered Given/When/Then acceptance criteria in the user's terms, Delivery checks split out. Use when breaking an epic into stories or writing any capability a person gets."
 version: 0.2.0
 created: 2026-08-26
 updated: 2026-08-26

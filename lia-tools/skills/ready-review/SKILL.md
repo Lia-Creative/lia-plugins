@@ -1,6 +1,7 @@
 ---
 name: ready-review
 slug: ready-review
+description: "Gate epics and stories before design or build spend work on them — a fresh session grades every story on the five checks (Title/Narrative/Scenarios/Completeness/Scope) with quoted evidence, plus the vault-dependence test; verdict as one comment. Use when asked if an epic or its stories are ready."
 version: 0.2.0
 created: 2026-08-26
 updated: 2026-08-26

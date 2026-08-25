@@ -1,6 +1,7 @@
 ---
 name: lead-engineer
 slug: lead-engineer
+description: "The senior developer's seat — holds the whole technical picture, never builds; routes across the bench: architecture, acceptance-criteria, build-prep, ticket-review (pickability), review-and-merge, security. Use when taking technical ownership of a milestone or deciding which engineering skill a moment needs."
 version: 0.1.0
 created: 2026-08-26
 updated: 2026-08-26
