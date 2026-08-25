@@ -1,8 +1,8 @@
 ---
 name: ticket-builder
 slug: ticket-builder
-description: How Lia builds Linear tickets and epics properly. The principles a good ticket holds to, the epic and ticket shapes (matched to the project's siblings), titles that name the unit of work with the story kept in the body, priority-and-dependency ordering, blocked-by sequencing, grounding every ticket in real vault sources with links kept in the relation field, the team/status/label/priority conventions, the doc-vs-ticket line, the Linear MCP mechanics, and the wrap-up rules (logging, cross-founder courtesy, project-description sync). Use whenever creating, restructuring, or breaking work into Linear issues for the Lia team.
-version: 0.4.0
+description: The shared mechanics under Lia's ticket writing, and the front door that routes to the writer seats. Shape-writing lives in epic-builder / story-writer / task-writer (tool shop, 26 Aug 2026); this skill owns what they all share — principles, grounding in real sources with links as relations, priority-and-dependency ordering, blocked-by sequencing, team/status/label conventions, the doc-vs-ticket line, the Linear MCP mechanics, the wrap-up rules — plus Shape B for Lia Creative workstream tickets, which the writers don't cover. Use for the mechanics, for Shape B work, or whenever a request to "build tickets" hasn't yet picked a seat.
+version: 0.5.0
 created: 2026-06-03
 updated: 2026-08-26
 status: active
@@ -26,8 +26,10 @@ companions:
 
 # Ticket Builder
 
-> [!important] **On ticket *shape*, *types* and *titles*, the canonical source is the Linear doc [How a Lia Toys ticket is shaped](https://linear.app/lia-creative/document/how-a-lia-toys-ticket-is-shaped-a5d28e39709b)** (Lia Toys project, written 25 Aug 2026).
-> **This skill owns the mechanics** — grounding, sequencing, the MCP calls, the wrap-up. It should **point at that doc, not restate it.** Where the two disagree the doc wins and this skill gets fixed. Restating it here is exactly how this skill spent two months teaching a title convention the board had moved off.
+> [!important] **On ticket *shape*, *types* and *titles*, the canonical source is the Linear doc [How a Lia Toys ticket is shaped](https://linear.app/lia-creative/document/how-a-lia-toys-ticket-is-shaped-a5d28e39709b)** (25 Aug 2026); **on how tickets *move***, it's [Tool shop](https://linear.app/lia-creative/document/tool-shop-how-a-liatools-product-gets-built-4a9cfacc41c8) (26 Aug 2026).
+> **This skill owns the mechanics** — grounding, sequencing, the MCP calls, the wrap-up. It should **point at those docs, not restate them.** Where they disagree the docs win and this skill gets fixed. Restating is exactly how this skill spent two months teaching a title convention the board had moved off.
+
+> [!important] **The writing itself moved into three seats on 26 Aug 2026** (tool shop): **`epic-builder`** for a versioned chunk of value, **`story-writer`** for the capabilities inside it, **`task-writer`** for the named work that isn't a story. Sent here to "build the tickets" for lia.tools product work? **Load the seat, not this skill** — this one carries what all three share, and Shape B below for Lia Creative workstream tickets, which the seats don't cover.
 
 **Trigger:** any request to create, restructure, sequence, or break work into Linear issues for the Lia team. Also "ticket builder" by name.
 
@@ -112,25 +114,7 @@ The output of Step 1 is a short list of real IDs and file paths. **If that list 
 
 There is no single global template — **match the shape the project's sibling tickets already use.** Two shapes are in use across Lia. Read the siblings (Step 1) and copy theirs.
 
-**Shape A — feature / build tickets (Lia Build; e.g. File Runner).** Atomic product work. This is the default for anything an engineer picks up and builds.
-
-```markdown
-**User story**
-As a <person from who-we-serve>, I want <the thing>, so that <the outcome>.
-
-**Why it matters**
-One or two plain sentences — the value, not the mechanics.
-
-**Acceptance criteria**
-
-- [ ] Observable, testable statements. A reviewer can tick each one.
-- [ ] Cover the happy path and the obvious edge ("no location" / "nothing to do").
-- [ ] Each one is a real check, not a restatement of the goal.
-
-**Scope / non-goals**
-
-* What this ticket deliberately doesn't do (and where that lives instead).
-```
+**Shape A — feature / build tickets (Lia Build) — moved to the writer seats, 26 Aug 2026.** A build ticket on the tool shop spine is a **story** (`story-writer`: Dan North narrative, acceptance criteria in the user's terms) or a **task** (`task-writer`: named work, typed, sparse), under a versioned epic (`epic-builder`). Those skills carry the shapes; don't reconstruct them from memory here. *(Shape A's old template — User story / Why it matters / Acceptance criteria / Scope — survives inside `story-writer` with the 26 Aug rules applied; tickets built to it before then read as legacy, not wrong.)*
 
 **Shape B — workstream / ops tickets (Lia Creative; e.g. Foundations).** Broader, founder-run work that isn't a single buildable feature.
 
@@ -162,29 +146,14 @@ Rules for both:
 
 ---
 
-## Step 3 — The epic shape (a job to be done)
+## Step 3 — The epic shape — moved to `epic-builder`, 26 Aug 2026
 
-An epic is **not** a plan or a list of its own children. It's a one-glance answer to: what job, for whom, what does success look like, and why does it matter. Lead with outcome and value; let the sub-issues carry the how.
+An epic is **not** a plan or a list of its own children — and on the tool shop spine it is **a versioned chunk of value** (`charts 1.0`) whose scope is read from its stories. `epic-builder` carries the shape (value / why now / what it is not / how you'd know it worked — the JTBD/User/Success/Why thinking survives there as the discovery lens).
 
-```markdown
-### JTBD
-* The job the user is hiring this for — in their terms, plainly.
-
-### User
-* The named person we're serving (from who-we-serve), in their situation.
-
-### Success
-* What "it worked" looks like for them — the outcome, concretely.
-
-### Why
-* Why it's worth doing now — the value / the strategic reason.
-* (Optional) the one seam line: what this does NOT own, in plain words.
-```
-
-Rules:
-- **Don't list the sub-features.** The sub-issues *are* the list — Linear shows them under the epic. Repeating them as bullets is mush.
-- **Keep it link-light.** The relation panel holds the dependencies and the seam; the description stays human. An epic full of chips reads like a plan, not a job.
-- **Match the siblings' naming — for epics.** File Runner epics are `Epic · <name>` (plain noun); Foundations epics are lowercase-versioned (`brand 1.0`); Lia Toys uses plain lowercase (`authentication and account management 1.1`). Copy whichever the project uses. The JTBD/User/Success/Why bones stay the same either way. **An epic's title may be a sentence — it carries the value.** Its children may not; they follow Step 3.
+What stays here, because it's cross-team:
+- **Don't list the sub-features.** The sub-issues *are* the list — repeating them as bullets is mush, and on the tool shop spine it's two homes for one fact.
+- **Keep it link-light.** The relation panel holds the dependencies and the seam; the description stays human.
+- **Match the siblings' naming — for epics.** File Runner legacy epics are `Epic · <name>`; Foundations and Lia Toys run lowercase-versioned (`brand 1.0`, `tool shop 1.0`) — the tool shop convention. **An epic's title carries the value (and its version).** Its children are named per Step 2's title rules.
 
 ---
 
@@ -206,7 +175,7 @@ In `save_issue`, `blockedBy` and `blocks` are **append-only** — they never rem
 
 **Six types, exactly one per leaf, never on an epic** (verified live 2026-08-25): `Bug` · `Feature` · `Improvement` · `Decision` · `Research` · `Foundation`. `Decision` and `Foundation` were both added 25 Aug 2026 — `Foundation` on CQ's call that *architecture is foundations, not improvements* (identity, data models, contracts, security rules; its test is that other work becomes possible or safe because it exists). **`POC` no longer exists**; `Experiment` is a live label but not one of the six. **An epic carries no type** — it is a position, not a label.
 
-**Workflow and routing labels sit alongside a type:** `human:chris` (blocked on a specific human action — the most under-used label on the board), `promotion` (**the one exemption — it replaces a type**), `idea`, `gate:*`, `defect:*`, `override:*`, and the **`specialist` group — `infra` / `auth` / `design-system` / `eval-harness` — which is mutually exclusive: passing two of them to `save_issue` is a 400, not a merge.**
+**Workflow and routing labels sit alongside a type:** `human:chris` (blocked on a specific human action — the most under-used label on the board), `promotion` (**the one exemption — it replaces a type**), `idea`, `defect:*`, `override:*`, and the **`specialist` group — `infra` / `auth` / `design-system` / `eval-harness` — which is mutually exclusive: passing two of them to `save_issue` is a 400, not a merge.** *(The `gate:*` labels were deleted 25 Aug 2026 — a gate verdict is a comment with evidence, never a label; a label can contradict the status where a comment cannot.)*
 
 [How a Lia Toys ticket is shaped](https://linear.app/lia-creative/document/how-a-lia-toys-ticket-is-shaped-a5d28e39709b) is canonical for the taxonomy and gives each type its test. Re-confirm with `list_issue_labels` if this block's date looks old.
 
@@ -283,6 +252,7 @@ This is the bar: grounded, one-job, reads like a job for a person, sequenced, lo
 
 ## Changelog
 
+- **0.5.0 (2026-08-26, CQ voice memos + Fable 5):** **The writing moved into three seats** — `epic-builder` / `story-writer` / `task-writer` (tool shop). This skill becomes the shared mechanics + the router: Shape A and the epic shape are pointers now; Shape B (Lia Creative workstreams) stays here because the seats don't cover it. `gate:*` dropped from the label list (deleted 25 Aug — verdicts are comments). Second canonical pointer added: [Tool shop](https://linear.app/lia-creative/document/tool-shop-how-a-liatools-product-gets-built-4a9cfacc41c8) for how tickets move.
 - **0.4.0 (2026-08-26, CQ):** **Titles name the unit of work** — noun phrase, two to four words, lowercase — replacing the verb-phrase rule from 0.3.0. **Lia-wide**, on CQ's call: *"sub tickets are the breakdown of how we get to the value of the epic… they aren't stories"* and *"every story has a title. The ticket name is the title, and the story itself goes onto the ticket."* The old title becomes the body's Goal / User story line. Carve-outs: Bugs keep the symptom, Decisions name the call, epics carry the value. "Match the siblings" narrowed to **shape**, since sibling titles are now pre-convention. Label block rebuilt: **six types** including `Decision` and `Foundation` (both 25 Aug 2026), `POC` removed, specialist-group exclusivity noted. Added a pointer making [How a Lia Toys ticket is shaped](https://linear.app/lia-creative/document/how-a-lia-toys-ticket-is-shaped-a5d28e39709b) canonical for shape/types/titles, so this skill stops restating what it can only drift from. Worked example B annotated with the conversion rather than rewritten.
 - **0.3.2 (2026-08-19) — logged retroactively on 2026-08-26**, having been shipped without a changelog entry. Two changes, recovered by diffing against the plugin export: **priority is two scales, not one** (CQ, 2026-08-11 — a parent's priority ranks its bucket against other parents, a child's ranks it within its own bucket), and **append log entries at the bottom of `_meta/log.md`, never rewrite the file to insert at the top** (CLAUDE.md housekeeping rule 2, tightened 2026-08-19).
 - **0.3.1 (2026-06-25, CQ):** Board-integrity rule — a parent (an epic, or any ticket with sub-issues) must not sit in **Review or QA** until all its sub-issues are **Done/Cancelled**. Added to Principle 4 + the Step 7 checklist.

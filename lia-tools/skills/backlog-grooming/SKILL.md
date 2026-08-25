@@ -2,9 +2,9 @@
 name: backlog-grooming
 slug: backlog-grooming
 description: How Lia keeps an existing Linear backlog healthy — the maintenance pass, not authoring. Sweep a project/team/cluster, audit every ticket against the CURRENT ticket-builder standard, check board integrity (parent-vs-children status, dependencies-as-relations, stale/orphan/duplicate tickets, label + priority sanity), then apply the safe fixes and flag the rest. Use when someone says "groom the backlog", "tidy the board", "audit the tickets", "check the tickets against the skill", "are these up to standard", "board hygiene", "clean up the backlog", or after the ticket standard changes and the old tickets need re-sweeping. Companion to ticket-builder (which authors one ticket); not planning (cycles + product-management own that).
-version: 0.1.0
+version: 0.1.1
 created: 2026-06-25
-updated: 2026-06-25
+updated: 2026-08-26
 status: draft
 maintainer: dan
 reviewed_by: chris (draft 2026-06-25, CQ-driven — for Dan review)
@@ -43,7 +43,7 @@ triggers:
 
 ## What good grooming feels like
 
-1. **Audit against the live standard, not memory.** The ticket-builder skill moves (it went 0.1.1 -> 0.3.1 in two days). Re-read the current `_meta/skills/ticket-builder/SKILL.md` at the start of every pass and audit against *that*. Auditing against a remembered version is the classic stale failure.
+1. **Audit against the live standard, not memory.** The ticket-builder skill moves (it went 0.1.1 -> 0.3.1 in two days). Re-read the current standard at the start of every pass and audit against *that* — the canonical shape doc ([How a Lia Toys ticket is shaped](https://linear.app/lia-creative/document/how-a-lia-toys-ticket-is-shaped-a5d28e39709b)), plus this plugin's `ticket-builder` / `epic-builder` / `story-writer` / `task-writer` (canonical since 26 Aug 2026 — not the vault's frozen copies). Auditing against a remembered version is the classic stale failure.
 2. **Don't churn in-flight work.** A ticket in Build / Review / QA is what someone is building or testing right now. **Fix-forward:** leave its body alone; apply the standard to Backlog/Todo tickets and to new work. Low-risk touches (a title, a status correction) are fine in-flight; rewriting a description mid-build is not.
 3. **Know the safe-fix line.** Some findings are safe to fix in place; some must be flagged for a human. Getting this line right (Step 5) matters more than volume — an over-eager rewrite is worse than an honest flag.
 4. **The board tells the truth.** Status and relations reflect reality. Headline rule: **a parent never sits in Review/QA ahead of its children** (ticket-builder Principle 4 / v0.3.1).

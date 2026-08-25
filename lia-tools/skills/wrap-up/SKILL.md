@@ -1,9 +1,9 @@
 ---
 name: wrap-up
 slug: wrap-up
-version: 1.2.0
+version: 1.2.1
 created: 2026-07-25
-updated: 2026-08-19
+updated: 2026-08-26
 status: active
 triggers:
   - "/wrap-up"
@@ -139,8 +139,8 @@ tags: [handover, <project-slug>]
 
 ## Related
 
-- `_meta/skills/product-retro/SKILL.md` — the per-session chronicle this composes with (retro = what we learned over time; handover = where things stand now)
-- `_meta/skills/execution-discipline/SKILL.md` — load first for unattended runs
-- `_meta/skills/ticket-builder/SKILL.md` — wrap-up rules; board truth
+- `product-retro` (vault `_meta/skills/` — not yet in this plugin) — the per-session chronicle this composes with (retro = what we learned over time; handover = where things stand now)
+- `execution-discipline` (vault `_meta/skills/` — not yet in this plugin) — load first for unattended runs
+- `ticket-builder` — in this plugin (canonical since 26 Aug 2026) — wrap-up rules; board truth
 - `Products/File Runner/Context/handovers/` — the worked example, including the supersede chain
-- Chris's Cowork account carries a synced copy of this skill (`/wrap-up`) so it triggers outside vault-mounted sessions. **This file is canonical** — if you change it, refresh the account copy (CLAUDE.md §Skills, rule 2).
+- Chris's Cowork account carries a synced copy of this skill (`/wrap-up`) so it triggers outside vault-mounted sessions. **This file — in the lia-tools plugin — is canonical since 26 Aug 2026** ([LIAB-919](https://linear.app/lia-creative/issue/LIAB-919)); if you change it, refresh the account copy (the vault copy is frozen pending [LIAB-924](https://linear.app/lia-creative/issue/LIAB-924)).
