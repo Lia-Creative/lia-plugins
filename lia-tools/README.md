@@ -15,7 +15,7 @@ The process the skills implement is written down in [Tool shop — how a lia.too
 | `epic-builder` | A versioned chunk of value — `charts 1.0`. Scope is read from its stories. |
 | `story-writer` | One capability per story, Dan North shape, acceptance criteria in the user's terms. |
 | `task-writer` | The named work that isn't a story. Sparse by design. |
-| `ticket-builder` | Pointer at the three above (the old front door still opens). |
+| `ticket-builder` | The shared mechanics under the three above, Shape B for Lia Creative workstreams, and the old front door — it routes. |
 | `backlog-grooming` | The maintenance pass for an existing backlog. |
 
 **Gating and moving the work**

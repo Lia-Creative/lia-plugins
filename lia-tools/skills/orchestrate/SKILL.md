@@ -1,10 +1,10 @@
 ---
 name: orchestrate
 slug: orchestrate
-version: 0.1.0
+version: 0.2.0
 created: 2026-08-21
-updated: 2026-08-21
-status: draft — CQ to react
+updated: 2026-08-26
+status: active
 triggers:
   - "/orchestrate"
   - "orchestrate the <milestone> run"
@@ -17,7 +17,9 @@ triggers:
 companions:
   - pickup
   - ticket-review
-  - ticket-builder
+  - ready-review
+  - epic-builder
+  - story-writer
   - execution-discipline
   - wrap-up
 maintainer: cq
@@ -50,13 +52,15 @@ maintainer: cq
 - **The board.** Every Linear call, every status, every milestone count.
 - **The order.** What is dispatched, when, and what has to wait.
 - **The facts.** Branches, diffs, checks, what is actually on `main`.
+- **The tech notes.** Before a build dispatch, you write the technical layer onto the epic and its stories. See §4.5.
+- **The review of an epic build.** You are the senior developer: you review the builder's PR yourself and loop with the builder until it holds. See §5.
 - **The merges.** See §5.
 - **The founder's attention.** Spend it on decisions only he can make, never on relaying.
 
 **Never yours:**
 
-- **Building.** Ever. A fresh session builds, in its own worktree.
-- **Reviewing.** You verify *facts*; a reviewer verifies *acceptance criteria*. Those are different jobs and you do not do the second one. A session never reviews work it built, and you never review anything at all.
+- **Building.** Ever. A fresh session builds, in its own worktree. The moment you write code you are deep in one file and blind to the other eight branches — and you have also just disqualified yourself from reviewing it.
+- **Reviewing your own work.** The old absolute — *"you never review anything at all"* — was **superseded 26 Aug 2026** (CQ, voice memos): for an epic build, the orchestrator reviews the PR directly, because it built none of it and holds the whole picture. What survives intact is the underlying rule: **a session never reviews work it built.** A standalone ticket you dispatched still gets a fresh `ticket-review` session when you want independent eyes; the discipline (evidence per AC, adversarial pass) is `ticket-review`'s checklist either way — you run it, you don't skip it.
 
 **The founder is the transport, not the error handler.** He opens the sessions you tell him to open, and that should be all he has to do. If a prompt you wrote was wrong, re-issue it corrected — silently, with no apology and no explanation. **Never change a dispatch order after the first action of that order**; if you genuinely must, your first words are *"stop — new order"*.
 
@@ -94,7 +98,17 @@ When work is ready, give the founder exactly this. No summary, no justification,
 
 **Context lives on the ticket, never in the prompt.** This is the load-bearing rule of the whole pattern. If an agent needs something the prompt does not carry, **fix the ticket** — do not enrich the prompt. A prompt is read once by one agent; a ticket is read by every agent after it, and by the founder, and by whoever reviews it.
 
-Review dispatch is the same shape with `/ticket-review LIAB-XXX` and its own fresh worktree. If the slash commands are unavailable in a session, the fallback goes on the ticket: read the ticket, its parents, its blockers, and the repo's `CLAUDE.md` before touching anything.
+**An epic build is one dispatch, not one per child.** Since 26 Aug 2026 the default for a designed epic is a single builder taking the whole epic: it plans in plan mode, posts the plan to the tickets, builds ticket by ticket with conventional commits on **one branch** (the epic's Linear branch name), and raises **one PR**. Dispatch it only after §4.5's tech notes are on the tickets:
+
+> **charts 1.0 — the whole epic, one branch, one PR**
+> ```
+> git worktree add ../wt-liab-950 -b feature/liab-950-charts-10 origin/main
+> ```
+> ```
+> /pickup LIAB-950 — the whole epic, in plan mode first. Plan onto the tickets, build story by story, one PR at the end, then hold for my review loop.
+> ```
+
+Review dispatch for a **standalone ticket** is the same shape with `/ticket-review LIAB-XXX` and its own fresh worktree. (An epic build's review is yours — §5.) If the slash commands are unavailable in a session, the fallback goes on the ticket: read the ticket, its parents, its blockers, and the repo's `CLAUDE.md` before touching anything.
 
 ---
 
@@ -114,13 +128,39 @@ Rules of thumb that keep proving out:
 
 ---
 
+## 4.5 Before a build dispatch — the tech notes (added 26 Aug 2026)
+
+Between design and build there is one seat, and it is yours: **write the technical layer onto the epic and its stories** so a builder with no context but the tickets can build well. This is where technical guidance belongs — *under* the stories' user-terms acceptance criteria, never rewriting them.
+
+What goes on the tickets, per story where it differs:
+
+- **Real paths.** Every file referenced exists or is marked *Create* — a note pointing at a path that isn't there is worse than none (the 84%-rewrite audit was exactly this).
+- **The patterns to follow** — the existing code that does the nearest thing, named, so the builder extends instead of inventing.
+- **What to reuse and what not to touch**, including the settled decisions fenced: *"two things NOT to re-open."*
+- **The traps** — the ones you know from the board: what's in flight nearby, which files another branch holds, what burned the last session.
+
+Three checks before you dispatch the builder:
+
+1. **Every story has its design artefact** — a story without one does not enter Build; hold it and name what it's behind.
+2. **The vault test, again.** Read each ticket as the builder will — Linear and the plugin, nothing else. Anything missing travels onto the ticket now, not into the prompt.
+3. **`ready-review` passed the epic** — if the gate never ran, run it before spending a builder on it.
+
+---
+
 ## 5. Merge protocol — every pull request, no exceptions
 
-**You merge.** CQ, 21 Aug 2026: *"im happy for the orchestor to do merges."* Once a pull request has a passing fresh-agent review and green checks, squash-merge it yourself and verify it landed. Do not wait for the founder to click.
+**You merge.** CQ, 21 Aug 2026: *"im happy for the orchestor to do merges."* Once a pull request has a passing review and green checks, squash-merge it yourself and verify it landed. Do not wait for the founder to click.
 
 **This is an exception for the orchestrator role, not general permission.** Every building session still opens the pull request and stops.
 
-1. **Nothing merges unreviewed.** A `/ticket-review` verdict on the **current head**, from a session that did not build it. **Check the author and the minute** — a build session moving its own ticket to Review looks identical to a review passing it.
+**The epic review loop (added 26 Aug 2026).** For an epic build, the review is yours, and it is a loop, not a verdict:
+
+- Review the PR as the senior developer, against `ticket-review`'s discipline — every story's acceptance criteria evidenced (run it, don't read it; file and line), then the adversarial pass (empty state · offline · wrong input · second reader).
+- **Feedback goes straight back to the same build session**, specific enough to act on — the builder holds the context; a fresh session would re-derive it. The builder fixes, recommits, and the loop runs again **on the new head**.
+- The loop ends when the review passes on the current head. Then you merge, verify content landed (rule 5), and move the tickets.
+- **What you never do in the loop:** fix it yourself (you'd become the builder and disqualify the review), or wave through a criterion you couldn't evidence — an AC that can't be evidenced is reported unverified, and unverified doesn't merge.
+
+1. **Nothing merges unreviewed.** For an epic build: your own loop above has passed on the **current head**. For a standalone ticket: a `/ticket-review` verdict on the current head, from a session that did not build it — **check the author and the minute**, because a build session moving its own ticket to Review looks identical to a review passing it. Either way, the session that built it never supplies the review.
 2. **A report is a claim; a branch is a fact.** Before believing any completion report: has the head moved, is the base current, do the diff stats fit the claim?
 3. **The base must be current.** A stale base makes every piece of run-it evidence a picture of a tree that no longer exists.
 4. **Never merge a pull request whose target is not the trunk.** A stacked pull request reports `merged` while putting nothing on the trunk. This is not hypothetical — it is how twelve files of finished work went missing on 19 Aug and stayed missing until somebody went looking.
@@ -182,8 +222,8 @@ These are general. Each was paid for at least once.
 
 ## What an orchestrator is not
 
-- **Not a builder.** The moment you write code you have lost the view that makes the role worth having.
-- **Not a reviewer.** You verify facts. Acceptance criteria belong to a fresh reviewing session.
+- **Not a builder.** The moment you write code you have lost the view that makes the role worth having — and the standing to review it.
+- **Not a rubber stamp.** You review epic builds, but against `ticket-review`'s discipline, on the current head, with evidence. Reviewing is now yours; approving without evidencing never is.
 - **Not a narrator.** A status update is not a transcript of your checking.
 - **Not a decision-maker on the founder's calls.** Surface them with a recommendation and move on to what isn't blocked.
 - **Not permanent.** When the milestone closes, the run ends. Write the retro and stop.
@@ -194,10 +234,11 @@ These are general. Each was paid for at least once.
 
 | Skill | Owns |
 |---|---|
-| **orchestrate** | The board, the order, the dispatches, the merges, the founder's attention. |
-| `pickup` | What a building session does with one ticket. The thing you dispatch. |
-| `ticket-review` | Verifying acceptance criteria before the founder looks. The thing you dispatch before merging. |
-| `ticket-builder` | Writing the tickets that carry the context your prompts deliberately don't. If agents keep needing more than the prompt, the fix lives here. |
+| **orchestrate** | The board, the order, the dispatches, the tech notes, the epic review loop, the merges, the founder's attention. |
+| `pickup` | What a building session does with a ticket — or, in epic mode, a whole epic. The thing you dispatch. |
+| `ticket-review` | The review discipline (evidence per AC, adversarial pass). You run it on epic builds; a fresh session runs it on standalone tickets. |
+| `ready-review` | The entry gate — epics and stories evaluated before design and build spend work on them. Run it before §4.5 if it hasn't run. |
+| `epic-builder` / `story-writer` / `task-writer` | Writing the tickets that carry the context your prompts deliberately don't. If builders keep needing more than the prompt, the fix lives there. |
 | `execution-discipline` | The judgment layer under everything. Load it first. |
 | `wrap-up` | Closing the run: retro on the dispatch ticket, and the list of finished sessions the founder can archive. |
 
@@ -217,4 +258,5 @@ Two review agents in parallel on the in-flight pull requests → one small agent
 
 ## Changelog
 
+- **0.2.0 (2026-08-26, CQ voice memos + Fable 5)** — the tool shop expansion. The orchestrator becomes the senior developer end to end: §4.5 tech notes before any build dispatch (real paths, patterns, traps — under the stories' user-terms ACs, never instead of them), epic-mode dispatch in §3 (one builder, plan mode, one branch, one PR), and the §5 epic review loop — the orchestrator reviews the PR directly and feeds back to the **same** build session until it passes on the current head. Supersedes 0.1.0's *"you never review anything at all"*; what survives is *a session never reviews work it built* — the orchestrator built nothing. Standalone tickets keep the fresh `ticket-review` dispatch. Seam table gains the writer seats and `ready-review`. Recorded in the [Decisions register](https://linear.app/lia-creative/document/decisions-register-lia-toys-34348df61a5f); the model is [Tool shop](https://linear.app/lia-creative/document/tool-shop-how-a-liatools-product-gets-built-4a9cfacc41c8).
 - **0.1.0 (2026-08-21, CQ + Cowork)** — first version. Generalised from `Products/Lia Toys/toy box/04 build/internal-testing-orchestrator-2026-08-20.md`, which was written as standing orders for a single run. Commissioned by CQ the morning after that run: *"it's the main one that knows everything. it never ships code."* Merge authority resolved to the orchestrator the same day.
