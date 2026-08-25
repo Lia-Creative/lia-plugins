@@ -14,6 +14,6 @@ The `ticket-builder` skill loads whenever you're creating, restructuring, or bre
 
 ## Source
 
-Canonical skill lives in the Lia Vault at `_meta/skills/ticket-builder/`; this plugin packages it for install. Sync one-way from the vault when the canonical version bumps.
+**Superseded 26 Aug 2026:** the canonical home for this skill is now the `lia-tools` plugin in this repo ([LIAB-919](https://linear.app/lia-creative/issue/LIAB-919) — the vault stopped being the skills home the same day). This standalone plugin stays installable until [LIAB-924](https://linear.app/lia-creative/issue/LIAB-924) retires it; don't edit the copy here, and don't sync from the vault — edits happen in `lia-tools/skills/`.
 
 Part of the [`lia-plugins`](https://github.com/Lia-Creative/lia-plugins) marketplace.
