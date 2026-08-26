@@ -90,7 +90,7 @@ needs a decision except the last row.
 | `ui-capture` | `lia-tools` → `ui-capture` 0.3.0 (**and** its `reference/` + `scripts/` bundles, which the standalone never had) |
 | `ui-teardown` | `lia-tools` → `ui-teardown` 0.2.1 (+ `reference/`) |
 | `wrap-up` | `lia-tools` → `wrap-up` 1.2.2 |
-| `ticket-engineering` | **No 1:1 replacement — this one is a decision.** Absorbed as discipline: its 6-criteria entry gate lives in `build-prep` + `ticket-review`, its completion gate in `review-and-merge`. Disable it if you accept that; keep it as a personal skill if you still want the Cursor-era mechanics on hand. |
+| `ticket-engineering` | **Disable — CQ's call, 26 Aug 2026.** No 1:1 replacement; absorbed as discipline, its 6-criteria entry gate into `build-prep` + `ticket-review` and its completion gate into `review-and-merge`. The Cursor-era mechanics go with it, deliberately. |
 
 And the two claude.ai plugins, same action, same place: **`lia-build` 0.2.0** and
 **`lia-toys` 0.3.0** — both superseded whole by `lia-tools`. Leave `cq`,

@@ -1,0 +1,9 @@
+{
+  "extraKnownMarketplaces": {
+    "lia-plugins": {
+      "source": { "source": "github", "repo": "Lia-Creative/lia-plugins" },
+      "autoUpdate": true
+    }
+  },
+  "enabledPlugins": { "lia-tools@lia-plugins": true }
+}

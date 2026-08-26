@@ -73,6 +73,32 @@ along with the hand-carried `.plugin` zip.
    template and never carried the plugin's manifest, skill or command. The only
    copy was here.)*
 
+## Make the check fail on purpose
+
+**Earned in this repo, 26 Aug 2026 (LIAB-959), three times in one day.** A rule
+nothing executes became a guard nothing tested became a fixture that could not
+tell the fix from the bug:
+
+1. The placeholder convention was written in prose. It passed every check we had
+   and made `lia-tools` 1.2.0 uninstallable on a whole surface.
+2. Its guard's first self-test still printed `ok` with the guard's core check
+   deleted — so it proved nothing.
+3. Its BOM fixture was red *either way* — with the fix as the defect, without it
+   as an unreadable file. Coverage that could not distinguish the two.
+
+Each layer looked like coverage. **A check nobody has watched fail is a check
+nobody knows works** — so break it deliberately and watch it go red before you
+trust it green. That is what `--self-test` is for, and why CI runs it *before*
+the real check.
+
+The same rule applied to acceptance criteria: **`grep -ri squeak` passed on two
+live references because neither contained the word.** A string test for a
+conceptual change is green in a way that means less than it looks like.
+
+And when you find a gap you are not fixing: **it becomes a ticket, not a
+paragraph.** Three gaps recorded in READMEs this day were invisible until
+someone asked.
+
 Roster and what belongs: [lia-tools/README.md](lia-tools/README.md). The
 audit trail of which copy won, why, and what was retired:
 [lia-tools/AUDIT.md](lia-tools/AUDIT.md).
