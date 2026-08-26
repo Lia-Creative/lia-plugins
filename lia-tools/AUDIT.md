@@ -25,6 +25,121 @@ All winners are in `skills/` as of PRs #2, #5, #4 and #6, each move `cmp`/`diff 
 - **`ticket-engineering` (claude.ai standalone 3.0.0, no vault copy): OUT as a skill, absorbed as discipline.** Its 6-criteria entry gate lives on in `build-prep` + `ticket-review` (the pickability check) + the vault's dev-ready checklist; its 4-point completion gate lives on in `review-and-merge` and the QA stage's real-data proof. Bringing the file in whole would have restated Cursor-era mechanics beside the seats that superseded them. The standalone remains Chris's claude.ai skill until the LIAB-924 retirement review looks at it.
 - **`excalidraw-diagram` ships in both `cq` 0.5.0 and `chris-quinton-diagrams` 0.2.0** — same defect class, out of this plugin's scope (personal bundles). Flagged for Chris here and on the ticket; nothing moved.
 
-## What happens to the losing copies
+## The retirement (LIAB-924)
 
-Nothing yet, deliberately — LIAB-919's freeze holds: the vault copies stay in place behind the dated pointer banner in `_meta/skills/README.md`, and the claude.ai plugins/standalones stay live for Cowork until the new plugin is proven on that surface. **LIAB-924 retires them**; deleting anything before then recreates the drift this file exists to end.
+**Started 26 Aug 2026.** LIAB-919's freeze held until the plugin was proven on the
+surface we actually publish to; [LIAB-924](https://linear.app/lia-creative/issue/LIAB-924)
+retires the copies it replaced. The ordering rule is unchanged: **nothing is
+deleted before its replacement is live.**
+
+Cowork was dropped as a publish target in the same pass. That removes the surface
+LIAB-922 existed to keep in sync, and it removes the only channel that needed a
+hand-built `.plugin` zip. Claude Code — CLI, desktop, and cloud/web sessions —
+is the whole distribution story now.
+
+### Done in this repo
+
+| What | State |
+|---|---|
+| `ticket-builder/` standalone plugin | **Removed.** Superseded by `lia-tools`' `ticket-builder` 0.5.1. Its unique 3 KB was resolved by LIAB-918 above — the older long-form shape sections, dropped deliberately because the canonical shape doc now owns them. |
+| `.claude-plugin/marketplace.json` entry | **Removed**, with `renames: {"ticket-builder": null}` so existing installs migrate instead of dangling. `squeaks` got the same treatment retroactively — it was removed on 26 Aug (LIAB-962) without one. |
+| `ticket-builder/skills/ticket-builder/handover-2026-06-25.md` | Not carried forward. It is a session handover from the v0.3.0 review (LIA-388), not skill content, and shipping it to every install was never right. It lives in git history at `3f719c4` and earlier. **If it matters, it belongs in the vault** — say so and it gets moved rather than left in a commit. |
+| Publish sequence in `README.md` | Rewritten for one surface. The three-surface table is gone. |
+
+### The shadowing is real, and it was measured here
+
+Not inferred — observed in a Claude Code session on 26 Aug 2026, which loaded 36
+skills from the account's synced standalone skills at `~/.claude/skills/synced/`.
+**The `lia-tools` plugin was not installed in that session at all.** Thirteen of
+the synced skills duplicate this roster, and eight were behind:
+
+| Skill | This repo | The synced standalone the session actually loaded |
+|---|---|---|
+| `ticket-builder` | 0.5.1 (26 Aug) | **0.3.0 (25 Jun)** — predates the writer-seat split entirely |
+| `ui-capture` | 0.3.0 | 0.2.0 |
+| `ui-teardown` | 0.2.1 | 0.2.0 |
+| `backlog-grooming` | 0.1.1 | 0.1.0 |
+| `new-toy` | 0.1.1 | 0.1.0 |
+| `toy-feedback-ingest` | 0.1.1 | 0.1.0 |
+| `wrap-up` | 1.2.2 | **no `version:` field at all** |
+| `toy-jam` · `toy-pickup` · `toy-release` · `toy-status` · `toy-tidy` · `toys-digest` | current | same version — matching today, unguarded tomorrow |
+
+A session asked to build a ticket there would have used the June standard,
+confidently, and nothing would have said so. **This is the drift this file exists
+to end, still running.** Plugin skills are namespaced (`/lia-tools:ticket-builder`)
+and standalones are not, so the two coexist rather than one overriding the
+other — which is worse, not better.
+
+### The switch-off list — Chris's action, in claude.ai settings
+
+Fourteen standalone skills to disable, each with what replaces it. Nothing here
+needs a decision except the last row.
+
+| Disable this standalone | Replaced by |
+|---|---|
+| `backlog-grooming` | `lia-tools` → `backlog-grooming` 0.1.1 |
+| `new-toy` | `lia-tools` → `new-toy` 0.1.1 |
+| `ticket-builder` | `lia-tools` → `ticket-builder` 0.5.1, plus the seats it routes to (`epic-builder`, `story-writer`, `task-writer`) |
+| `toy-feedback-ingest` | `lia-tools` → `toy-feedback-ingest` 0.1.1 |
+| `toy-jam` | `lia-tools` → `toy-jam` 0.1.0 |
+| `toy-pickup` | `lia-tools` → `toy-pickup` 0.1.0 |
+| `toy-release` | `lia-tools` → `toy-release` 0.2.0 |
+| `toy-status` | `lia-tools` → `toy-status` 0.1.0 |
+| `toy-tidy` | `lia-tools` → `toy-tidy` 0.1.0 |
+| `toys-digest` | `lia-tools` → `toys-digest` 0.1.0 |
+| `ui-capture` | `lia-tools` → `ui-capture` 0.3.0 (**and** its `reference/` + `scripts/` bundles, which the standalone never had) |
+| `ui-teardown` | `lia-tools` → `ui-teardown` 0.2.1 (+ `reference/`) |
+| `wrap-up` | `lia-tools` → `wrap-up` 1.2.2 |
+| `ticket-engineering` | **Disable — CQ's call, 26 Aug 2026.** No 1:1 replacement; absorbed as discipline, its 6-criteria entry gate into `build-prep` + `ticket-review` and its completion gate into `review-and-merge`. The Cursor-era mechanics go with it, deliberately. |
+
+And the two claude.ai plugins, same action, same place: **`lia-build` 0.2.0** and
+**`lia-toys` 0.3.0** — both superseded whole by `lia-tools`. Leave `cq`,
+`chris-music`, `file-runner` and `chris-quinton-diagrams` alone; personal
+bundles, out of scope.
+
+### Before switching anything off
+
+**A session must be able to reach the replacement, or disabling the standalone
+just removes the skill.** Two prerequisites, in this order:
+
+1. `lia-tools` installed and loading in the Claude Code you actually use — proven by invoking a skill, not by reading a list.
+2. For **cloud and web sessions**, the `.claude/settings.json` declaration in [README.md](README.md#the-one-gap-worth-knowing-about), in each repo those sessions open. They have no `/plugin` command, so without it they have no path to the plugin at all — and today they are being fed by exactly the standalones this list disables.
+
+**Dropping Cowork makes this sharper, not softer.** These fourteen skills will
+not exist in Cowork afterwards: no plugin there, and no standalone either. If any
+of them earns its keep in a Cowork session — `toys-digest` on its Monday
+schedule is the obvious candidate — that is a reason to keep the standalone or
+move the work to Claude Code, and it is a decision to make deliberately rather
+than discover.
+
+### The vault
+
+`_meta/skills/`'s roster directories come out, and `_meta/skills/README.md`
+records where they went, when, and why — an empty directory with no note is how
+the next person concludes they were lost. **What stays is as deliberate as what
+goes:** the research skills (`discover`, `enrich`, `research-*`, `wiki-ingest`,
+`slack-ingest`) and the one-offs were never part of this roster. The README
+should say so. Not doable from a build machine — Chris's, on his own filesystem.
+
+### The unbacked personal skills — inventory, with a recommendation
+
+LIAB-924 asked where these came from and whether they should be somewhere
+durable. They are claude.ai standalone skills, they are not in this repo, and
+LIAB-924 established none of their `SKILL.md` files is in the vault. Several
+*reference* vault paths as the canonical source of their **assets** — that is a
+different thing from the skill itself being backed up.
+
+| Skill | Version | Reading |
+|---|---|---|
+| `chris-vault-lint` | 0.4.0 | Names a canonical source in the vault — confirm whether that covers the `SKILL.md` or only what it lints. |
+| `design-system` | — | Names `02 studio/chris quinton/design-system/` as canonical for its **tokens and style guide**. The skill file itself still needs a home. |
+| `voice-note-transcription` | 0.1.0 | Names a canonical source; machine-specific (runs on `chris-mac-mini`). |
+| `creative-retro-jam` · `recording-description` · `unlisted-youtube-upload` · `shoot-planning` · `morning` | — | Write into the vault, aren't backed by it. One copy, no history, no backup. |
+| `writing-style-core` · `writing-style-social` | — | Also ship in the `cq` plugin, so these two are backed. Named here so it isn't a surprise later. |
+
+**Recommendation: a `cq-skills` repo, not this one.** They fail this plugin's
+membership test — *does an agent building a lia.tools product need it?* — but
+they pass the one that matters here: they exist in exactly one place, editable
+from a web UI, with no history and no diff. A git repo with the same PR shape as
+this one fixes that without mixing personal tooling into the build plugin. Which
+repo is Chris's call; that they need one is not.
