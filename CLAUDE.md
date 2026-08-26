@@ -15,11 +15,14 @@ a skill anywhere else is editing a frozen copy.
    has been invisible to real sessions (proved 26 Aug). Keep it: what the skill
    does + when to use it.
 
-   **No `<` or `>` anywhere in frontmatter — write placeholders as `[name]`.**
-   Cowork reads angle brackets as an XML tag and refuses the whole plugin, while
-   the git channel and `claude plugin validate` take it happily (LIAB-959).
-   `node scripts/check-skill-frontmatter.mjs` is the guard; CI runs it on every
-   PR. The full story, and what is and isn't known about that validator, is in
+   **No `<` or `>` anywhere in a skill's frontmatter, or in a plugin
+   manifest's `description` — write placeholders as `[name]`.** Cowork reads
+   angle brackets as an XML tag and refuses the whole plugin, while the git
+   channel and `claude plugin validate` take it happily (LIAB-959). Command
+   files are the exception: `argument-hint: <name>` is Claude Code's own
+   convention and is left alone. `node scripts/check-skill-frontmatter.mjs` is
+   the guard; CI runs it on every PR. The full story, and what is and isn't
+   known about that validator, is in
    [lia-tools/README.md](lia-tools/README.md#writing-frontmatter--no-angle-brackets).
 3. **A content change bumps the skill's `version:` with a changelog line, and
    bumps `lia-tools/.claude-plugin/plugin.json`.** Version numbers have lied

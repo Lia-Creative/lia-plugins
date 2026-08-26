@@ -90,7 +90,7 @@ Already installed? `/plugin marketplace update lia-plugins` picks up new version
 
 ## Writing frontmatter — no angle brackets
 
-**Never put `<` or `>` in a skill's frontmatter. Write placeholders as `[name]`, not `<name>`.**
+**Never put `<` or `>` in a skill's frontmatter, or in a plugin manifest's `description`. Write placeholders as `[name]`, not `<name>`.**
 
 This is the one rule you can break without any local tool telling you. It cost a
 release ([LIAB-959](https://linear.app/lia-creative/issue/LIAB-959)):
@@ -110,9 +110,25 @@ node scripts/check-skill-frontmatter.mjs             # every SKILL.md in the rep
 node scripts/check-skill-frontmatter.mjs --self-test # proves it can go red
 ```
 
-It reads frontmatter only — angle brackets in a skill's **body** are fine, and
-several skills need them. YAML block-scalar headers (`description: >-`) are
-allowed; ten skills use them and that `>` never reaches the description text.
+It reads every `SKILL.md`'s frontmatter — all fields, not just `description` —
+plus every `.claude-plugin/plugin.json` and `marketplace.json` `description`,
+since those are published prose the same validator sees.
+
+Three things it deliberately leaves alone, because a guard that fails on correct
+input is a guard someone deletes in a hurry:
+
+- **A skill's body.** Angle brackets below the fence are fine and several skills
+  need them.
+- **YAML block-scalar headers** (`description: >-`, either indicator order).
+  That `>` is structure and never reaches the description text; ten skills use it.
+- **Command files.** `argument-hint: <name>` is Claude Code's own documented
+  convention, and `squeaks/` isn't ours to edit (repo rule 7).
+
+**A file it cannot parse is reported, not skipped.** A `SKILL.md` with a BOM
+before `---` or no closing `---` used to sail through while the success line
+counted it as checked — a false green with a number vouching for it. Now the
+failure line names it, and the summary prints blocks actually read against files
+found, so a skip is visible.
 
 ### What is actually known about the validator
 
