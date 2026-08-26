@@ -212,7 +212,10 @@ gets this plugin only if the repo it opens declares it in `.claude/settings.json
 ```json
 {
   "extraKnownMarketplaces": {
-    "lia-plugins": { "source": { "source": "github", "repo": "Lia-Creative/lia-plugins" } }
+    "lia-plugins": {
+      "source": { "source": "github", "repo": "Lia-Creative/lia-plugins" },
+      "autoUpdate": true
+    }
   },
   "enabledPlugins": { "lia-tools@lia-plugins": true }
 }
@@ -222,6 +225,19 @@ That declaration belongs in **each repo a build session opens**. This repo carri
 a working copy at [`.claude/settings.json`](../.claude/settings.json) — copy it
 verbatim; only the marketplace name and plugin name matter. **`lia-toy-box` still
 needs it**, and so does any other repo a cloud session works in.
+
+Two honest notes on that snippet (LIAB-987). Cloud and web sessions provision
+their plugins fresh at session start, so they always run whatever the `release`
+ref serves that day — they are auto-updating by construction, whatever the
+flags say. And the `autoUpdate` key's documented home is *managed* settings;
+whether Claude Code honors it at project scope is not established. It stays in
+the snippet because it states the intent and costs nothing — but the switch
+that is *known* to turn auto-update on for a CLI or desktop machine is the
+per-machine toggle: `/plugin` → **Marketplaces** → `lia-plugins` →
+**Enable auto-update**. Once it is on, the machine refreshes the marketplace
+shortly after session start and picks up whatever `release` serves — the
+renames migration included (watched in [AUDIT.md](AUDIT.md#the-renames-migration-watched-working-liab-989)),
+with no command typed.
 
 Without it, a cloud session falls back to whatever account-level skills happen to
 sync into it, which is exactly the shadowing LIAB-924 exists to end. **Add it to
