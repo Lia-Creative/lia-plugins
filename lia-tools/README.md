@@ -141,18 +141,22 @@ Established, not assumed:
   broken build, and the string "XML tags" does not appear anywhere in the Claude
   Code CLI. That is why the git channel published a plugin Cowork would not take.
 - **`description:` is checked.** The rejection names it.
-- **`triggers:` is not established either way, and cannot be from a build
-  machine.** The only evidence is circumstantial and points at "not checked":
-  the error names `description` alone, and `wrap-up` has been live as a claude.ai
-  standalone skill carrying `<project>` in its triggers. Neither is proof —
-  `triggers:` is Lia's own convention, not part of the SKILL.md schema, so a
-  validator reading known fields would never see it.
+- **`triggers:` is deliberately unanswered.** The evidence is circumstantial and
+  points at "not checked" — the error names `description` alone, `wrap-up` was
+  live on claude.ai carrying `<project>` in its triggers, and `triggers:` is
+  Lia's own convention rather than part of the SKILL.md schema. None of that is
+  proof, and settling it needs a publish.
 
-**Outstanding check for Chris:** publish a throwaway `.plugin` build carrying
-angle brackets in a `triggers:` entry *and nowhere else*, and record here whether
-Cowork accepts it. Until then the rule above is deliberately wider than the known
-failure — a placeholder in `triggers:` gets copied into a `description:` sooner
-or later, and half a fix is what caused this.
+**We are not going to settle it, and that is the call** (CQ, 26 Aug 2026). A
+probe was scoped and then dropped: **no decision depends on the answer.** The
+rule above bans angle brackets across all frontmatter whichever way the
+validator behaves, so knowing would change nothing about the guard, this build,
+or what a skill author is told. The question only mattered while the fix might
+have been narrowed to match it — once the rule went wider, the question died.
+
+Recorded so it does not get re-found and re-filed as a gap. If it ever needs
+answering: one throwaway build with angle brackets in a `triggers:` entry and
+nowhere else.
 
 ## How a change publishes
 
