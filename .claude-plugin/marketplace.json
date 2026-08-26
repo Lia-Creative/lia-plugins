@@ -24,13 +24,10 @@
         "ref": "main"
       },
       "homepage": "https://github.com/Lia-Creative/design-plugin"
-    },
-    {
-      "name": "ticket-builder",
-      "description": "Superseded by lia-tools (which carries ticket-builder and its successors) — install that instead. This standalone stays until LIAB-924 retires it.",
-      "category": "productivity",
-      "source": "./ticket-builder",
-      "homepage": "https://github.com/Lia-Creative/lia-plugins"
     }
-  ]
+  ],
+  "renames": {
+    "ticket-builder": null,
+    "squeaks": null
+  }
 }

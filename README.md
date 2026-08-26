@@ -15,7 +15,9 @@ Then install what you need:
 /plugin install design-and-refine@lia-plugins
 ```
 
-That's it. New tools added here later show up with a `/plugin marketplace update lia-plugins`.
+That's it. New tools added here later show up with a `/plugin marketplace update lia-plugins`, and updates to a plugin you already have come with `claude plugin update lia-tools@lia-plugins` — or on their own, if you switch on auto-update for the marketplace (`/plugin` → **Marketplaces** → `lia-plugins`), which is off by default.
+
+**Cloud and web sessions** (claude.ai/code, the mobile app) have no `/plugin` command. They pick these up only where a repo declares them in `.claude/settings.json` — see [lia-tools/README.md](lia-tools/README.md#the-one-gap-worth-knowing-about).
 
 ## What's in here
 
@@ -27,7 +29,7 @@ Everything an agent needs to build lia.tools products: writing epics, stories an
 
 Refining a real component in an existing repo: `/design-and-refine:start` generates and compares UI variations on-brand.
 
-*(The `squeaks` lo-fi prototyping plugin was retired from this marketplace on 26 Aug 2026 — [LIAB-962](https://linear.app/lia-creative/issue/LIAB-962). The [Squeaks scaffold template](https://github.com/Lia-Creative/squeaks) it started from is unaffected.)*
+*(Two plugins were retired from this marketplace on 26 Aug 2026: the standalone `ticket-builder`, superseded by `lia-tools` — [LIAB-924](https://linear.app/lia-creative/issue/LIAB-924) — and the `squeaks` lo-fi prototyping plugin, [LIAB-962](https://linear.app/lia-creative/issue/LIAB-962). The [Squeaks scaffold template](https://github.com/Lia-Creative/squeaks) it started from is unaffected. Both are `renames` entries in the marketplace, so existing installs migrate rather than dangle.)*
 
 ## Sources
 

@@ -92,15 +92,22 @@ Already installed? `/plugin marketplace update lia-plugins` picks up new version
 
 **Never put `<` or `>` in a skill's frontmatter, or in a plugin manifest's `description`. Write placeholders as `[name]`, not `<name>`.**
 
-This is the one rule you can break without any local tool telling you. It cost a
-release ([LIAB-959](https://linear.app/lia-creative/issue/LIAB-959)):
-`epic-builder` 0.2.0's description ended `…or asked 'epic: <name>'.` The git
-marketplace took it, `claude plugin validate` passed it, and the claude.ai/Cowork
-installer refused the entire plugin —
+**This rule is kept deliberately, after the surface that enforced it stopped being
+a target** (LIAB-924, 26 Aug 2026). It cost a release
+([LIAB-959](https://linear.app/lia-creative/issue/LIAB-959)): `epic-builder`
+0.2.0's description ended `…or asked 'epic: <name>'.` The git marketplace took
+it, `claude plugin validate` passed it, and the claude.ai/Cowork installer
+refused the entire plugin —
 
 > Plugin validation failed: Skill 'skills/epic-builder': SKILL.md description cannot contain XML tags
 
 One placeholder, and `lia-tools` 1.2.0 was uninstallable on a whole surface.
+
+We no longer publish to Cowork, so nothing in the current pipeline enforces this.
+It stays anyway, because the guard is free to run and the alternative is
+re-learning it the expensive way if we ever publish there again. A placeholder
+written `[name]` costs nothing; a rule deleted the day it stopped biting is how
+the same bug comes back.
 
 The guard is `scripts/check-skill-frontmatter.mjs` at the repo root, run by
 `.github/workflows/skills.yml` on every PR and every push to `main`:
@@ -148,30 +155,49 @@ Established, not assumed:
   `triggers:` is Lia's own convention, not part of the SKILL.md schema, so a
   validator reading known fields would never see it.
 
-**Outstanding check for Chris:** publish a throwaway `.plugin` build carrying
-angle brackets in a `triggers:` entry *and nowhere else*, and record here whether
-Cowork accepts it. Until then the rule above is deliberately wider than the known
-failure — a placeholder in `triggers:` gets copied into a `description:` sooner
-or later, and half a fix is what caused this.
+**The outstanding experiment is dropped, not answered.** It was: publish a
+throwaway `.plugin` build carrying angle brackets in a `triggers:` entry and
+nowhere else, and record whether Cowork accepts it. With Cowork retired as a
+publish target (LIAB-924) there is nothing to run it against. The rule above
+stays wider than the known failure, which is the right way round for a guard
+nobody is currently testing.
 
 ## How a change publishes
 
-**A publish isn't done until it has been installed in all three surfaces, and one
-surface passing is not evidence about the others.** That is the rule LIAB-959
-bought: [LIAB-919](https://linear.app/lia-creative/issue/LIAB-919)'s "installable
-— proven by installing it" was satisfied against Claude Code, Cowork was never
-installed into, and the build shipped broken on the surface nobody stood on.
+**One surface, one artifact.** Claude Code is the only channel this plugin
+publishes to — the CLI, the desktop app and cloud/web sessions are all the same
+Claude Code, so a design session (`/design` runs inside Claude Code) gets the
+plugin the moment Claude Code does. Cowork was retired as a publish target on
+26 Aug 2026 ([LIAB-924](https://linear.app/lia-creative/issue/LIAB-924)); the
+hand-carried `.plugin` zip is gone with it.
 
 1. Edit the skill **here**, bump the skill's `version:` frontmatter with a changelog line, and bump this plugin's version in `.claude-plugin/plugin.json`.
-2. PR, review, merge. The git marketplace is live at that moment — team machines follow on their next `/plugin marketplace update`. CI runs the frontmatter guard on the PR; it is not a substitute for step 3.
-3. **Install it on all three, in this order:**
+2. PR, review, merge. CI runs the frontmatter guard on the PR.
+3. The git marketplace is live at that moment. Team machines follow on `/plugin marketplace update lia-plugins`, then `claude plugin update lia-tools@lia-plugins` — or automatically, if auto-update is switched on for the marketplace (`/plugin` → **Marketplaces** → `lia-plugins` → **Enable auto-update**; it is off by default for third-party marketplaces).
+4. **Prove it.** Open a fresh session and invoke a changed skill — don't just read it. `claude --plugin-dir <path-to-lia-tools> -p` verifies a branch before merge; a real install verifies the release.
 
-| Surface | How | State |
-|---|---|---|
-| **Cowork** | A `.plugin` zip of `lia-tools/`, hand-published to claude.ai. Manual until [LIAB-922](https://linear.app/lia-creative/issue/LIAB-922). | **Do this one first.** It is the strictest validator — LIAB-959 is the proof — so it is the gating surface, not the afterthought. |
-| **Claude Code** | `/plugin marketplace update lia-plugins`, then `claude plugin update lia-tools@lia-plugins`. | The only surface with a real proof today. |
-| **A design session** | The design-facing skills (`design-handoff`, `ui-capture`, `ui-teardown`, `polish`) load and are useful. | **Nobody has yet said what "works" means here.** Name the concrete check before assuming this one too. |
+### The one gap worth knowing about
 
-Treat the git channel as the truth if the two published channels ever disagree.
+**Cloud and web Claude Code sessions do not have `/plugin`.** They can't run an
+interactive install, so a session started from claude.ai/code or the mobile app
+gets this plugin only if the repo it opens declares it in `.claude/settings.json`:
 
-Old copies (the vault's `_meta/skills/`, the claude.ai `lia-build` plugin and standalone skills) are retired by [LIAB-924](https://linear.app/lia-creative/issue/LIAB-924), not by deleting anything from here.
+```json
+{
+  "extraKnownMarketplaces": {
+    "lia-plugins": { "source": { "source": "github", "repo": "Lia-Creative/lia-plugins" } }
+  },
+  "enabledPlugins": { "lia-tools@lia-plugins": true }
+}
+```
+
+That declaration belongs in **each repo a build session opens** — this one, `lia-toy-box`, and any other. Without it, a cloud session falls back to whatever
+account-level skills happen to sync into it, which is exactly the shadowing
+LIAB-924 exists to end. **Add it to a repo before retiring anything that repo's
+sessions currently rely on.**
+
+Old copies — the vault's `_meta/skills/`, the claude.ai `lia-build` and `lia-toys`
+plugins, and the claude.ai standalone skills that duplicate this roster — are
+retired by [LIAB-924](https://linear.app/lia-creative/issue/LIAB-924). See
+[AUDIT.md](AUDIT.md#the-retirement-liab-924) for what came out, what deliberately
+stayed, and the switch-off list.
