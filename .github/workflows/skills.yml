@@ -8,6 +8,10 @@ on:
   push:
     branches: [main]
 
+# Only ever checks out and runs node.
+permissions:
+  contents: read
+
 jobs:
   frontmatter:
     runs-on: ubuntu-latest

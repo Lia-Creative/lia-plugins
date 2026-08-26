@@ -111,8 +111,9 @@ node scripts/check-skill-frontmatter.mjs --self-test # proves it can go red
 ```
 
 It reads every `SKILL.md`'s frontmatter — all fields, not just `description` —
-plus every `.claude-plugin/plugin.json` and `marketplace.json` `description`,
-since those are published prose the same validator sees.
+plus every `commands/*.md` frontmatter and every `.claude-plugin/plugin.json`
+and `marketplace.json` `description`, since those are published prose the same
+validator sees.
 
 Three things it deliberately leaves alone, because a guard that fails on correct
 input is a guard someone deletes in a hurry:
@@ -121,8 +122,10 @@ input is a guard someone deletes in a hurry:
   need them.
 - **YAML block-scalar headers** (`description: >-`, either indicator order).
   That `>` is structure and never reaches the description text; ten skills use it.
-- **Command files.** `argument-hint: <name>` is Claude Code's own documented
-  convention, and `squeaks/` isn't ours to edit (repo rule 7).
+- **A command's `argument-hint:` line, and only that line.** `argument-hint:
+  <prototype-name>` is Claude Code's own documented convention — but a command's
+  `description:` is published prose like any other, so the rest of its
+  frontmatter is read.
 
 **A file it cannot parse is reported, not skipped.** A `SKILL.md` with a BOM
 before `---` or no closing `---` used to sail through while the success line

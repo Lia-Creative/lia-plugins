@@ -9,6 +9,7 @@
 //
 // What it reads:
 //   - every SKILL.md's YAML frontmatter — all fields, not just `description`
+//   - every commands/*.md frontmatter, except its `argument-hint:` line
 //   - every .claude-plugin/plugin.json and marketplace.json `description`
 //
 // The rule is deliberately wider than the failure. The Cowork validator names
@@ -21,8 +22,10 @@
 // someone deletes in a hurry:
 //   - YAML block-scalar headers (`description: >-`). That `>` is structure and
 //     never reaches the description text; ten skills here use it.
-//   - Command files (`argument-hint: <name>`) are not scanned. Angle brackets
-//     there are Claude Code's own documented convention.
+//   - A command's `argument-hint:` line, and only that line. Angle brackets
+//     there are Claude Code's own documented convention — but a command's
+//     `description:` is published prose like any other, so the rest of its
+//     frontmatter is read.
 //
 //   node scripts/check-skill-frontmatter.mjs              # check the repo
 //   node scripts/check-skill-frontmatter.mjs --self-test  # prove it goes red
@@ -45,23 +48,27 @@ const hasAngleBracket = (s) => /[<>]/.test(s);
 
 function findFiles(root) {
   const skills = [];
+  const commands = [];
   const manifests = [];
-  const walk = (dir) => {
+  const walk = (dir, inCommands) => {
     for (const entry of readdirSync(dir, { withFileTypes: true })) {
       const path = join(dir, entry.name);
       if (entry.isDirectory()) {
-        if (!SKIP_DIRS.has(entry.name)) walk(path);
+        if (!SKIP_DIRS.has(entry.name)) walk(path, inCommands || entry.name === "commands");
       } else if (entry.name === "SKILL.md") {
         skills.push(path);
+      } else if (inCommands && entry.name.endsWith(".md")) {
+        commands.push(path);
       } else if (MANIFESTS.has(entry.name) && basename(dir) === ".claude-plugin") {
         manifests.push(path);
       }
     }
   };
-  walk(root);
+  walk(root, false);
   skills.sort();
+  commands.sort();
   manifests.sort();
-  return { skills, manifests };
+  return { skills, commands, manifests };
 }
 
 // The frontmatter block: a leading `---` line, up to the next `---` line.
@@ -92,29 +99,44 @@ function descriptions(node, path = "$") {
   return [];
 }
 
-const lineOf = (text, needle) => text.slice(0, text.indexOf(needle)).split("\n").length;
+// The value in the file is JSON-escaped, so search for the escaped form first.
+// Never guess: `indexOf` returning -1 used to make `slice(0, -1)` report the
+// file's LAST line as the offence. The JSON path in the detail is the real
+// locator; line 1 is an honest fallback.
+function lineOf(text, value) {
+  for (const needle of [JSON.stringify(value).slice(1, 31), value.slice(0, 30)]) {
+    const at = text.indexOf(needle);
+    if (at !== -1) return text.slice(0, at).split("\n").length;
+  }
+  return 1;
+}
+
+const ARGUMENT_HINT = /^\s*argument-hint:/;
 
 function scan(root) {
-  const { skills, manifests } = findFiles(root);
+  const { skills, commands, manifests } = findFiles(root);
   const offences = [];
   let blocksRead = 0;
 
-  for (const file of skills) {
+  // A command file's frontmatter is read like a skill's, minus `argument-hint:`.
+  for (const [file, isCommand] of [...skills.map((f) => [f, false]), ...commands.map((f) => [f, true])]) {
     const text = readFileSync(file, "utf8");
     const lines = frontmatterLines(text);
     if (lines === null) {
       offences.push({
+        kind: "unchecked",
         file: relative(root, file),
         line: 1,
-        detail: "no frontmatter block — a BOM before `---`, or no closing `---`. NOT CHECKED.",
+        detail: "no frontmatter block — a BOM before `---`, or no closing `---`.",
       });
       continue;
     }
     blocksRead += 1;
     for (const { number, content } of lines) {
       if (BLOCK_SCALAR_HEADER.test(content)) continue;
+      if (isCommand && ARGUMENT_HINT.test(content)) continue;
       if (hasAngleBracket(content)) {
-        offences.push({ file: relative(root, file), line: number, detail: content.trim() });
+        offences.push({ kind: "brackets", file: relative(root, file), line: number, detail: content.trim() });
       }
     }
   }
@@ -125,28 +147,49 @@ function scan(root) {
     try {
       parsed = JSON.parse(text);
     } catch (error) {
-      offences.push({ file: relative(root, file), line: 1, detail: `unparseable JSON (${error.message}). NOT CHECKED.` });
+      offences.push({ kind: "unchecked", file: relative(root, file), line: 1, detail: `unparseable JSON (${error.message}).` });
       continue;
     }
     for (const { path, value } of descriptions(parsed)) {
       if (hasAngleBracket(value)) {
-        offences.push({ file: relative(root, file), line: lineOf(text, value.slice(0, 30)), detail: `${path} — ${value}` });
+        offences.push({ kind: "brackets", file: relative(root, file), line: lineOf(text, value), detail: `${path} — ${value}` });
       }
     }
   }
 
-  return { offences, checked: { blocks: blocksRead, skills: skills.length, manifests: manifests.length } };
+  return {
+    offences,
+    checked: { blocks: blocksRead, files: skills.length + commands.length, commands: commands.length, manifests: manifests.length },
+  };
 }
+
+const list = (offences) => offences.map(({ file, line, detail }) => `  ${file}:${line}\n    ${detail}\n`).join("");
 
 function report({ offences, checked }) {
   if (offences.length === 0) {
-    console.log(`ok — ${checked.blocks} skill frontmatter blocks + ${checked.manifests} plugin manifests, no angle brackets`);
+    console.log(
+      `ok — ${checked.blocks} frontmatter blocks (${checked.commands} of them commands) + ${checked.manifests} plugin manifests, no angle brackets`,
+    );
     return 0;
   }
-  console.error(`Angle brackets in a published description (${offences.length}) — Cowork reads these as XML tags and refuses the whole plugin:\n`);
-  for (const { file, line, detail } of offences) console.error(`  ${file}:${line}\n    ${detail}\n`);
-  console.error(`Write placeholders as [name], not <name>.`);
-  console.error(`Read: ${checked.blocks}/${checked.skills} skill frontmatter blocks, ${checked.manifests} manifests.`);
+
+  // Two different problems: one needs a placeholder rewritten, the other needs
+  // the file made readable. Printing them under one headline told whoever hit
+  // the second to fix the first.
+  const brackets = offences.filter((o) => o.kind === "brackets");
+  const unchecked = offences.filter((o) => o.kind === "unchecked");
+
+  if (brackets.length) {
+    console.error(`Angle brackets in a published description (${brackets.length}) — Cowork reads these as XML tags and refuses the whole plugin:\n`);
+    console.error(list(brackets));
+    console.error(`  → Write placeholders as [name], not <name>.\n`);
+  }
+  if (unchecked.length) {
+    console.error(`NOT CHECKED (${unchecked.length}) — the guard could not read these, so they are unverified, not clean:\n`);
+    console.error(list(unchecked));
+    console.error(`  → Make the frontmatter readable: drop the BOM, or close the \`---\` fence.\n`);
+  }
+  console.error(`Read: ${checked.blocks}/${checked.files} frontmatter blocks, ${checked.manifests} manifests.`);
   return 1;
 }
 
@@ -160,7 +203,12 @@ function selfTest() {
     mkdirSync(join(dir, "skills", name), { recursive: true });
     writeFileSync(join(dir, "skills", name, "SKILL.md"), body);
   };
+  const command = (name, body) => {
+    mkdirSync(join(dir, "commands"), { recursive: true });
+    writeFileSync(join(dir, "commands", `${name}.md`), body);
+  };
   const DEFECT = `description: "Use when asked 'epic: <name>'."`;
+  const falsePositiveFixtures = 7; // [name], folded >-, indented >2-, body, BOM, command argument-hint, clean manifest
 
   try {
     // Must be caught.
@@ -168,6 +216,7 @@ function selfTest() {
     skill("broken-bom", "﻿" + ["---", "name: bom", DEFECT, "---", "", "# BOM before the fence", ""].join("\n"));
     skill("broken-unterminated", ["---", "name: unterminated", DEFECT, "", "# No closing fence", ""].join("\n"));
     skill("broken-folded", ["---", "name: folded-defect", "description: >-", "  Use when asked 'epic: <name>'.", "---", "", "# Defect on a continuation line", ""].join("\n"));
+    command("broken-command", ["---", `description: "Scaffold an <thing>."`, "argument-hint: <prototype-name>", "---", "", "# A command description is published prose too", ""].join("\n"));
     mkdirSync(join(dir, "broken-plugin", ".claude-plugin"), { recursive: true });
     writeFileSync(
       join(dir, "broken-plugin", ".claude-plugin", "plugin.json"),
@@ -179,26 +228,40 @@ function selfTest() {
     skill("clean-folded", ["---", "name: folded", "description: >-", "  Use when asked for an epic.", "---", "", "# Fine", ""].join("\n"));
     skill("clean-indented", ["---", "name: indented", "description: >2-", "  Both indicator orders are valid YAML.", "---", "", "# Fine", ""].join("\n"));
     skill("clean-body", ["---", "name: body", `description: "Fine."`, "---", "", "# Angle brackets below the fence are fine", "", "`handover-<date>-<slug>`", ""].join("\n"));
+    // Without the BOM strip this file goes red as NOT CHECKED — a false
+    // positive on correct input. `broken-bom` alone cannot catch that: it is
+    // red either way, just for a different reason. This fixture is what pins
+    // the strip down, together with the kind/line assertion below.
+    skill("clean-bom", "\ufeff" + ["---", "name: clean-bom", `description: "Perfectly fine, behind a BOM."`, "---", "", "# Fine", ""].join("\n"));
+    command("clean-command", ["---", `description: "Scaffold a prototype."`, "argument-hint: <prototype-name>", "---", "", "# argument-hint is Claude Code's own convention", ""].join("\n"));
     mkdirSync(join(dir, "clean-plugin", ".claude-plugin"), { recursive: true });
     writeFileSync(
       join(dir, "clean-plugin", ".claude-plugin", "marketplace.json"),
       JSON.stringify({ name: "m", description: "Fine.", plugins: [{ name: "p", description: "Also fine." }] }, null, 2),
     );
 
-    const expectedRed = ["broken", "broken-bom", "broken-unterminated", "broken-folded", "broken-plugin"];
+    const expectedRed = ["broken", "broken-bom", "broken-unterminated", "broken-folded", "broken-plugin", "broken-command"];
     const { offences } = scan(dir);
-    const flagged = new Set(offences.map((o) => o.file.split(/[\\/]/).find((s) => s.startsWith("broken") || s.startsWith("clean"))));
+    const nameOf = (o) => o.file.split(/[\\/]/).map((s) => s.replace(/\.md$/, "")).find((s) => s.startsWith("broken") || s.startsWith("clean"));
 
-    const missed = expectedRed.filter((name) => !flagged.has(name));
+    const missed = expectedRed.filter((name) => !offences.some((o) => nameOf(o) === name));
     const falsePositives = offences.filter((o) => o.file.includes("clean"));
 
-    if (missed.length || falsePositives.length) {
+    // `broken-bom` must be caught as the DEFECT on line 3, not as an unreadable
+    // file. Without that, dropping the BOM strip leaves the self-test green.
+    const bom = offences.find((o) => nameOf(o) === "broken-bom");
+    const bomWrong = bom && (bom.kind !== "brackets" || bom.line !== 3);
+
+    if (missed.length || falsePositives.length || bomWrong) {
       console.error("self-test FAILED");
       for (const name of missed) console.error(`  missed planted defect: ${name}`);
       for (const o of falsePositives) console.error(`  false positive: ${o.file}:${o.line} — ${o.detail}`);
+      if (bomWrong) console.error(`  BOM not stripped: broken-bom reported as ${bom.kind} at line ${bom.line}, expected brackets at line 3`);
       return 1;
     }
-    console.log(`self-test ok — ${expectedRed.length} planted defects caught (raw, BOM, unterminated, folded continuation, plugin.json); 5 legal spellings left alone`);
+    console.log(
+      `self-test ok — ${expectedRed.length} planted defects caught (raw, BOM at the real line, unterminated, folded continuation, plugin.json, command); ${falsePositiveFixtures} legal spellings left alone`,
+    );
     return 0;
   } finally {
     rmSync(dir, { recursive: true, force: true });
