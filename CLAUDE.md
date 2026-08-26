@@ -44,9 +44,13 @@ a skill anywhere else is editing a frozen copy.
    and [How a Lia Toys ticket is shaped](https://linear.app/lia-creative/document/how-a-lia-toys-ticket-is-shaped-a5d28e39709b).
    Skills point at those docs; they never restate them. Where a skill and the
    docs disagree, the docs win and the skill gets fixed.
-7. **`squeaks` and the standalone `ticket-builder` plugin are not yours to
-   restructure** — squeaks has its own upstream; the standalone ticket-builder
-   is superseded and awaits LIAB-924.
+7. **The standalone `ticket-builder` plugin is not yours to restructure** — it
+   is superseded by `lia-tools` and awaits LIAB-924.
+
+   *(`squeaks` was retired from this marketplace on 26 Aug 2026, LIAB-962. The
+   rule used to cover it too, on the grounds that it had its own upstream —
+   which was false: `Lia-Creative/squeaks` is a Vite scaffold template and never
+   carried the plugin's manifest, skill or command. The only copy was here.)*
 
 Roster and what belongs: [lia-tools/README.md](lia-tools/README.md). The
 audit trail of which copy won and why: [lia-tools/AUDIT.md](lia-tools/AUDIT.md).

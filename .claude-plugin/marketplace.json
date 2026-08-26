@@ -14,13 +14,6 @@
       "homepage": "https://github.com/Lia-Creative/lia-plugins"
     },
     {
-      "name": "squeaks",
-      "description": "Scaffold and drive deliberately-rough, copy-first lo-fi prototypes. Describe an idea, get a clickable wireframe. Use when the thinking isn't finished yet.",
-      "category": "design",
-      "source": "./squeaks",
-      "homepage": "https://github.com/Lia-Creative/squeaks"
-    },
-    {
       "name": "design-and-refine",
       "description": "Generate distinct UI variations in an existing repo, compare side-by-side, collect feedback, and synthesize a refined version. Use for hi-fi work on real components.",
       "category": "design",
