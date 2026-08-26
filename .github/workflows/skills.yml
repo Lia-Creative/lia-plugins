@@ -9,6 +9,11 @@ on:
   pull_request:
   push:
     branches: [main, release]
+  # By hand, from any branch carrying this file. Exists because GitHub has
+  # been watched dropping pull_request runs entirely (26 Aug 2026, PRs #13 and
+  # #14 — event delivered, no run created): when that happens, this is the only
+  # way to get the guards a real run on the exact head.
+  workflow_dispatch:
 
 # Only ever checks out and runs node.
 permissions:
@@ -28,9 +33,11 @@ jobs:
 
   # Machines only receive an update when the plugin's version field changes
   # (LIAB-986), so a lia-tools change without a bump is a promotion that
-  # delivers to nobody. PR-only: on a push there is no base to compare against.
+  # delivers to nobody. Not on push: a landed merge has no base to compare
+  # against. On dispatch the base falls back to origin/main — every PR here
+  # targets the trunk.
   version-bump:
-    if: github.event_name == 'pull_request'
+    if: github.event_name == 'pull_request' || github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -42,4 +49,4 @@ jobs:
           node-version: "22"
       # Same rule as the frontmatter guard: red first, then trusted.
       - run: node scripts/check-version-bump.mjs --self-test
-      - run: node scripts/check-version-bump.mjs --base "origin/${{ github.base_ref }}"
+      - run: node scripts/check-version-bump.mjs --base "origin/${{ github.base_ref || 'main' }}"
