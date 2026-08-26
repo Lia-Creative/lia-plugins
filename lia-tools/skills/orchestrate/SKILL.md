@@ -2,7 +2,7 @@
 name: orchestrate
 slug: orchestrate
 description: "Superseded pointer (26 Aug 2026): the orchestrator split — load project-manager for the board, dispatch and updates; load lead-engineer for tech prep, review and merges. Use only to find where the orchestrator's jobs went."
-version: 0.3.0
+version: 0.3.1
 created: 2026-08-21
 updated: 2026-08-26
 status: superseded — pointer
@@ -10,7 +10,7 @@ triggers:
   - "/orchestrate"
   - "be the orchestrator"
   - "you run the board"
-  - "orchestrate the <milestone> run"
+  - "orchestrate the [milestone] run"
   - "co-ordinate the agents on X"
 companions:
   - project-manager
@@ -29,6 +29,7 @@ Dispatched at a milestone with both jobs implied? Two sessions, one seat each �
 
 ## Changelog
 
+- **0.3.1 (2026-08-26, LIAB-959)** — `<milestone>` in `triggers:` becomes `[milestone]`, so no frontmatter here carries angle brackets for Cowork's validator to read as a tag. Pointer content unchanged.
 - **0.3.0 (2026-08-26, CQ voice memos + Fable 5)** — becomes this pointer. Board half → `project-manager` 0.1.0; technical half → `lead-engineer` 0.1.0 and its bench (`build-prep` carries §4.5, `review-and-merge` carries §5).
 - **0.2.0 (2026-08-26)** — the tool shop expansion: tech notes, epic dispatch, the direct review loop.
 - **0.1.0 (2026-08-21, CQ + Cowork)** — first version, generalised from the 20 Aug internal-testing run.

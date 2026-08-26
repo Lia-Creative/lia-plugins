@@ -88,10 +88,90 @@ Research skills (`discover`, `enrich`, `research-*`, `wiki-ingest`), the persona
 
 Already installed? `/plugin marketplace update lia-plugins` picks up new versions.
 
+## Writing frontmatter — no angle brackets
+
+**Never put `<` or `>` in a skill's frontmatter, or in a plugin manifest's `description`. Write placeholders as `[name]`, not `<name>`.**
+
+This is the one rule you can break without any local tool telling you. It cost a
+release ([LIAB-959](https://linear.app/lia-creative/issue/LIAB-959)):
+`epic-builder` 0.2.0's description ended `…or asked 'epic: <name>'.` The git
+marketplace took it, `claude plugin validate` passed it, and the claude.ai/Cowork
+installer refused the entire plugin —
+
+> Plugin validation failed: Skill 'skills/epic-builder': SKILL.md description cannot contain XML tags
+
+One placeholder, and `lia-tools` 1.2.0 was uninstallable on a whole surface.
+
+The guard is `scripts/check-skill-frontmatter.mjs` at the repo root, run by
+`.github/workflows/skills.yml` on every PR and every push to `main`:
+
+```
+node scripts/check-skill-frontmatter.mjs             # every SKILL.md in the repo
+node scripts/check-skill-frontmatter.mjs --self-test # proves it can go red
+```
+
+It reads every `SKILL.md`'s frontmatter — all fields, not just `description` —
+plus every `commands/*.md` frontmatter and every `.claude-plugin/plugin.json`
+and `marketplace.json` `description`, since those are published prose the same
+validator sees.
+
+Three things it deliberately leaves alone, because a guard that fails on correct
+input is a guard someone deletes in a hurry:
+
+- **A skill's body.** Angle brackets below the fence are fine and several skills
+  need them.
+- **YAML block-scalar headers** (`description: >-`, either indicator order).
+  That `>` is structure and never reaches the description text; ten skills use it.
+- **A command's `argument-hint:` line, and only that line.** `argument-hint:
+  <prototype-name>` is Claude Code's own documented convention — but a command's
+  `description:` is published prose like any other, so the rest of its
+  frontmatter is read.
+
+**A file it cannot parse is reported, not skipped.** A `SKILL.md` with a BOM
+before `---` or no closing `---` used to sail through while the success line
+counted it as checked — a false green with a number vouching for it. Now the
+failure line names it, and the summary prints blocks actually read against files
+found, so a skip is visible.
+
+### What is actually known about the validator
+
+Established, not assumed:
+
+- **The check is server-side.** `claude plugin validate lia-tools` passes on the
+  broken build, and the string "XML tags" does not appear anywhere in the Claude
+  Code CLI. That is why the git channel published a plugin Cowork would not take.
+- **`description:` is checked.** The rejection names it.
+- **`triggers:` is not established either way, and cannot be from a build
+  machine.** The only evidence is circumstantial and points at "not checked":
+  the error names `description` alone, and `wrap-up` has been live as a claude.ai
+  standalone skill carrying `<project>` in its triggers. Neither is proof —
+  `triggers:` is Lia's own convention, not part of the SKILL.md schema, so a
+  validator reading known fields would never see it.
+
+**Outstanding check for Chris:** publish a throwaway `.plugin` build carrying
+angle brackets in a `triggers:` entry *and nowhere else*, and record here whether
+Cowork accepts it. Until then the rule above is deliberately wider than the known
+failure — a placeholder in `triggers:` gets copied into a `description:` sooner
+or later, and half a fix is what caused this.
+
 ## How a change publishes
 
-1. Edit the skill **here**, bump the skill's `version:` frontmatter, and bump this plugin's version in `.claude-plugin/plugin.json`.
-2. PR, review, merge. The git marketplace is live at that moment — team machines follow on their next `/plugin marketplace update`.
-3. Chris republishes the same build to the claude.ai/Cowork channel. Until [LIAB-922](https://linear.app/lia-creative/issue/LIAB-922)'s check exists, this step is manual and unverified — treat the git channel as the truth if the two ever disagree.
+**A publish isn't done until it has been installed in all three surfaces, and one
+surface passing is not evidence about the others.** That is the rule LIAB-959
+bought: [LIAB-919](https://linear.app/lia-creative/issue/LIAB-919)'s "installable
+— proven by installing it" was satisfied against Claude Code, Cowork was never
+installed into, and the build shipped broken on the surface nobody stood on.
+
+1. Edit the skill **here**, bump the skill's `version:` frontmatter with a changelog line, and bump this plugin's version in `.claude-plugin/plugin.json`.
+2. PR, review, merge. The git marketplace is live at that moment — team machines follow on their next `/plugin marketplace update`. CI runs the frontmatter guard on the PR; it is not a substitute for step 3.
+3. **Install it on all three, in this order:**
+
+| Surface | How | State |
+|---|---|---|
+| **Cowork** | A `.plugin` zip of `lia-tools/`, hand-published to claude.ai. Manual until [LIAB-922](https://linear.app/lia-creative/issue/LIAB-922). | **Do this one first.** It is the strictest validator — LIAB-959 is the proof — so it is the gating surface, not the afterthought. |
+| **Claude Code** | `/plugin marketplace update lia-plugins`, then `claude plugin update lia-tools@lia-plugins`. | The only surface with a real proof today. |
+| **A design session** | The design-facing skills (`design-handoff`, `ui-capture`, `ui-teardown`, `polish`) load and are useful. | **Nobody has yet said what "works" means here.** Name the concrete check before assuming this one too. |
+
+Treat the git channel as the truth if the two published channels ever disagree.
 
 Old copies (the vault's `_meta/skills/`, the claude.ai `lia-build` plugin and standalone skills) are retired by [LIAB-924](https://linear.app/lia-creative/issue/LIAB-924), not by deleting anything from here.

@@ -2,7 +2,7 @@
 name: task-writer
 slug: task-writer
 description: "Ticket the named work that isn't a story — typed per the six, under a story or epic, sparse by design; plan-grain detail is refused and routed to plan-mode notes on the ticket. Use when work like 'core security setup' needs a ticket, or when deciding whether something is a task at all."
-version: 0.1.0
+version: 0.1.1
 created: 2026-08-26
 updated: 2026-08-26
 status: active
@@ -10,7 +10,7 @@ triggers:
   - "/task-writer"
   - "write the tasks"
   - "this isn't a story, ticket it"
-  - "task under <story/epic>"
+  - "task under [story/epic]"
 companions:
   - epic-builder
   - story-writer
@@ -60,4 +60,5 @@ If you're translating a plan into tickets, stop — you're duplicating the plan 
 
 ## Changelog
 
+- **0.1.1 (2026-08-26, LIAB-959)** — `<story/epic>` in `triggers:` becomes `[story/epic]`, per the frontmatter rule that came out of the Cowork install failure. Shape unchanged.
 - **0.1.0 (2026-08-26, CQ voice memos + Fable 5)** — first version. The task level (under story or epic), the six-types rule applied at task grain, and the sparse rule: plans live on tickets as comments, not as tickets.
