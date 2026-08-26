@@ -1,7 +1,7 @@
 {
   "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
   "name": "lia-plugins",
-  "description": "Lia Creative's Claude Code tooling. The home for everything the team installs to prototype and build — start with lia-tools for the build process, plus the prototyping pair.",
+  "description": "Lia Creative's Claude Code tooling. The home for everything the team installs to prototype and build — start with lia-tools for the build process, plus design-and-refine for hi-fi UI work.",
   "owner": {
     "name": "Lia Creative"
   },

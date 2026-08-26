@@ -33,4 +33,4 @@ Refining a real component in an existing repo: `/design-and-refine:start` genera
 
 - `design-and-refine` is referenced from our fork [`Lia-Creative/design-plugin`](https://github.com/Lia-Creative/design-plugin) (upstream: [`0xdesign/design-plugin`](https://github.com/0xdesign/design-plugin)).
 
-Both are MIT-licensed forks kept in the Lia org so we own the source of truth and can pull upstream updates.
+It's an MIT-licensed fork kept in the Lia org so we own the source of truth and can pull upstream updates.
