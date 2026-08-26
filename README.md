@@ -41,6 +41,8 @@ It's an MIT-licensed fork kept in the Lia org so we own the source of truth and 
 
 1. On the fork: `git fetch upstream && git merge upstream/main` (or cherry-pick), push to the fork's `main`.
 2. Read the diff you just pulled — the pin is the review record, so the commit it names is a commit someone has looked at.
-3. Open a PR on this repo moving the `ref` SHA in `.claude-plugin/marketplace.json` to the new fork commit. The PR body says what came in from upstream.
+3. Open a PR on this repo moving the `sha` in `.claude-plugin/marketplace.json` to the new fork commit. The PR body says what came in from upstream.
 
 The pin never floats; moving it is always a reviewed change on this repo.
+
+*(Mechanics, learned by watching an install fail on 26 Aug 2026: the source's `ref` field is fetched like a branch or tag name — a raw commit hash there breaks the install with "Remote branch not found". A commit pin goes in the `sha` field, which is also what wins if both are set.)*
