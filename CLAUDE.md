@@ -45,11 +45,18 @@ along with the hand-carried `.plugin` zip.
    (its §5 carries the landing rules). Verify a branch before merging with
    `claude --plugin-dir <path-to-lia-tools> -p` — invoke the changed skills in
    a fresh session; don't just read them.
-5. **Publishing: merge = live.** Team machines follow on `/plugin marketplace
-   update lia-plugins` and `claude plugin update lia-tools@lia-plugins`, or
-   automatically with auto-update enabled for the marketplace (off by default
-   for third-party marketplaces). There is no second channel to republish to
-   and no zip to build.
+5. **Publishing: merge lands, promotion ships.** The marketplace serves
+   `lia-tools` from the `release` ref (LIAB-986), so a merge to `main` reaches
+   nobody until someone fast-forwards `release` to `main` — one command, and
+   rollback is one command back; both are in
+   [lia-tools/README.md](lia-tools/README.md#how-a-change-publishes). The
+   version bump rule 3 demands is what makes a promotion deliver — machines
+   only fetch when the version field changes — and CI fails a `lia-tools/**`
+   PR without one (`scripts/check-version-bump.mjs`). Machines follow on
+   `/plugin marketplace update lia-plugins` and `claude plugin update
+   lia-tools@lia-plugins`, or automatically with auto-update enabled for the
+   marketplace (off by default for third-party marketplaces). There is no
+   second channel to republish to and no zip to build.
 
    **Cloud and web sessions are the exception worth remembering:** they have no
    `/plugin` command, so they get this plugin only where a repo declares it in

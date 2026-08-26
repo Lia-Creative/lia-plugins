@@ -1,12 +1,14 @@
 name: skills
 
-# Merging to main publishes on the git channel, so the guard runs before the
-# merge, not after it. LIAB-959: a placeholder that Claude Code accepted and
-# Cowork refused reached main with nothing in between saying so.
+# The guards run before the merge, not after it. LIAB-959: a placeholder that
+# Claude Code accepted and Cowork refused reached main with nothing in between
+# saying so. `release` is in the push list as insurance: promotion is a
+# fast-forward of commits main already ran CI on, so a red push to release
+# means someone promoted something that never went through a PR.
 on:
   pull_request:
   push:
-    branches: [main]
+    branches: [main, release]
 
 # Only ever checks out and runs node.
 permissions:
@@ -23,3 +25,21 @@ jobs:
       # The guard proves it can go red before it is trusted to say green.
       - run: node scripts/check-skill-frontmatter.mjs --self-test
       - run: node scripts/check-skill-frontmatter.mjs
+
+  # Machines only receive an update when the plugin's version field changes
+  # (LIAB-986), so a lia-tools change without a bump is a promotion that
+  # delivers to nobody. PR-only: on a push there is no base to compare against.
+  version-bump:
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          # The check diffs against the PR's base branch, so it needs history.
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      # Same rule as the frontmatter guard: red first, then trusted.
+      - run: node scripts/check-version-bump.mjs --self-test
+      - run: node scripts/check-version-bump.mjs --base "origin/${{ github.base_ref }}"
