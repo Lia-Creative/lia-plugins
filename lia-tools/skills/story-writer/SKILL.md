@@ -2,7 +2,7 @@
 name: story-writer
 slug: story-writer
 description: "Write user stories per Dan North — name titles, As-a/I-want/so-that narrative with a named face, numbered Given/When/Then acceptance criteria in the user's terms, Delivery checks split out. Use when breaking an epic into stories or writing any capability a person gets."
-version: 0.2.0
+version: 0.2.1
 created: 2026-08-26
 updated: 2026-08-26
 status: active
@@ -10,8 +10,8 @@ triggers:
   - "/story-writer"
   - "write the stories"
   - "break this epic into stories"
-  - "user stories for <epic>"
-  - "story for <capability>"
+  - "user stories for [epic]"
+  - "story for [capability]"
 companions:
   - epic-builder
   - scenario-builder
@@ -91,5 +91,6 @@ Mechanics — `save_issue`, relations, sequencing, priority-in-two-scales, the w
 
 ## Changelog
 
+- **0.2.1 (2026-08-26, LIAB-959)** — `<epic>` and `<capability>` in `triggers:` become `[epic]` and `[capability]`, per the frontmatter rule that came out of the Cowork install failure. Shape unchanged.
 - **0.2.0 (2026-08-26, LIAB-949 + Fable 5)** — the Dan North install (P1–P5): behavioural ACs are **numbered Given/When/Then scenarios** with "[Graded at Review]" for the honest judgement calls; the **Delivery-checks split**; the **narrative-required rule**; `scenario-builder` and `acceptance-criteria` named as the seats either side. This carries the brief's item 2, which targeted the vault ticket-builder's Shape A — the shape had moved here the same morning (LIAB-919/920), so the change follows the canon.
 - **0.1.0 (2026-08-26, CQ voice memos + Fable 5)** — first version. The Dan North narrative + user-terms acceptance criteria, name-titles per the 26 Aug title call, scenario cap, and the two clean seams (design, tech notes) that keep a story from becoming a spec.

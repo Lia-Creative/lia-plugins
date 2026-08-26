@@ -1,17 +1,17 @@
 ---
 name: epic-builder
 slug: epic-builder
-description: "Shape a versioned chunk of value into an epic — charts 1.0, scope read from its stories, value/why-now/what-it-is-not/how-you'd-know body, no ACs on the parent. Use when opening a piece of work, shaping the next version of a tool, or asked 'epic: <name>'."
-version: 0.2.0
+description: "Shape a versioned chunk of value into an epic — charts 1.0, scope read from its stories, value/why-now/what-it-is-not/how-you'd-know body, no ACs on the parent. Use when opening a piece of work, shaping the next version of a tool, or asked 'epic: [name]'."
+version: 0.2.1
 created: 2026-08-26
 updated: 2026-08-26
 status: active
 triggers:
   - "/epic-builder"
-  - "epic: <name>"
+  - "epic: [name]"
   - "build an epic"
   - "shape this chunk of value"
-  - "new epic for <toy/feature>"
+  - "new epic for [toy/feature]"
   - "what should charts 1.0 be"
 companions:
   - jtbd
@@ -90,5 +90,6 @@ Mechanics — team routing, `save_issue`, relations, sequencing, the wrap-up —
 
 ## Changelog
 
+- **0.2.1 (2026-08-26, LIAB-959)** — the `<name>` placeholder in `description:` and in two `triggers:` becomes `[name]`. Cowork's validator parsed the angle brackets as an XML tag and refused the whole plugin; the git channel had accepted it. Wording and behaviour unchanged.
 - **0.2.0 (2026-08-26 pm, Fable 5)** — the discovery seats land upstream: the epic cites `jtbd`'s job statement and `problem-definition`'s brief instead of carrying the JTBD lens itself. Shape unchanged.
 - **0.1.0 (2026-08-26, CQ voice memos + Fable 5)** — first version. Carved out of `ticket-builder` 0.4.0's epic half (the JTBD/User/Success/Why thinking survives as the discovery lens; the written shape follows the 25 Aug shape doc). New here: the version in the name, scope-read-from-stories, next-version-is-a-new-epic, and the not-too-chunky rule sized to one build run.

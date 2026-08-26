@@ -2,7 +2,7 @@
 name: wrap-up
 slug: wrap-up
 description: "Land a working session — finish or deliberately park loose ends, write the pick-up-here handover (one ACTIVE per thread), append the retro, do the housekeeping; the pickup side reads the ACTIVE handover before any work resumes. Use at end of day, on 'wrap up', or when closing out a session with work carrying forward."
-version: 1.2.1
+version: 1.2.2
 created: 2026-07-25
 updated: 2026-08-26
 status: active
@@ -16,10 +16,10 @@ triggers:
   - "close out the session"
   - "handover"
   - "write the handover"
-  - "pick up <project>"
+  - "pick up [project]"
   - "where did we leave off"
-  - "what's the latest on <project>"
-  - "continue the work on <project>"
+  - "what's the latest on [project]"
+  - "continue the work on [project]"
 companions:
   - product-retro
   - execution-discipline
@@ -145,3 +145,7 @@ tags: [handover, <project-slug>]
 - `ticket-builder` — in this plugin (canonical since 26 Aug 2026) — wrap-up rules; board truth
 - `Products/File Runner/Context/handovers/` — the worked example, including the supersede chain
 - Chris's Cowork account carries a synced copy of this skill (`/wrap-up`) so it triggers outside vault-mounted sessions. **This file — in the lia-tools plugin — is canonical since 26 Aug 2026** ([LIAB-919](https://linear.app/lia-creative/issue/LIAB-919)); if you change it, refresh the account copy (the vault copy is frozen pending [LIAB-924](https://linear.app/lia-creative/issue/LIAB-924)).
+
+## Changelog
+
+- **1.2.2 (2026-08-26, LIAB-959)** — the three `<project>` placeholders in `triggers:` become `[project]`, per the frontmatter rule that came out of the Cowork install failure. First entry here: this skill reached the plugin without a changelog, so earlier versions are unrecorded.

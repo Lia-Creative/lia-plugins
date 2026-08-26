@@ -1,0 +1,21 @@
+name: skills
+
+# Merging to main publishes on the git channel, so the guard runs before the
+# merge, not after it. LIAB-959: a placeholder that Claude Code accepted and
+# Cowork refused reached main with nothing in between saying so.
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+jobs:
+  frontmatter:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      # The guard proves it can go red before it is trusted to say green.
+      - run: node scripts/check-skill-frontmatter.mjs --self-test
+      - run: node scripts/check-skill-frontmatter.mjs
