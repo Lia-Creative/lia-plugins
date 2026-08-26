@@ -46,6 +46,33 @@ is the whole distribution story now.
 | `ticket-builder/skills/ticket-builder/handover-2026-06-25.md` | Not carried forward. It is a session handover from the v0.3.0 review (LIA-388), not skill content, and shipping it to every install was never right. It lives in git history at `3f719c4` and earlier. **If it matters, it belongs in the vault** — say so and it gets moved rather than left in a commit. |
 | Publish sequence in `README.md` | Rewritten for one surface. The three-surface table is gone. |
 
+### The renames migration, watched working (LIAB-989)
+
+The `renames: {"ticket-builder": null, "squeaks": null}` block was written on
+faith in a docs page; nobody had watched a machine holding a retired plugin go
+through it. Watched on 26 Aug 2026 — real `claude` CLI 2.1.246, isolated
+config, marketplace served from this repo at `5ba29ed` (ticket-builder still
+listed), then updated to `83d8f0d` (renames live):
+
+- **At `claude plugin marketplace update` time**, the
+  `"ticket-builder@lia-plugins": true` key is dropped from the machine's
+  `enabledPlugins` — the settings rewrite the docs promise is real and
+  immediate.
+- **The next session loads nothing from it.** `claude plugin list` shows the
+  plugin **disabled**, annotated `Removed from the "lia-plugins" marketplace`.
+- **It is a disable, not an uninstall.** The cached copy stays in the list
+  with that note. `claude plugin uninstall ticket-builder@lia-plugins` is
+  optional tidy-up, not a required manual step — nothing dangles, nothing
+  breaks, and auto-update's marketplace refresh triggers the same migration
+  with no command typed.
+
+Caveats, recorded rather than rounded off: observed at **user scope**, which
+is how team machines install. A managed-settings install cannot be rewritten
+(per the docs) and would re-notify until an admin updates managed settings —
+not our case today. `squeaks` rides the identical mechanism; `ticket-builder`
+is the observed instance. A team-machine spot check on the next real
+promotion confirms what the clean room predicts.
+
 ### The shadowing is real, and it was measured here
 
 Not inferred — observed in a Claude Code session on 26 Aug 2026, which loaded 36
