@@ -180,10 +180,28 @@ plugin the moment Claude Code does. Cowork was retired as a publish target on
 26 Aug 2026 ([LIAB-924](https://linear.app/lia-creative/issue/LIAB-924)); the
 hand-carried `.plugin` zip is gone with it.
 
-1. Edit the skill **here**, bump the skill's `version:` frontmatter with a changelog line, and bump this plugin's version in `.claude-plugin/plugin.json`.
-2. PR, review, merge. CI runs the frontmatter guard on the PR.
-3. The git marketplace is live at that moment. Team machines follow on `/plugin marketplace update lia-plugins`, then `claude plugin update lia-tools@lia-plugins` — or automatically, if auto-update is switched on for the marketplace (`/plugin` → **Marketplaces** → `lia-plugins` → **Enable auto-update**; it is off by default for third-party marketplaces).
-4. **Prove it.** Open a fresh session and invoke a changed skill — don't just read it. `claude --plugin-dir <path-to-lia-tools> -p` verifies a branch before merge; a real install verifies the release.
+**Merge is not live.** `main` is where work lands; **`release` is what every
+machine runs** — the marketplace serves `lia-tools` from the `release` ref
+(LIAB-986). The stop between a bad merge and the whole team is the promotion
+step below, and the way back out is the rollback next to it.
+
+1. Edit the skill **here**, bump the skill's `version:` frontmatter with a changelog line, and bump this plugin's version in `.claude-plugin/plugin.json`. The plugin bump is not bookkeeping: **machines only receive an update when the version field changes**, so a promotion without a bump delivers to nobody. CI fails any PR touching `lia-tools/**` without one (`scripts/check-version-bump.mjs` — the version-vs-SHA call went to keeping the explicit version, enforced, 26 Aug 2026).
+2. PR, review, merge. CI runs the frontmatter guard and the version-bump guard on the PR. The merge lands on `main` and reaches nobody yet.
+3. **Promote.** One command, from any clone:
+
+   ```
+   git fetch origin && git push origin origin/main:release
+   ```
+
+   A fast-forward of `release` to `main`. Team machines follow on `/plugin marketplace update lia-plugins`, then `claude plugin update lia-tools@lia-plugins` — or automatically, if auto-update is switched on for the marketplace (`/plugin` → **Marketplaces** → `lia-plugins` → **Enable auto-update**; it is off by default for third-party marketplaces).
+4. **Roll back.** Also one command — move the ref back to the last good commit (find it in `git log origin/release`):
+
+   ```
+   git fetch origin && git push --force-with-lease origin [last-good-sha]:release
+   ```
+
+   The downgrade delivers for the same reason the upgrade does: the served version changes. `release` is the one ref where a force-push is legitimate, and promotion history is the record of what was live when.
+5. **Prove it.** Open a fresh session and invoke a changed skill — don't just read it. `claude --plugin-dir <path-to-lia-tools> -p` verifies a branch before merge; a real install after promotion verifies the release.
 
 ### The one gap worth knowing about
 
