@@ -2,7 +2,7 @@
 name: lia-voice-check
 slug: lia-voice-check
 description: "Audit already-drafted Lia copy for AI tells and voice drift — the structural pattern scan, the deterministic word-check backstop, and the brand and product-voice checks, reported before anything is changed. Use before shipping any Lia-facing words: product UI text, empty states, onboarding, release notes, site or store copy."
-version: 0.2.0
+version: 0.2.1
 created: 2026-07-06
 updated: 2026-08-27
 status: active
@@ -73,7 +73,7 @@ python3 "[this skill]/scripts/word-check.py" path/to/draft.md
 # installed, the script sits at ${CLAUDE_PLUGIN_ROOT}/skills/lia-voice-check/scripts/word-check.py
 ```
 
-Three tiers: `HARD-AVOID` (corporate verbs + US spelling) report as errors and exit non-zero; `WATCHLIST` (AI-tell vocabulary — delve, seamless, robust, navigate, elevate…) warns only (run the filler test: real meaning = keep, decoration = cut); `SOFT-AVOID` (filler — actually, really, just, simply…) warns only. The script is the deterministic net under the LLM scan — it catches exact matches buried in long copy. `lia-voice.md` wins any disagreement; keep the script's word lists in sync when the voice doc changes.
+Four tiers: `HARD-AVOID` (corporate verbs + unambiguous US spelling) reports as errors and exits non-zero; **`spelling to check by sense`** warns only — words that are US in one sense and correct Australian in the other (`license` the verb versus `licence` the noun; `meter` the device versus `metre` the unit), which the script cannot tell apart and so refuses to block on; `WATCHLIST` (AI-tell vocabulary — delve, seamless, robust, navigate, elevate…) warns only (run the filler test: real meaning = keep, decoration = cut); `SOFT-AVOID` (filler — actually, really, just, simply…) warns only. The script is the deterministic net under the LLM scan — it catches exact matches buried in long copy. `lia-voice.md` wins any disagreement; keep the script's word lists in sync when the voice doc changes.
 
 ## Step 5 — Report
 
@@ -83,7 +83,7 @@ Produce a single report:
 # lia-voice-check report — [draft]
 
 Profile: [Lia brand / Held / …]     Pass: [soft / hard]
-Word-check: [✓ clean | ✗ N hard-avoid, ⚠ N watchlist, ⚠ N soft-avoid]
+Word-check: [✓ clean | ✗ N hard-avoid, ⚠ N sense-check, ⚠ N watchlist, ⚠ N soft-avoid]
 
 ## Structural patterns flagged   (grouped by pattern, with counts + examples + fix)
 ## Quality-check results          (pass/fail table, notes on fails)
@@ -117,5 +117,6 @@ If the scan surfaces a new AI pattern the references don't cover, or a Lia-voice
 
 ## Changelog
 
+- **0.2.1 (2026-08-27, PR #19 review)** — two script defects found in review. One match now reports once (`utilize` sat in both the corporate-verb list and the `-ize` pattern and was counted twice, in a report the skill tells you to quote counts from). And `license` and `meter` stop blocking correct Australian English — the verb and the device are standard AU, the script cannot read the sense, so they moved to a warn-only sense-check tier instead of failing the run.
 - **0.2.0 (2026-08-27, LIAB-997)** — lands in the plugin, beside `polish` as the copy half of the gate. Script path repointed at the skill's own bundle instead of the retired vault path; bench placement and related seats added. The references and the word lists are unchanged.
 - 2026-07-06: v0.1.0. Initial skill (LIAB-486, Luke-driven). Built from Dan's `voice-check` AI-pattern layer + a new Lia brand-voice standard with a Held product profile. First real use: the Held role-catalogue-v2 hard pass.

@@ -29,7 +29,7 @@ companions: [toy-pickup, toy-release, ticket-builder, prototype-feedback-loop]
 
 The upload half is his (with his personal `recording-description` skill drafting the title, description and chapters). This skill starts when the URL and transcript exist.
 
-**Load `_meta/skills/execution-discipline/SKILL.md` first**, as with any Lia skill run. Never invent Linear ticket IDs, statuses, or vault paths — verify everything live.
+**Load `execution-discipline` first** (in this plugin), as with any Lia skill run. Never invent Linear ticket IDs, statuses, or vault paths — verify everything live.
 
 ## Step 0 — Scope the video
 
@@ -127,4 +127,4 @@ Short: the meeting note path, the summaries written, tickets created (IDs), the 
 
 ## Changelog
 
-- **0.1.2 (2026-08-27, LIAB-997)** — the stage gate and the whisper recipe now point at `prototype-feedback-loop` in this plugin rather than the retired vault path. No change to the ingest itself. First entry here; earlier versions are unrecorded.
+- **0.1.2 (2026-08-27, LIAB-997)** — the stage gate and the whisper recipe now point at `prototype-feedback-loop` in this plugin rather than the retired vault path, and the `execution-discipline` load line with them (found in the PR #19 review; the rest of that sweep stays LIAB-963's). No change to the ingest itself. First entry here; earlier versions are unrecorded.
