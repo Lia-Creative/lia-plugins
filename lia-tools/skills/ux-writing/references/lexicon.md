@@ -12,17 +12,25 @@ the product or is Apple's rule, which we've adopted.
 
 ## 0. Not settled — do not treat these as house rules
 
-These rows are this skill's suggestion and **have not had a founder's yes.** Each one is
-marked inline as well, because a table row gets read on its own far more often than a
-file's header does — an agent greps for a verb, finds a row, and ships it.
+**Nothing is currently unsettled.** Every row in §1 has had a founder's yes.
 
 | Row | What's open | Who decides |
 |---|---|---|
-| **Show Details** (§1) | Whether the disclosure control is called *Show Details*, and whether Lia wants that pattern at all rather than keeping the detail in the log. `patterns.md` §3 leans on it in the meantime. | Chris |
+| *(none)* | | |
+
+**This section stays empty, it doesn't go away.** §5 sends every new row here: a proposed
+word gets its row in §1 marked *NOT SETTLED* **and** a line in the table above, in the same
+PR. Both, because a table row gets read on its own far more often than a file's header does
+— an agent greps for a verb, finds a row, and ships it. An empty table is the normal state,
+not a sign the section is dead.
 
 Use a proposed word if you need one — but say in the PR that you did, and don't cite this
 file as the reason. Settling a row means Chris says yes, the marker comes off, and the
 changelog says when.
+
+**Settled here so far:** *Show Details* — Chris, 28 Aug 2026, following Apple's shipped
+convention. The row carries **Hide Details** with it, because the label flips with the
+state. The provenance, and the limits of it, are in `apple-distilled.md` §2.
 
 ---
 
@@ -50,13 +58,13 @@ changelog says when.
 | Mark a thing you already see | **Select** | Choose, Check, Tick, Highlight |
 | Give it a new name | **Rename** | Edit name, Change name |
 | Send words back to us | **Send Feedback** | Submit, Report, Contact Us |
-| Look at something in more detail | **Show Details** — **NOT SETTLED: proposed only, no founder's yes. Don't cite this row as house style.** (see §0) | More info, Details…, Expand, Learn More |
+| Look at something in more detail | **Show Details** / **Hide Details** *(the label flips with the state; no ellipsis — nothing opens)* | More info, Details…, Expand, Learn More |
 | Go to a thing's own screen | **Open** | View, Go To, Launch |
 | Keep changes | **Save** | Apply, Commit, Update, Confirm |
 
 **Pairs stay paired.** If you use one half, use the other half's word for the reverse:
 Add/Remove · Turn On/Turn Off · Connect/Disconnect · Sign In/Sign Out · Open/Close ·
-Run/Stop · Save/Cancel.
+Run/Stop · Save/Cancel · Show Details/Hide Details.
 
 ## 2. The nouns
 

@@ -13,6 +13,7 @@ guidance, not from second-hand articles about it:
 | [HIG — Buttons](https://developer.apple.com/design/human-interface-guidelines/buttons) | Label content, the verb rule, roles (primary / cancel / destructive) |
 | [HIG — Notifications](https://developer.apple.com/design/human-interface-guidelines/notifications) · [Onboarding](https://developer.apple.com/design/human-interface-guidelines/onboarding) | Notification titles vs body, previews-off text, onboarding as optional and interactive |
 | [Apple Style Guide, June 2026](https://help.apple.com/pdf/applestyleguide/en_US/apple-style-guide.pdf) (244pp) | The mechanics: capitalisation rules word by word, the terminology verdicts, inclusive writing |
+| AppKit's own shipped strings — `AppKit.framework/Resources/Common.loctable`, key `en`, on macOS 26.5.2 (build 25F84, AppKit 6.9). Read 28 Aug 2026 | The `Show Details` / `Hide Details` pair, and the `Show X` / `Hide X` shape around it (§2). Not a document — the strings the system actually ships |
 
 Apple is not quoted at length here on purpose — this is the working distillation, in
 Lia's words, of rules that are Apple's. Go to the sources when a case is genuinely new.
@@ -141,6 +142,38 @@ And the verbs of interaction: you **choose** a menu item, you **select** a thing
 some text, a checkbox), you **click** with a pointer, you **tap** on touch, you **press**
 a physical button. Describe the gesture the device actually has — never "click" on a
 phone. Best of all, where you can, name the target and skip the gesture.
+
+### Disclosure — Show Details / Hide Details
+
+**The control is a pair, and its label flips with the state.** Apple ships both halves:
+
+| What the person can see | The label |
+|---|---|
+| Detail hidden | **Show Details** |
+| Detail showing | **Hide Details** |
+
+Title case, no ending punctuation, and **no ellipsis** — nothing further opens, the detail
+is revealed in place. That is exactly what separates it from "Choose a Photo…", and it is
+why naming only one half is naming half a control: the person who opened it is left
+without a word for closing it again.
+
+The shape generalises past this one label. AppKit's common strings carry the same
+construction for Inspector, Options and Sidebar — **name the thing being revealed, and
+pair the verbs.** Never "More info", "Expand", "Details…" or a bare "Learn More".
+
+**Where this one came from, exactly.** It is sourced differently from everything else in
+this file, so the difference is written down rather than smoothed over. The label and the
+pairing were verified first-hand against the strings macOS actually ships: `Show Details`
+and `Hide Details` are both keys in AppKit's `Common.loctable` (English), on macOS 26.5.2,
+checked 28 Aug 2026. **That is evidence of the convention Apple ships, not a quotation from
+the HIG** — the HIG's Disclosure controls page describes the control, and nothing readable
+in it names these labels. Anyone who finds chapter and verse should add it here.
+
+**And the decision to put error detail behind one is Lia's, not Apple's.** Chris,
+28 Aug 2026: *follow Apple's logic — yes, put it behind disclosure.* Apple's logic is
+progressive disclosure; the ruling that a Lia failure message keeps system text out of the
+sentence and behind this control is a founder decision of that date, and `patterns.md` §3
+is where it bites.
 
 ---
 

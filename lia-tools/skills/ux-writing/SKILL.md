@@ -2,7 +2,7 @@
 name: ux-writing
 slug: ux-writing
 description: "Write the words in the interface — action labels, alerts, errors, empty states, notifications — to Apple's mechanics and Lia's voice: one verb per action from the shared lexicon, Apple-exact title case on labels, no blame, no system text, checked by a deterministic lint. Use when a screen needs its copy written or repaired, when button labels are being chosen, or when a flow's language has drifted."
-version: 0.1.2
+version: 0.1.3
 created: 2026-08-27
 updated: 2026-08-28
 status: active
@@ -52,8 +52,9 @@ them. The mechanics are Apple's. The voice stays Lia's.
 ## The references — read before writing, every time
 
 1. `references/lexicon.md` — **first.** One action, one word. This is what stops the
-   product forking its own vocabulary. Read **§0 before §1**: some rows are proposed and
-   have no founder's yet — usable, but never quotable as house style.
+   product forking its own vocabulary. Read **§0 before §1** — it lists any row that is
+   proposed and has not had a founder's yes. Those are usable if you need one, but never
+   quotable as house style. §0 is empty as of 28 Aug 2026; that is its normal state.
 2. `references/patterns.md` — the shape for the surface you're writing (labels,
    confirmations, errors, empty states, waiting, permissions, settings, fields,
    notifications, first run, success).
@@ -168,6 +169,21 @@ ticket prose, and documentation. It also doesn't audit finished copy for AI tell
 
 ## Changelog
 
+- **0.1.3 (2026-08-28)** — **`Show Details` is settled house style. Chris, 28 Aug 2026:
+  *"follow Apple's logic. yes put it behind disclosure."*** So `patterns.md` §3 keeps its
+  clause and stops hedging: raw system text never reaches the sentence, and detail that
+  matters to support sits behind the disclosure. The lexicon's §0 is now empty and stays —
+  §5 sends new proposals there, so removing it would break the add-a-row procedure.
+  **The settlement came with its source, because it had to.** `apple-distilled.md` said
+  nothing about disclosure controls at all, so deleting the NOT SETTLED markers on their
+  own would have promoted an unsourced claim to house style — the exact failure this skill
+  exists to prevent, in the file that exists to prevent it. The HIG's Disclosure controls
+  page renders client-side and could not be read; rather than cite a page nobody opened,
+  the label was verified first-hand against what macOS actually ships — `Show Details` and
+  `Hide Details` are both keys in AppKit's `Common.loctable`, English, macOS 26.5.2. That
+  is a weaker claim than a HIG quotation and is written down as one. It also settled a
+  second question nobody had asked: the control is a **pair**, so a lexicon row naming one
+  half was half a rule, and `Hide Details` now travels with it.
 - **0.1.2 (2026-08-28, review round 1 on PR #22)** — the status-code rule was narrowed
   until it stopped catching what it exists for. `error` counted only as `error code`,
   while the reverse-order pattern took a bare `404 error` — so `Error 404:`, the shape a
