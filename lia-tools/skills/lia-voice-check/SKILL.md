@@ -2,7 +2,7 @@
 name: lia-voice-check
 slug: lia-voice-check
 description: "Audit already-drafted Lia copy for AI tells and voice drift — the structural pattern scan, the deterministic word-check backstop, and the brand and product-voice checks, reported before anything is changed. Use before shipping any Lia-facing words: product UI text, empty states, onboarding, release notes, site or store copy."
-version: 0.2.1
+version: 0.2.2
 created: 2026-07-06
 updated: 2026-08-27
 status: active
@@ -73,7 +73,16 @@ python3 "[this skill]/scripts/word-check.py" path/to/draft.md
 # installed, the script sits at ${CLAUDE_PLUGIN_ROOT}/skills/lia-voice-check/scripts/word-check.py
 ```
 
-Four tiers: `HARD-AVOID` (corporate verbs + unambiguous US spelling) reports as errors and exits non-zero; **`spelling to check by sense`** warns only — words that are US in one sense and correct Australian in the other (`license` the verb versus `licence` the noun; `meter` the device versus `metre` the unit), which the script cannot tell apart and so refuses to block on; `WATCHLIST` (AI-tell vocabulary — delve, seamless, robust, navigate, elevate…) warns only (run the filler test: real meaning = keep, decoration = cut); `SOFT-AVOID` (filler — actually, really, just, simply…) warns only. The script is the deterministic net under the LLM scan — it catches exact matches buried in long copy. `lia-voice.md` wins any disagreement; keep the script's word lists in sync when the voice doc changes.
+Four tiers:
+
+| Tier | Behaviour | What's in it |
+|---|---|---|
+| `HARD-AVOID` | error, exit 1 | corporate verbs and AI-buzz nouns with no legitimate use (leverage, empower, synergy, **seamless**, transformative, utilise/utilize), plus unambiguous US spelling |
+| `spelling to check by sense` | warn | US in one sense, correct Australian in the other — `license` the verb versus `licence` the noun, `meter` the device versus `metre` the unit. The script cannot read the sense, so it refuses to block |
+| `WATCHLIST` | warn | AI-tell vocabulary that *does* have legitimate uses — delve, robust, navigate, elevate, landscape, crucial. Run the filler test: real meaning = keep, decoration = cut |
+| `SOFT-AVOID` | warn | filler — actually, really, just, simply, in order to |
+
+**Why some words `ai-patterns.md` §22 calls hard-avoid are only a warning here.** That section is written for the LLM scan, which reads context; the script cannot. A word goes in the script's hard tier only when no legitimate use exists — *utilise* is always *use*. `navigate` and `robust` are AI tells in nine drafts out of ten and correct in the tenth ("navigate to the folder", "a robust test suite"), so the script warns and you judge. **`ai-patterns.md` still wins on the verdict; the tiers only decide what the script may fail a run on.** The script is the deterministic net under the LLM scan — it catches exact matches buried in long copy. `lia-voice.md` wins any disagreement; keep the script's word lists in sync when the voice doc changes.
 
 ## Step 5 — Report
 
@@ -117,6 +126,7 @@ If the scan surfaces a new AI pattern the references don't cover, or a Lia-voice
 
 ## Changelog
 
+- **0.2.2 (2026-08-27, PR #19 second review)** — five more script defects, all reproduced before fixing. The `-ize` allow-list matched on `startswith`, so every prefixed correct word (`resize`, `downsizing`, `supersized`) hard-failed a draft; it now matches listed prefixes plus e-dropping stems, and still catches `emphasizing`. The US-spelling net gained the `-yze` family and the metric units (`kilometer`, `liter`) — as an explicit list, because a general `\w+meter` net would fail on `parameter`, `diameter` and `thermometer`, which are correct. Multi-word phrases now match across a hard wrap (they silently no-opped on wrapped markdown, which is most of the vault). `utilise` joins `utilize` in the hard tier — one word, one verdict. The sense-check notes are printed instead of defined and dropped. And the tier table above now says what the script actually enforces.
 - **0.2.1 (2026-08-27, PR #19 review)** — two script defects found in review. One match now reports once (`utilize` sat in both the corporate-verb list and the `-ize` pattern and was counted twice, in a report the skill tells you to quote counts from). And `license` and `meter` stop blocking correct Australian English — the verb and the device are standard AU, the script cannot read the sense, so they moved to a warn-only sense-check tier instead of failing the run.
 - **0.2.0 (2026-08-27, LIAB-997)** — lands in the plugin, beside `polish` as the copy half of the gate. Script path repointed at the skill's own bundle instead of the retired vault path; bench placement and related seats added. The references and the word lists are unchanged.
 - 2026-07-06: v0.1.0. Initial skill (LIAB-486, Luke-driven). Built from Dan's `voice-check` AI-pattern layer + a new Lia brand-voice standard with a Held product profile. First real use: the Held role-catalogue-v2 hard pass.

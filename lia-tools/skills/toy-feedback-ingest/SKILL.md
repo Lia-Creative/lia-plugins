@@ -15,7 +15,7 @@ description: >-
   folder.
 version: 0.1.2
 created: 2026-08-16
-updated: 2026-08-19
+updated: 2026-08-27
 status: active
 maintainer: cq
 author: cq

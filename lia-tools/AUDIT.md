@@ -102,12 +102,18 @@ other — which is worse, not better.
 Fourteen standalone skills to disable, each with what replaces it. Nothing here
 needs a decision except the last row.
 
+**The versions below are minimums, not pins** — they name what the replacement
+was at or after the moment this row was written, and a later bump only makes the
+replacement newer. Read them as "this version or later"; a row is wrong only if
+the plugin's copy is *behind* it. (The table above is the opposite: a dated
+measurement, left as the record.)
+
 | Disable this standalone | Replaced by |
 |---|---|
 | `backlog-grooming` | `lia-tools` → `backlog-grooming` 0.1.1 |
 | `new-toy` | `lia-tools` → `new-toy` 0.1.1 |
 | `ticket-builder` | `lia-tools` → `ticket-builder` 0.5.1, plus the seats it routes to (`epic-builder`, `story-writer`, `task-writer`) |
-| `toy-feedback-ingest` | `lia-tools` → `toy-feedback-ingest` 0.1.1 |
+| `toy-feedback-ingest` | `lia-tools` → `toy-feedback-ingest` 0.1.2 |
 | `toy-jam` | `lia-tools` → `toy-jam` 0.1.0 |
 | `toy-pickup` | `lia-tools` → `toy-pickup` 0.1.0 |
 | `toy-release` | `lia-tools` → `toy-release` 0.2.0 |
@@ -116,7 +122,7 @@ needs a decision except the last row.
 | `toys-digest` | `lia-tools` → `toys-digest` 0.1.0 |
 | `ui-capture` | `lia-tools` → `ui-capture` 0.3.0 (**and** its `reference/` + `scripts/` bundles, which the standalone never had) |
 | `ui-teardown` | `lia-tools` → `ui-teardown` 0.2.1 (+ `reference/`) |
-| `wrap-up` | `lia-tools` → `wrap-up` 1.2.2 |
+| `wrap-up` | `lia-tools` → `wrap-up` 1.2.3 |
 | `ticket-engineering` | **Disable — CQ's call, 26 Aug 2026.** No 1:1 replacement; absorbed as discipline, its 6-criteria entry gate into `build-prep` + `ticket-review` and its completion gate into `review-and-merge`. The Cursor-era mechanics go with it, deliberately. |
 
 And the two claude.ai plugins, same action, same place: **`lia-build` 0.2.0** and

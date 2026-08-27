@@ -4,7 +4,7 @@ slug: wrap-up
 description: "Land a working session — finish or deliberately park loose ends, write the pick-up-here handover (one ACTIVE per thread), append the retro, do the housekeeping; the pickup side reads the ACTIVE handover before any work resumes. Use at end of day, on 'wrap up', or when closing out a session with work carrying forward."
 version: 1.2.3
 created: 2026-07-25
-updated: 2026-08-26
+updated: 2026-08-27
 status: active
 triggers:
   - "/wrap-up"

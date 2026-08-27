@@ -22,6 +22,7 @@ Dan-personal exceptions are removed for Lia's brand register.
 LAST_SYNC: 2026-07-06
 """
 
+import bisect
 import re
 import sys
 import argparse
@@ -30,7 +31,8 @@ import json
 # Corporate verbs + AI-buzz nouns that should never appear in Lia copy.
 HARD_AVOID = [
     "leverage", "leveraging", "empower", "empowering", "unlock", "unlocking",
-    "upskill", "utilize", "utilizing", "synergy", "synergies", "seamless",
+    "upskill", "utilize", "utilizing", "utilise", "utilising", "synergy",
+    "synergies", "seamless",
     "seamlessly", "transformative", "groundbreaking", "supercharge",
     "turnkey", "best-in-class", "cutting-edge", "next-level",
 ]
@@ -38,6 +40,13 @@ HARD_AVOID = [
 # US spellings — flagged as hard errors (Lia writes Australian English).
 US_SPELLING = [
     r"\b\w*iz(e|es|ed|ing|ation)\b",   # organize, realize, optimization…
+    r"\b\w*yz(e|es|ed|ing)\b",         # analyze, paralyzed, catalyzing (AU: -yse)
+    # Metric units only. NOT a general \w+meter net: parameter, diameter,
+    # perimeter, thermometer, speedometer and micrometer (the instrument) are
+    # all correct Australian spellings, and a net that caught them would fail
+    # on correct input — the defect this file has already been fixed for twice.
+    r"\b(kilo|centi|milli|deci|deka|hecto|nano)meter(s)?\b",
+    r"\b(milli|centi|deci|kilo)?liter(s)?\b",
     r"\bcolor(s|ed|ing|ful)?\b", r"\bbehavior(s|al)?\b", r"\bfavor(s|ed|ing|ite|able)?\b",
     r"\bhonor(s|ed|ing|able)?\b", r"\blabor(s|ed|ing)?\b", r"\bneighbor(s|hood|ing)?\b",
     r"\bcenter(s|ed|ing)?\b", r"\btheater(s)?\b", r"\bfiber(s)?\b",
@@ -51,19 +60,28 @@ US_SPELLING = [
 # guard that fails on correct input is a guard someone deletes in a hurry.
 #   licence = the noun, license = the VERB (both standard AU/UK)
 #   metre   = the unit,  meter  = the device (parking meter, power meter)
-US_SPELLING_AMBIGUOUS = [
-    (r"\blicense(s|d|ing)?\b", "US for the noun; correct AU for the verb (licence = noun)"),
-    (r"\bmeter(s)?\b", "US for the unit; correct AU for the device (metre = unit)"),
-]
+US_SPELLING_AMBIGUOUS = {
+    r"\blicense(s|d|ing)?\b": "US for the noun; correct AU for the verb (licence = noun)",
+    r"\bmeter(s)?\b": "US for the unit; correct AU for the device (metre = unit)",
+}
 
 # -ize words that are correct even in AU English (Macquarie): keep off the net,
-# including their inflections (sized, sizing, prizes, seized, capsized…).
-US_IZE_ALLOW_ROOTS = ("size", "prize", "seize", "capsize", "maize", "assize", "downsize", "oversize")
+# including their inflections (sized, sizing, prizes, seized, capsized…) AND
+# their prefixed forms. Matching on startswith() alone failed every prefixed
+# one — `resize`, `downsizing`, `supersized` all hard-failed a correct draft.
+# The prefixes are listed rather than left open (`[a-z]*`): an open prefix
+# allows `emphasizing` too, which is US (AU: emphasise). Stems drop their `e`
+# before an ending, so match on the stem without it.
+US_IZE_ALLOW = re.compile(
+    r"^(re|down|up|over|super|mid|out)?"
+    r"(siz|priz|seiz|maiz|assiz|capsiz)"
+    r"(e|es|ed|ing)?$",
+    re.IGNORECASE,
+)
 
 
 def _ize_allowed(tok):
-    t = tok.lower()
-    return any(t == r or t.startswith(r) for r in US_IZE_ALLOW_ROOTS)
+    return bool(US_IZE_ALLOW.match(tok))
 
 # AI-tell vocabulary — warn, run the filler test (real meaning = keep).
 WATCHLIST = [
@@ -71,7 +89,7 @@ WATCHLIST = [
     "fostering", "elevate", "elevating", "landscape", "robust", "holistic",
     "crucial", "powerful", "innovative", "testament", "underscore",
     "underscores", "enhance", "enhancing", "streamline", "streamlining",
-    "utilise", "myriad", "realm", "vibrant", "bustling", "nuanced",
+    "myriad", "realm", "vibrant", "bustling", "nuanced",
     "meticulous", "meticulously", "notably", "moreover", "furthermore",
 ]
 
@@ -84,18 +102,36 @@ SOFT_AVOID = [
 ]
 
 
-def find(words, text, regex=False):
+def _line_index(text):
+    """Offsets of each line start, so a whole-text match reports its line."""
+    starts, pos = [0], 0
+    for line in text.split("\n")[:-1]:
+        pos += len(line) + 1
+        starts.append(pos)
+    return starts
+
+
+def find(words, text, regex=False, notes=None):
+    """Scan the WHOLE text, not line by line.
+
+    Line-at-a-time matching silently no-opped on every multi-word entry the
+    moment a draft was hard-wrapped — "in order to" broken across two lines
+    matched nothing, in files the vault hard-wraps by convention. Spaces in a
+    phrase therefore match any run of whitespace, newlines included.
+    """
     hits = []
+    starts = _line_index(text)
     lines = text.split("\n")
-    for i, line in enumerate(lines, 1):
-        for w in words:
-            pat = w if regex else r"\b" + re.escape(w) + r"\b"
-            for m in re.finditer(pat, line, re.IGNORECASE):
-                tok = m.group(0)
-                if regex and _ize_allowed(tok):
-                    continue
-                hits.append((i, tok, line.strip(), m.start()))
-    return hits
+    for w in words:
+        pat = w if regex else r"\b" + r"\s+".join(re.escape(p) for p in w.split()) + r"\b"
+        for m in re.finditer(pat, text, re.IGNORECASE):
+            tok = m.group(0)
+            if regex and _ize_allowed(tok):
+                continue
+            i = bisect.bisect_right(starts, m.start())
+            hits.append((i, " ".join(tok.split()), lines[i - 1].strip(), m.start(),
+                         (notes or {}).get(w, "")))
+    return sorted(hits, key=lambda h: (h[0], h[3]))
 
 
 def merge(*hitlists):
@@ -137,16 +173,17 @@ def main():
 
     hard = find(HARD_AVOID, text)
     ussp = find(US_SPELLING, text, regex=True)
-    ambig = find([p for p, _ in US_SPELLING_AMBIGUOUS], text, regex=True)
+    ambig = find(list(US_SPELLING_AMBIGUOUS), text, regex=True,
+                 notes=US_SPELLING_AMBIGUOUS)
     watch = find(WATCHLIST, text)
     soft = find(SOFT_AVOID, text)
 
     if a.json:
         print(json.dumps({
-            "hard_avoid": [{"line": l, "match": t} for l, t, _, _ in merge(hard, ussp)],
-            "spelling_check_sense": [{"line": l, "match": t} for l, t, _, _ in ambig],
-            "watchlist": [{"line": l, "match": t} for l, t, _, _ in watch],
-            "soft_avoid": [{"line": l, "match": t} for l, t, _, _ in soft],
+            "hard_avoid": [{"line": l, "match": t} for l, t, _, _, _ in merge(hard, ussp)],
+            "spelling_check_sense": [{"line": l, "match": t, "note": n} for l, t, _, _, n in ambig],
+            "watchlist": [{"line": l, "match": t} for l, t, _, _, _ in watch],
+            "soft_avoid": [{"line": l, "match": t} for l, t, _, _, _ in soft],
         }, indent=2))
         sys.exit(1 if (hard or ussp) else 0)
 
@@ -154,8 +191,9 @@ def main():
         if not hits:
             return
         print(f"\n{mark} {len(hits)} {title}:")
-        for l, t, line, _ in hits[:60]:
-            print(f'  Line {l}: "{t}"\n    → {snip(line)}')
+        for l, t, line, _, note in hits[:60]:
+            print(f'  Line {l}: "{t}"' + (f"  ({note})" if note else ""))
+            print(f"    → {snip(line)}")
         if len(hits) > 60:
             print(f"  … and {len(hits) - 60} more")
 
