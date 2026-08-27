@@ -80,6 +80,7 @@ The process the skills implement is written down in [Tool shop — how a lia.too
 | Skill | The seat |
 |---|---|
 | `design-lead` | The design stage owned: ready stories in, every step checked covered before the engineer preps the build. |
+| `design-reference` | Reference we already hold, found, broken down cited to frames, and applied as take/adapt/drop. |
 | `design-exploration` | Distinct directions from the job, one chosen out loud. |
 | `design-flows` | Every scenario walked as screens, states and transitions. |
 | `hifi-design` | The screens for real, on the design system, as the artefact. |
