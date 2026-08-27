@@ -2,9 +2,9 @@
 name: polish
 slug: polish
 description: "Hold the built interface to the design spec (the HTML artefact, which wins over prose) in design-system terms — and where Toys DS can't yet express the spec, name the acceptable gap and leave the note, never silently approximate. Use before calling any story with a design spec done."
-version: 0.1.0
+version: 0.1.1
 created: 2026-08-26
-updated: 2026-08-26
+updated: 2026-08-28
 status: active
 triggers:
   - "/polish"
@@ -14,6 +14,7 @@ triggers:
 companions:
   - build
   - review-and-merge
+  - ux-writing
 maintainer: cq
 ---
 
@@ -48,4 +49,5 @@ Where the spec shows something the DS can't yet express:
 
 ## Changelog
 
+- **0.1.1 (2026-08-28, LIAB-1004)** — names `ux-writing` back. That seat lists this one as a companion; the link was one-way, which is the finding L2 from the LIAB-1000 review. The two halves of the same gate: this holds the screen to the spec, `ux-writing` writes what it says.
 - **0.1.0 (2026-08-26, CQ voice memos + Fable 5)** — first version. The conformance walk, system-terms rule, and the named-gap discipline with owner routing (Toys DS → Chris, DS → Dan).

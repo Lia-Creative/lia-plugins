@@ -2,9 +2,9 @@
 name: error-states
 slug: error-states
 description: "The state sweep after hi-fi — error, empty, loading and edge states hunted per flow, each one designed or explicitly ruled out with why; happy-path-only never leaves this seat as done. Use when hi-fi screens exist and the design believes itself finished, or when asked what happens when a flow goes wrong."
-version: 0.1.0
+version: 0.1.1
 created: 2026-08-27
-updated: 2026-08-27
+updated: 2026-08-28
 status: active
 triggers:
   - "/error-states"
@@ -16,6 +16,7 @@ companions:
   - design-flows
   - design-handoff
   - design-lead
+  - ux-writing
 maintainer: cq
 ---
 
@@ -61,4 +62,5 @@ The sweep's output is the completed list, and it is what `design-lead`'s coverag
 
 ## Changelog
 
+- **0.1.1 (2026-08-28, LIAB-1004)** — names `ux-writing` back, closing the one-way link. This seat finds the states that need words; that one writes them. Every state this sweep surfaces arrives at `ux-writing` needing a string.
 - **0.1.0 (2026-08-27, CQ + LIAB-995)** — first version. The error-states step of CQ's design stage as its own seat: the four-pass sweep per flow, designed-or-ruled-out-loud as the only two outcomes, and the state class as where the sweep lands for the builder.
