@@ -50,3 +50,19 @@ jobs:
       # Same rule as the frontmatter guard: red first, then trusted.
       - run: node scripts/check-version-bump.mjs --self-test
       - run: node scripts/check-version-bump.mjs --base "origin/${{ github.base_ref || 'main' }}"
+
+  # LIAB-1005: both jobs above passed a directory under lia-tools/skills/ with
+  # no SKILL.md — one walks *for* SKILL.md files, the other counts changed
+  # paths, so neither could see it, and 468 lines that install and cannot be
+  # invoked went through. Runs on every event, like the frontmatter job: it
+  # reads the tree as it stands and needs no base ref.
+  roster:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      # Same rule as the other two: red first, then trusted.
+      - run: node scripts/check-skill-roster.mjs --self-test
+      - run: node scripts/check-skill-roster.mjs

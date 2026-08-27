@@ -80,6 +80,22 @@ along with the hand-carried `.plugin` zip.
    template and never carried the plugin's manifest, skill or command. The only
    copy was here.)*
 
+8. **A directory under `lia-tools/skills/` carries a `SKILL.md`, and the plugin
+   README names it.** Claude Code's skill loader keys on `SKILL.md`, and the
+   whole `lia-tools/` directory ships to installers — so a directory without
+   one installs, cannot be invoked, and stays greppable by any agent working in
+   the tree. That is what reached `main` in PR #20 (LIAB-1005):
+   `skills/ux-writing/references/*.md`, 468 lines, no `SKILL.md`, and both
+   existing guards green — one walks *for* `SKILL.md` files, the other counts
+   changed paths, so a directory that cannot load is not something either can
+   see. The roster half is the same drift pointing the other way: a skill with
+   no row in [lia-tools/README.md](lia-tools/README.md#whats-in-it) is a skill
+   nobody knows we carry, and a row with no directory points at nothing.
+   `node scripts/check-skill-roster.mjs` is the guard; CI runs it on every PR.
+   *(Numbered last on purpose — the rule numbers here are cited from skills and
+   scripts, so a new rule goes on the end rather than shifting five references
+   and a plugin version with it.)*
+
 ## Make the check fail on purpose
 
 **Earned in this repo, 26 Aug 2026 (LIAB-959), three times in one day.** A rule
@@ -101,6 +117,13 @@ the real check.
 The same rule applied to acceptance criteria: **`grep -ri squeak` passed on two
 live references because neither contained the word.** A string test for a
 conceptual change is green in a way that means less than it looks like.
+
+**A fourth, a day later (LIAB-1005).** Both guards were green on a PR carrying a
+skill directory that could not load, and both were *right*: one walks **for**
+`SKILL.md` files, so a missing one is not a failure it can report, it is a file
+it never sees. A guard's blind spot is not in what it checks; it is in the shape
+of what it enumerates. Ask what a check cannot see before believing what it
+says.
 
 And when you find a gap you are not fixing: **it becomes a ticket, not a
 paragraph.** Three gaps recorded in READMEs this day were invisible until
