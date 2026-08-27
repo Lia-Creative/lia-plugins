@@ -12,6 +12,7 @@ The process the skills implement is written down in [Tool shop — how a lia.too
 
 | Skill | The seat |
 |---|---|
+| `discovery-lead` | The bench's own lead — the thread held from problem to ready story; routes the writers, requests the gate, never writes. |
 | `problem-definition` | Problems formalised and mapped across the board. |
 | `jtbd` | The job named consistently, requirements mapped — beside the epic. |
 | `epic-builder` | A versioned chunk of value — `charts 1.0`. Scope is read from its stories. |
@@ -27,7 +28,13 @@ The process the skills implement is written down in [Tool shop — how a lia.too
 
 | Skill | The seat |
 |---|---|
-| `project-manager` | Tickets run front to end: dispatch, statuses kept true, context enforced, human-readable updates. |
+| `project-manager` | Tickets run front to end: passed between the stage leads on gate verdicts, dispatch, statuses kept true, context enforced, human-readable updates. |
+
+**The marketplace's own seat**
+
+| Skill | The seat |
+|---|---|
+| `plugin-manager` | `lia-plugins` run like a product: skill-change review, the merges, promotion and rollback, roster hygiene. |
 
 **The lead engineer's bench**
 
@@ -64,11 +71,21 @@ The process the skills implement is written down in [Tool shop — how a lia.too
 | `toy-feedback-ingest` | A feedback video → notes, summaries, tickets. |
 | `adventure-chat-ingest` | An adventure chat → the discovery backbone. |
 
-**Design + the judgment layer**
+**The design bench**
 
 | Skill | The seat |
 |---|---|
-| `design-handoff` | How a design reaches a builder — the `.dc.html` folder, how to read it, artefact beats prose. |
+| `design-lead` | The design stage owned: ready stories in, every step checked covered before the engineer preps the build. |
+| `design-exploration` | Distinct directions from the job, one chosen out loud. |
+| `design-flows` | Every scenario walked as screens, states and transitions. |
+| `hifi-design` | The screens for real, on the design system, as the artefact. |
+| `error-states` | The sweep — error, empty, loading, edge: designed or ruled out loud. |
+| `design-handoff` | How a design reaches a builder — the `.dc.html` folder, how to read it, the HTML home, artefact beats prose. |
+
+**Recon + the judgment layer**
+
+| Skill | The seat |
+|---|---|
 | `ui-capture` | Screens captured to a consistent standard, with a coverage score. |
 | `ui-teardown` | The UX + feature teardown, every claim cited to a shot. |
 | `execution-discipline` | Load first, every run — ground truth, stop conditions, done-means-evidence. |

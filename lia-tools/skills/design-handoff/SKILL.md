@@ -2,19 +2,22 @@
 name: design-handoff
 slug: design-handoff
 description: "How a design reaches a builder — the .dc.html prototype folder, how to read it (markup, DS helmet, the state class that lists the real interaction states), and the rule that the artefact outranks ticket prose. Use when a story carries a design spec, when opening a .dc.html, or when writing a design onto a ticket."
-version: 0.1.0
+version: 0.2.0
 created: 2026-08-26
-updated: 2026-08-26
+updated: 2026-08-27
 status: active
 triggers:
   - "/design-handoff"
   - "open the design spec"
   - "read the dc.html"
   - "how does the design reach the builder"
+  - "get the design onto the ticket"
 companions:
   - polish
   - build-prep
   - build
+  - design-lead
+  - error-states
 maintainer: cq
 ---
 
@@ -67,6 +70,14 @@ An earlier claude.ai-exported variant exists (seen and unpacked in an August ses
 - **No transcription.** Ticket prose carries the story and criteria; the design carries itself. A designer's build spec or handover doc rides along as a companion file, not as pasted prose.
 - The lead engineer's `build-prep` cites the artefact's path and its state class; `ready-review`/`ticket-review` treat a design-led story without its artefact as not ready.
 
+## 5. The return path — getting the HTML home
+
+This seat is the **final step of the design bench** (`design-lead`'s pipeline, after `error-states`), and the handover isn't done until the HTML is home:
+
+- **Into the repo the build happens in**, committed under `design/[spec-name]/` as the whole folder (§1's shape) — the default, because a builder's worktree then carries the design with the code; **or attached to the ticket** when there is no repo yet, with the folder zipped so the sidecars survive.
+- **The ticket links what landed** — the path or attachment plus the project id — and carries the handover notes: the chosen direction and its why, the ruled-out states list, anything the artefact can't say about itself.
+- **The design lead's coverage verdict cites this section** for its Handover row; an artefact that exists only in a canvas or a chat is not handed over.
+
 ## What this seat is not
 
 - **Not design production** — that's the design session's; this is the seam.
@@ -75,4 +86,5 @@ An earlier claude.ai-exported variant exists (seen and unpacked in an August ses
 
 ## Changelog
 
+- **0.2.0 (2026-08-27, CQ + LIAB-995)** — the return path written down (§5): the HTML committed into the build repo's `design/` folder or attached whole, the notes that ride with it, and this seat placed as the design bench's final step under `design-lead`.
 - **0.1.0 (2026-08-26, LIAB-921 + Fable 5)** — first version, written against the two real prototypes in lia-toy-box `design/` (opened and probed, not recalled); the older base64 variant documented from the prior session's unpack with a readability check to tell them apart. LIAB-859 points here rather than repeating it.
