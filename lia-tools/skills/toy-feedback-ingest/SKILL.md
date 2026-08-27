@@ -13,9 +13,9 @@ description: >-
   feedback, bugs, feature feedback, process feedback. Toys mentioned
   generally files at the line level; a specific toy files into that toy's
   folder.
-version: 0.1.1
+version: 0.1.2
 created: 2026-08-16
-updated: 2026-08-19
+updated: 2026-08-27
 status: active
 maintainer: cq
 author: cq
@@ -29,7 +29,7 @@ companions: [toy-pickup, toy-release, ticket-builder, prototype-feedback-loop]
 
 The upload half is his (with his personal `recording-description` skill drafting the title, description and chapters). This skill starts when the URL and transcript exist.
 
-**Load `_meta/skills/execution-discipline/SKILL.md` first**, as with any Lia skill run. Never invent Linear ticket IDs, statuses, or vault paths — verify everything live.
+**Load `execution-discipline` first** (in this plugin), as with any Lia skill run. Never invent Linear ticket IDs, statuses, or vault paths — verify everything live.
 
 ## Step 0 — Scope the video
 
@@ -48,7 +48,7 @@ If the scope is genuinely ambiguous, ask — one question, widget where possible
 ## Step 1 — Inputs
 
 - **The URL.** Verify it read-only before writing it anywhere: the watch page loads, the title matches the recording, visibility is unlisted. Never change any video setting.
-- **The transcript.** A timestamped `.srt` is the load-bearing format — it's what makes chapter marks, ticket timestamps, and frame grabs possible. If only a plain `.md` shows up, ask for the `.srt` before settling for less. If there's no transcript at all but a local `.mp4` exists, transcribe per the whisper recipe in `_meta/skills/prototype-feedback-loop/SKILL.md` (video-first variant).
+- **The transcript.** A timestamped `.srt` is the load-bearing format — it's what makes chapter marks, ticket timestamps, and frame grabs possible. If only a plain `.md` shows up, ask for the `.srt` before settling for less. If there's no transcript at all but a local `.mp4` exists, transcribe per the whisper recipe in `prototype-feedback-loop` §3 (the video-first variant).
 - **The local `.mp4`, if it still exists.** Note its path now — it's the source for frame grabs in Step 6, and it tends to get cleared to `_to_delete/` after upload.
 
 ## Step 2 — Tidy the transcript
@@ -57,7 +57,7 @@ Per the rules in `_meta/internal-videos.md`: fix the recurring mishears ("Leah" 
 
 ## Step 3 — The stage gate
 
-**Before extracting anything, apply the stage-appropriate-feedback rule** from `_meta/skills/prototype-feedback-loop/SKILL.md` §Stage-appropriate feedback. If the artefact under review is structure-stage (Chris says so, usually in the opening seconds — "ruthless simplicity", "I pulled the detail out", wireframe framing), then: shape feedback only, **no tickets**, no missing-detail inventory. The typed extraction below still happens, but everything routes to the proposed list, nothing auto.
+**Before extracting anything, apply the stage-appropriate-feedback rule** from `prototype-feedback-loop` §1 — the gate above that loop, in this plugin. If the artefact under review is structure-stage (Chris says so, usually in the opening seconds — "ruthless simplicity", "I pulled the detail out", wireframe framing), then: shape feedback only, **no tickets**, no missing-detail inventory. The typed extraction below still happens, but everything routes to the proposed list, nothing auto.
 
 A built toy being product-tested (which is the normal case for these videos) is not structure-stage — bugs on it are real bugs.
 
@@ -124,3 +124,7 @@ Short: the meeting note path, the summaries written, tickets created (IDs), the 
 - **URL won't verify** — write the note anyway, leave `url:` blank, flag it. A page with `video: true` and no URL is an unfinished job to come back to.
 - **Epic missing for a toy** — don't invent one; propose creating it (or run `new-toy` if the whole toy has no home).
 - **Two buckets both plausible for an item** — ask, don't guess. The bugs-vs-jam split is the most useful thing this doc does.
+
+## Changelog
+
+- **0.1.2 (2026-08-27, LIAB-997)** — the stage gate and the whisper recipe now point at `prototype-feedback-loop` in this plugin rather than the retired vault path, and the `execution-discipline` load line with them (found in the PR #19 review; the rest of that sweep stays LIAB-963's). No change to the ingest itself. First entry here; earlier versions are unrecorded.

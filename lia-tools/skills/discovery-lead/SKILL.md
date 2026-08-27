@@ -1,8 +1,8 @@
 ---
 name: discovery-lead
 slug: discovery-lead
-description: "The discovery bench's own lead — holds the thread from problem to ready story, never writes; routes across problem-definition, jtbd, scenario-builder, epic-builder, story-writer, task-writer, schema-manager, and requests ready-review as the exit gate. Use when taking ownership of a discovery stage or deciding which discovery skill a moment needs."
-version: 0.1.0
+description: "The discovery bench's own lead — holds the thread from problem to ready story, never writes; routes across problem-definition, insight-extraction, jtbd, feature-definition, scenario-builder, epic-builder, story-writer, task-writer, schema-manager and synthetic-users, and requests ready-review as the exit gate. Use when taking ownership of a discovery stage or deciding which discovery skill a moment needs."
+version: 0.2.0
 created: 2026-08-27
 updated: 2026-08-27
 status: active
@@ -14,12 +14,15 @@ triggers:
   - "run discovery for [epic]"
 companions:
   - problem-definition
+  - insight-extraction
   - jtbd
+  - feature-definition
   - scenario-builder
   - epic-builder
   - story-writer
   - task-writer
   - schema-manager
+  - synthetic-users
   - ready-review
   - project-manager
   - execution-discipline
@@ -32,8 +35,11 @@ maintainer: cq
 
 | Moment | Load |
 |---|---|
+| A pile of chats, feedback or research needs its patterns pulled out | `insight-extraction` — ranked, sourced, confidence-capped |
 | A raw observation, complaint or friction needs formalising | `problem-definition` |
 | The job behind a problem needs naming and its requirements mapping | `jtbd` |
+| An idea needs shaping before an epic — the context, and what the world already does | `feature-definition` |
+| A brief is about to get expensive and nobody has argued against it | `synthetic-users` — hypotheses to aim discovery with, never evidence |
 | A user needs walking through a flow with concrete inputs | `scenario-builder` |
 | A versioned chunk of value needs writing | `epic-builder` |
 | A capability needs its story, Dan North shape | `story-writer` |
@@ -61,6 +67,11 @@ maintainer: cq
 - **Not the gate.** `ready-review` stays fresh-eyes; this seat requests it and acts on its verdict.
 - **Not the PM.** Sequencing, dispatch mechanics and statuses are `project-manager`'s; this seat owns the judgment about readiness, not the movement.
 
+## The evidence rule, stated once
+
+Rule 2 above has one edge worth naming, because two seats on this bench produce material that *looks* like evidence and is not. **`synthetic-users` produces hypotheses**; they aim a real conversation and never stand behind a problem, a job or a story. **`insight-extraction` produces claims capped by what backs them** — one chat can never make an insight firm, and founder-only evidence stays `forming` however much of it there is. A thread that traces back to either without a real person underneath is a broken thread, and it goes back to the seat that broke it.
+
 ## Changelog
 
+- **0.2.0 (2026-08-27, LIAB-996 + LIAB-997)** — the three discovery seats that landed the same day join the routing table: `insight-extraction` before the problem, `feature-definition` between the job and the epic, `synthetic-users` as the pressure test. The evidence rule spells out what neither of the last two may be mistaken for.
 - **0.1.0 (2026-08-27, CQ + LIAB-995)** — first version. The discovery mirror of `lead-engineer`: the bench routing table, the unbroken-thread rule, and the gate kept out of its own hands.
