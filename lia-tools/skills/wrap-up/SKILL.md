@@ -2,7 +2,7 @@
 name: wrap-up
 slug: wrap-up
 description: "Land a working session — finish or deliberately park loose ends, write the pick-up-here handover (one ACTIVE per thread), append the retro, do the housekeeping; the pickup side reads the ACTIVE handover before any work resumes. Use at end of day, on 'wrap up', or when closing out a session with work carrying forward."
-version: 1.2.2
+version: 1.2.3
 created: 2026-07-25
 updated: 2026-08-26
 status: active
@@ -140,12 +140,13 @@ tags: [handover, <project-slug>]
 
 ## Related
 
-- `product-retro` (vault `_meta/skills/` — not yet in this plugin) — the per-session chronicle this composes with (retro = what we learned over time; handover = where things stand now)
-- `execution-discipline` (vault `_meta/skills/` — not yet in this plugin) — load first for unattended runs
+- `product-retro` — in this plugin — the per-session chronicle this composes with (retro = what we learned over time; handover = where things stand now)
+- `execution-discipline` — in this plugin — load first for unattended runs
 - `ticket-builder` — in this plugin (canonical since 26 Aug 2026) — wrap-up rules; board truth
 - `Products/File Runner/Context/handovers/` — the worked example, including the supersede chain
 - Chris's Cowork account carries a synced copy of this skill (`/wrap-up`) so it triggers outside vault-mounted sessions. **This file — in the lia-tools plugin — is canonical since 26 Aug 2026** ([LIAB-919](https://linear.app/lia-creative/issue/LIAB-919)); if you change it, refresh the account copy (the vault copy is frozen pending [LIAB-924](https://linear.app/lia-creative/issue/LIAB-924)).
 
 ## Changelog
 
+- **1.2.3 (2026-08-27, LIAB-997)** — `product-retro` and `execution-discipline` stop being named as absent: both are in the plugin now, and §Related says so.
 - **1.2.2 (2026-08-26, LIAB-959)** — the three `<project>` placeholders in `triggers:` become `[project]`, per the frontmatter rule that came out of the Cowork install failure. First entry here: this skill reached the plugin without a changelog, so earlier versions are unrecorded.
