@@ -2,7 +2,7 @@
 name: design-flows
 slug: design-flows
 description: "Transform the reqs and the chosen direction into clear flows — every scenario walked as screens, states and transitions, each flow named after the scenario it serves, gaps routed back as findings not filled by invention. Use when a chosen direction needs its flows, when asked how a user moves through a feature, or before hi-fi starts."
-version: 0.1.0
+version: 0.1.1
 created: 2026-08-27
 updated: 2026-08-27
 status: active
@@ -12,6 +12,7 @@ triggers:
   - "flows for [story]"
   - "how does the user move through this"
 companions:
+  - design-reference
   - design-exploration
   - hifi-design
   - scenario-builder
@@ -38,6 +39,13 @@ maintainer: cq
 - **Transitions are decisions.** Name what triggers each move (the person acts, the system finishes, time passes) — "then the next screen" hides exactly the logic the builder will have to invent.
 - **A flow that needs a state the story never mentions is a finding**, routed back through `design-lead` (a `defect:discovery` or a scenario gap), never quietly absorbed. Filling gaps by invention is how design and discovery drift apart.
 
+## 2b. Reference as a shortcut, never as the reason
+
+Where reference exists for a flow of this shape, `design-reference` shortens the walk — someone has already
+solved the ordering, and its breakdown says which decisions they made. Two limits hold: **a borrowed screen
+still needs a scenario reaching it** (the rule above does not soften for a good reference), and **the model
+check comes first** — a step that exists because of their product's model is not a step in ours.
+
 ## 3. The form
 
 Flows live with the design artefact — a flow page on the canvas or in the `design/[spec-name]/` folder — legible enough that `error-states` can sweep them and `hifi-design` can build to them: screens as boxes with their states listed, transitions as labelled arrows. Fidelity stays low; this seat's output is structure.
@@ -55,3 +63,4 @@ Flows live with the design artefact — a flow page on the canvas or in the `des
 ## Changelog
 
 - **0.1.0 (2026-08-27, CQ + LIAB-995)** — first version. The clear-flows step of CQ's design stage as its own seat: scenario-to-flow mapping, the missing-screen probe, transitions as named decisions, and gaps routed back instead of invented over.
+- **0.1.1 (2026-08-27, CQ + LIAB-1000)** — reference named as a legitimate shortcut into the walk, under the scenario rule and the model check.

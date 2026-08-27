@@ -2,7 +2,7 @@
 name: design-lead
 slug: design-lead
 description: "The design stage owned end to end — ready stories in, then exploration, flows, hi-fi, error states, and the handover out, each step its own seat; the lead checks every step is covered before tickets reach the lead engineer for build prep. Use when taking ownership of a design stage or deciding which design skill a moment needs."
-version: 0.1.0
+version: 0.2.0
 created: 2026-08-27
 updated: 2026-08-27
 status: active
@@ -13,6 +13,7 @@ triggers:
   - "is the design stage covered"
   - "design stage for [epic]"
 companions:
+  - design-reference
   - design-exploration
   - design-flows
   - hifi-design
@@ -32,6 +33,7 @@ maintainer: cq
 
 | Moment | Load |
 |---|---|
+| The stage wants to know what good looks like, or reference exists worth mining | `design-reference` |
 | The story needs directions explored before anything is drawn | `design-exploration` |
 | The chosen direction needs turning into clear flows | `design-flows` |
 | The flows need their screens at hi-fi, on the design system | `hifi-design` |
@@ -49,7 +51,7 @@ The reqs come in through the discovery gate: **a story that has not passed `read
 
 The lead's own job is one verdict, mirroring `ready-review`'s shape: a comment on the epic, each step graded with evidence cited, before the tickets go to `lead-engineer` for `acceptance-criteria` and `build-prep`:
 
-- **Direction** — chosen and named, the not-chosen recorded (from `design-exploration`).
+- **Direction** — chosen and named, the not-chosen recorded (from `design-exploration`); where reference informed it, the breakdown is cited and its applied half is on the ticket (from `design-reference`).
 - **Flows** — every scenario has one; no screen exists that no scenario reaches.
 - **Hi-fi** — every flow screen designed, expressed in the design system; gaps named and routed, never fudged.
 - **States** — error, empty, loading, edge swept per flow, designed or explicitly ruled out (from `error-states`).
@@ -75,3 +77,4 @@ A step not covered is a dispatch, not a footnote. **Skipping a step is deliberat
 ## Changelog
 
 - **0.1.0 (2026-08-27, CQ + LIAB-995)** — first version. The design stage as an owned bench: CQ's step list (reqs, exploration, flows, hi-fi, error states, handover, HTML back) each a seat, with the coverage verdict as the stage's exit gate.
+- **0.2.0 (2026-08-27, CQ + LIAB-1000)** — `design-reference` added to the bench and to the **Direction** row of the coverage gate: reference that informed a direction is cited, not remembered.
