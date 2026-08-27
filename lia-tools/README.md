@@ -21,7 +21,7 @@ The process the skills implement is written down in [Tool shop — how a lia.too
 | `story-writer` | One capability per story, Dan North shape: numbered Given/When/Then ACs + Delivery checks. |
 | `scenario-builder` | A user walked through each flow with concrete inputs — the ACs' raw material. |
 | `task-writer` | The named work that isn't a story. Sparse by design. |
-| `schema-manager` | Entities and variables mapped centrally — the layer that lets tools talk to each other. |
+| `schema-manager` | Entities mapped across three layers — shared typed code is the truth, the Linear map the directory, the vault the reasoning. |
 | `ready-review` | Fresh eyes grading epics and stories on the five checks before anything downstream spends work. |
 | `synthetic-users` | The panel you interview to find the objections before build spends on them. Hypotheses, never evidence. |
 | `ticket-builder` | The shared mechanics under the writers, Shape B for Lia Creative workstreams, and the old front door — it routes. |
@@ -44,12 +44,18 @@ The process the skills implement is written down in [Tool shop — how a lia.too
 | Skill | The seat |
 |---|---|
 | `lead-engineer` | The seat itself — the standing rules, and the routing across this bench. |
-| `architecture` | Docs follow code, patterns stay singular, standards hold. |
+| `architecture` | Docs follow code, patterns stay singular, standards hold, and a standard everything inherits is filed as the line's. |
 | `acceptance-criteria` | The freeze pass: scenarios → the final numbered Given/When/Then + Delivery checks. |
 | `build-prep` | How to build it — real paths, patterns, traps, resolvable paths — under the criteria. |
 | `ticket-review` | The pre-dispatch check: could an agent start without asking anything? *(Reassigned 26 Aug — built-work review lives in `review-and-merge`.)* |
 | `review-and-merge` | The review loop with the builder, by AC index, then the content-verified merge. |
 | `security` | The compliance shell — six earned rules, grows one real case at a time. |
+
+**The category benches** — what a whole category of tool is held to, whatever the story is:
+
+| Skill | The seat |
+|---|---|
+| `file-management` | Ten bright lines for anything that moves someone's own files, the person-outranks-the-tool rule, trust as a build requirement. |
 
 **Build**
 
