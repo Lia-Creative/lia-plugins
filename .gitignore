@@ -1,0 +1,19 @@
+# macOS Finder metadata. This repo is worked on from a Mac that also syncs
+# Google Drive vaults, where .DS_Store is everywhere — one `git add -A` in a
+# directory Finder has visited is all it takes.
+#
+# It is not only untidiness: `scripts/check-skill-roster.mjs` fails a directory
+# under skills/ that holds files but no SKILL.md, and a lone .DS_Store counts as
+# holding files. A committed one would turn an empty skill folder into a red CI
+# job about a file the author cannot see in Finder. Cheaper to never take it.
+.DS_Store
+._*
+
+# Editor and OS noise
+Thumbs.db
+*.swp
+.idea/
+.vscode/
+
+# Node, for the guards' local runs
+node_modules/
