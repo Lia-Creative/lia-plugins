@@ -7,9 +7,9 @@ description: >-
   Chris reviews and sends. Runs on a Monday-morning schedule and on demand
   when Chris says "toys digest", "draft the toys update", "what happened
   with the toys this week", or "catch the channel up".
-version: 0.1.0
+version: 0.2.0
 created: 2026-08-17
-updated: 2026-08-17
+updated: 2026-08-28
 status: active
 maintainer: cq
 author: cq
@@ -21,7 +21,7 @@ companions: [toy-status, toy-tidy, toy-feedback-ingest]
 
 **What this is.** The #toys channel already gets Linear's ticket noise. This is the human-readable weekly line on top of it: seven days of movement across the toy line, in one short post, drafted for Chris to send.
 
-**Load `_meta/skills/execution-discipline/SKILL.md` first.** The standing Slack rule is absolute here: **never post to a channel without Chris seeing the draft.** Scheduled runs draft and stop.
+**Load `execution-discipline` first** (in this plugin). The standing Slack rule is absolute here: **never post to a channel without Chris seeing the draft.** Scheduled runs draft and stop.
 
 ## The window
 
@@ -30,7 +30,7 @@ The last 7 days (or since the previous digest if Chris names a gap). Everything 
 ## Gather
 
 1. **Board movement** — Lia Toys project, live: tickets moved to Review or Done this week, new tickets from feedback rounds, promotions run (and their register rows).
-2. **Feedback that landed** — new `meetings/` notes and `04 build/feedback/` summaries this week: one line each, with the video link.
+2. **Feedback that landed** — new `meetings/` notes and `05 build/feedback/` summaries this week: one line each, with the video link.
 3. **Waiting on a founder** — tickets sitting in Review, promotion gates needing a call on the ticket, jam items that aged past two weeks. This is usually the most useful section.
 4. **Vault movement** — `_meta/log.md` toys entries this week, anything structural (new toy, convention change).
 
@@ -49,3 +49,7 @@ Deliver as a Slack draft when the tooling allows (draft message to the #toys cha
 The schedule fires Monday 8am Sydney. A scheduled run behaves identically but assumes Chris is not watching: it prepares the draft, delivers it, and never waits on questions — anything ambiguous gets flagged inside the draft rather than asked. If the vault or board is unreachable from the scheduled session, report that and stop; a digest built from memory is worse than a missed week.
 
 Nothing is written to the vault except when a digest surfaces drift worth recording — then one line in `_meta/log.md` and a pointer at `toy-tidy`.
+
+## Changelog
+
+- **0.2.0 (2026-08-28, LIAB-1006 + LIAB-963)** — the week's feedback is read from `05 build/feedback/`: the line gained a `04 design/` stage on 28 Aug and build moved up one. The `execution-discipline` load line names the sibling seat in this plugin rather than the retired vault `_meta/skills/` path. First entry here; earlier versions are unrecorded.

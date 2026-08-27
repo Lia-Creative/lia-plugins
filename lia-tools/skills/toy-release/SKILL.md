@@ -1,9 +1,9 @@
 ---
 name: toy-release
 description: How any agent works a toy through the Lia Toys environments — versioning a toy correctly, knowing which stage it may move, running a promotion after the founder gate, and verifying the result. Load whenever a session creates a toy, bumps a toy's version, or is asked to promote a toy to test, uat, or production. Canonical model lives in Products/Lia Toys/toy box/03 strategy/toy-versioning-and-environments-2026-08-13.md — this skill is the runbook, not the model.
-version: 0.2.0
+version: 0.3.0
 created: 2026-08-13
-updated: 2026-08-13
+updated: 2026-08-28
 status: active
 maintainer: cq
 author: cq
@@ -12,7 +12,7 @@ captured_by: cq-cowork
 
 # Toy release — the agent runbook
 
-Load `execution-discipline` first, as with any skill run. Then this.
+Load `execution-discipline` first (in this plugin), as with any skill run. Then this.
 
 **The model in one breath:** four stages (`build → test → uat → production`), three account groups (`internal / uat / external`), one app. Stage lives in the release register (server); the version number echoes it pre-1.0. Read the full standard before your first promotion: `Products/Lia Toys/toy box/03 strategy/toy-versioning-and-environments-2026-08-13.md`.
 
@@ -73,7 +73,11 @@ Full conventions: `Products/Lia Toys/toy box/03 strategy/git-and-release-convent
 ## Grounding
 
 - `Products/Lia Toys/toy box/03 strategy/toy-versioning-and-environments-2026-08-13.md` — the standard (the four jam calls, 13 Aug 2026)
-- `Products/Lia Toys/toy box/04 build/prd-06-environments.md` + `prd-07-groups-and-register.md` — what the app and service do with what you write
+- `Products/Lia Toys/toy box/05 build/requirements/prd-06-environments.md` + `prd-07-groups-and-register.md` — what the app and service do with what you write
 - `Products/Lia Toys/toy box/03 strategy/toy-contract-2026-08-12.md` — the manifest `version` field
 - `Products/Lia Toys/toy box/03 strategy/git-and-release-conventions-2026-08-13.md` — branches, commit scopes, the release PR shape, tags
-- `_meta/skills/execution-discipline/SKILL.md` — load first, always
+- `execution-discipline` — in this plugin — load first, always
+
+## Changelog
+
+- **0.3.0 (2026-08-28, LIAB-1006 + LIAB-963)** — the environments PRD pointer was stale twice: the toy box renumbered `04 build/` to `05 build/` on 28 Aug (CQ, LIAB-1006), and the PRDs sit in a `requirements/` subfolder, not at the build root — verified on disk, both halves fixed. `execution-discipline` is named as the sibling seat in this plugin rather than pathed at the retired vault `_meta/skills/`. The versioning model itself is untouched; the standard in `03 strategy/` remains canonical and did not move. First entry here; earlier versions are unrecorded.

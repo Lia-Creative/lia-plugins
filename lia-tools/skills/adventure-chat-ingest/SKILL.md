@@ -12,9 +12,9 @@ description: >-
   conversation with a person (not a product walkthrough — that's
   toy-feedback-ingest). Person-first, not product-first: the unit of work is
   the human, and every downstream page cites the chat.
-version: 0.1.0
+version: 0.2.0
 created: 2026-08-19
-updated: 2026-08-19
+updated: 2026-08-28
 status: active
 maintainer: cq
 author: cq
@@ -28,7 +28,7 @@ companions: [toy-feedback-ingest, toy-pickup, execution-discipline, research-ver
 
 The theory it serves: our customers are our adventurers; Lia = solving people's problems, which gets them back to their adventure. The chat is where the problems come from.
 
-**Load `_meta/skills/execution-discipline/SKILL.md` first**, as with any Lia skill run. Never invent paths, ticket IDs, or things a person didn't say.
+**Load `execution-discipline` first** (in this plugin), as with any Lia skill run. Never invent paths, ticket IDs, or things a person didn't say.
 
 ## Step 0 — Scope check
 
@@ -39,7 +39,7 @@ Two intakes exist and they route differently:
 | A conversation **with a person** about their adventure and how they work | **This skill.** |
 | Chris walking through **a toy or the toy box** (bugs, design, features) | `toy-feedback-ingest`. |
 
-A chat that wanders into product feedback stays **one chat note here**; route the product-feedback moments per `toy-feedback-ingest`'s conventions (per-toy summary in `04 build/feedback/`, bugs proposed) and cross-link, rather than writing two competing records. If genuinely ambiguous, ask — one question, widget where possible.
+A chat that wanders into product feedback stays **one chat note here**; route the product-feedback moments per `toy-feedback-ingest`'s conventions (per-toy summary in `05 build/feedback/`, bugs proposed) and cross-link, rather than writing two competing records. If genuinely ambiguous, ask — one question, widget where possible.
 
 Read `02 discovery/README.md` before the first run of a session — the standing rules (sourcing, no duplicates, adventure-not-private-life, internal-by-default) govern everything below.
 
@@ -105,3 +105,7 @@ Short: the chat note path, profile created/updated, problems created/fed, scenar
 - **The person asked for something to stay off the record** — it stays off the record, everywhere, including the transcript if they asked mid-recording. Note the redaction exists; not what it was.
 - **A chat contradicts vault canon** (a strategy doc, a locked decision) — flag it in the report; never silently overwrite. A real person's evidence against a hypothesis is exactly what discovery is for, and exactly what needs a founder's eyes.
 - **The same person exists in another research track** (e.g. the dump interview set) — cross-link, don't merge. Scoped product interviews stay toy-local; the profile here links to them.
+
+## Changelog
+
+- **0.2.0 (2026-08-28, LIAB-1006 + LIAB-963)** — where a chat wanders into product feedback, the hand-off names `05 build/feedback/`: the line gained a `04 design/` stage on 28 Aug and build moved up one. The `execution-discipline` load line names the sibling seat in this plugin rather than the retired vault `_meta/skills/` path. `02 discovery/`, the line-level home this skill writes into, is unaffected by the renumber. First entry here; earlier versions are unrecorded.
