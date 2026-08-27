@@ -54,7 +54,9 @@ jobs:
   # LIAB-1005: both jobs above passed a directory under lia-tools/skills/ with
   # no SKILL.md — one walks *for* SKILL.md files, the other counts changed
   # paths, so neither could see it, and 468 lines that install and cannot be
-  # invoked went through. Runs on every event, like the frontmatter job: it
+  # invoked went green through CI. A human reading the diff stopped them before
+  # the merge; nothing else would have. Runs on every event, like the
+  # frontmatter job: it
   # reads the tree as it stands and needs no base ref.
   roster:
     runs-on: ubuntu-latest

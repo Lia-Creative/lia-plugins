@@ -15,9 +15,10 @@
 // Why it matters past tidiness: the whole `lia-tools/` directory ships to
 // installers at each version, and Claude Code's skill loader keys on
 // `SKILL.md`. A directory without one installs and is unreachable — while
-// still being greppable by any agent working in the tree. In this case that
-// included lexicon rows marked "(proposed) — want a founder's yes before they
-// harden", which read as settled house rules with nothing left to frame them.
+// still being greppable by any agent working in the tree. The lines that got
+// this far carried lexicon rows marked "(proposed) — want a founder's yes
+// before they harden", which would have read as settled house rules with
+// nothing left to frame them.
 //
 // Two rules, one question — is the roster true? — pointing opposite ways:
 //
@@ -224,7 +225,7 @@ function selfTest() {
   try {
     // --- plugin-a: the real defects ---------------------------------------
     // The ticket's own case, to the letter: reference files, no SKILL.md
-    // anywhere. This is what shipped through PR #20.
+    // anywhere. This is what went green through PR #20's CI.
     write("plugin-a/skills/ux-writing/references/lexicon.md", "# lexicon\n\n(proposed) — want a founder's yes before they harden\n");
     write("plugin-a/skills/ux-writing/references/patterns.md", "# patterns\n");
     // A SKILL.md that exists but one level too deep — still unloadable, and

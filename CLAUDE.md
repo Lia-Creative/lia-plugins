@@ -84,13 +84,15 @@ along with the hand-carried `.plugin` zip.
    README names it.** Claude Code's skill loader keys on `SKILL.md`, and the
    whole `lia-tools/` directory ships to installers — so a directory without
    one installs, cannot be invoked, and stays greppable by any agent working in
-   the tree. That is what reached `main` in PR #20 (LIAB-1005):
-   `skills/ux-writing/references/*.md`, 468 lines, no `SKILL.md`, and both
-   existing guards green — one walks *for* `SKILL.md` files, the other counts
-   changed paths, so a directory that cannot load is not something either can
-   see. The roster half is the same drift pointing the other way: a skill with
-   no row in [lia-tools/README.md](lia-tools/README.md#whats-in-it) is a skill
-   nobody knows we carry, and a row with no directory points at nothing.
+   the tree. That is what both guards passed green on PR #20 (LIAB-1005):
+   `skills/ux-writing/references/*.md`, 468 lines, no `SKILL.md` — one walks
+   *for* `SKILL.md` files, the other counts changed paths, so a directory that
+   cannot load is not something either can see. **It never reached `main`: a
+   human reading the diff stopped it,** which is the one check this repo has
+   already decided not to rely on. The roster half is the same drift pointing
+   the other way: a skill with no row in
+   [lia-tools/README.md](lia-tools/README.md#whats-in-it) is a skill nobody
+   knows we carry, and a row with no directory points at nothing.
    `node scripts/check-skill-roster.mjs` is the guard; CI runs it on every PR.
    *(Numbered last on purpose — the rule numbers here are cited from skills and
    scripts, so a new rule goes on the end rather than shifting five references
@@ -121,9 +123,10 @@ conceptual change is green in a way that means less than it looks like.
 **A fourth, a day later (LIAB-1005).** Both guards were green on a PR carrying a
 skill directory that could not load, and both were *right*: one walks **for**
 `SKILL.md` files, so a missing one is not a failure it can report, it is a file
-it never sees. A guard's blind spot is not in what it checks; it is in the shape
-of what it enumerates. Ask what a check cannot see before believing what it
-says.
+it never sees. What stopped it was a human reading the diff — the check this
+repo has already decided not to rely on. A guard's blind spot is not in what it
+checks; it is in the shape of what it enumerates. Ask what a check cannot see
+before believing what it says.
 
 And when you find a gap you are not fixing: **it becomes a ticket, not a
 paragraph.** Three gaps recorded in READMEs this day were invisible until
