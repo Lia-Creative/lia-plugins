@@ -14,12 +14,15 @@ The process the skills implement is written down in [Tool shop — how a lia.too
 |---|---|
 | `problem-definition` | Problems formalised and mapped across the board. |
 | `jtbd` | The job named consistently, requirements mapped — beside the epic. |
+| `feature-definition` | The idea captured, the context block, and what the world already does — before the epic is written. |
+| `insight-extraction` | A corpus mined for the claims that would change a decision, ranked, sourced, confidence-capped. |
 | `epic-builder` | A versioned chunk of value — `charts 1.0`. Scope is read from its stories. |
 | `story-writer` | One capability per story, Dan North shape: numbered Given/When/Then ACs + Delivery checks. |
 | `scenario-builder` | A user walked through each flow with concrete inputs — the ACs' raw material. |
 | `task-writer` | The named work that isn't a story. Sparse by design. |
 | `schema-manager` | Entities and variables mapped centrally — the layer that lets tools talk to each other. |
 | `ready-review` | Fresh eyes grading epics and stories on the five checks before anything downstream spends work. |
+| `synthetic-users` | The panel you interview to find the objections before build spends on them. Hypotheses, never evidence. |
 | `ticket-builder` | The shared mechanics under the writers, Shape B for Lia Creative workstreams, and the old front door — it routes. |
 | `backlog-grooming` | The maintenance pass for an existing backlog. |
 
@@ -49,6 +52,7 @@ The process the skills implement is written down in [Tool shop — how a lia.too
 | `polish` | The interface held to the design spec; Toys DS gaps named and routed, never fudged. |
 | `pickup` | The front door for single tickets, and the hand-back path. |
 | `wrap-up` | Landing a session: handover, retro, housekeeping. |
+| `product-retro` | The mandatory per-session entry `wrap-up` and `pickup` both call. |
 
 **The toys nine** — the product line's own process:
 
@@ -71,13 +75,17 @@ The process the skills implement is written down in [Tool shop — how a lia.too
 | `design-handoff` | How a design reaches a builder — the `.dc.html` folder, how to read it, artefact beats prose. |
 | `ui-capture` | Screens captured to a consistent standard, with a coverage score. |
 | `ui-teardown` | The UX + feature teardown, every claim cited to a shot. |
+| `prototype-feedback-loop` | A founder's walkthrough distilled — the stage gate first, then the record and the frame-attached tickets. |
+| `lia-voice-check` | The copy half of the gate: AI tells and voice drift, audited before shipping words. |
 | `execution-discipline` | Load first, every run — ground truth, stop conditions, done-means-evidence. |
 
 *(`orchestrate` remains as a pointer — the seat split into `project-manager` + `lead-engineer` on 26 Aug 2026.)*
 
 ## What doesn't belong here
 
-Research skills (`discover`, `enrich`, `research-*`, `wiki-ingest`), the personal bundles (`cq`, `chris-music`, `chris-quinton-diagrams`), and one-off ingest skills. The test: *does an agent building a lia.tools product need it?* If not, it stays where it is.
+The vault pipeline (`wiki-ingest`, `lint`, `enrich`, `discover`, `slack-ingest`, `weekly-context-enrich`), the research engine (`research-plan`, `research-run`, `research-verify`, `research-library`, `acquired-ingest`), the publishing skills (`lia-html-render`, `add-website-experiment`), the brand-asset and Figma-authoring tooling (`lia-blockprint-treatment`, `figma-dls-build`), and the founder-personal bundles (`cq`, `chris-music`, `chris-quinton-diagrams` — including the whole `cq:writing-style-*` set, which is Chris's own voice and not shared). The test: *does an agent building a lia.tools product need it?* If not, it stays where it is.
+
+Two of those lines have a nearby cousin **in** the roster, and the difference is the corpus, not the craft. `insight-extraction` mines the discovery backbone — chats with real people about the work — and its output is a ledger entry a story can cite; the research engine answers commissioned questions and keeps its own library. `synthetic-users` generates hypotheses to aim discovery with, and is barred from the ledger for exactly that reason.
 
 ## Install
 
