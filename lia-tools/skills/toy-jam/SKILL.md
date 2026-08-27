@@ -9,9 +9,9 @@ description: >-
   write it back", or hands over a jam recording or notes to be landed.
   Two halves: before (agenda) and after (write-back) — either can run
   alone.
-version: 0.1.0
+version: 0.2.0
 created: 2026-08-17
-updated: 2026-08-17
+updated: 2026-08-28
 status: active
 maintainer: cq
 author: cq
@@ -23,11 +23,11 @@ companions: [toy-feedback-ingest, toy-status, ticket-builder, toy-pickup]
 
 **What this is.** `toy-feedback-ingest` deliberately refuses to ticket unsettled things — they land as "open items needing a jam" in meeting notes, and `Jam ·` tickets sit on the board. Without a closer, those piles only grow. This skill is the closer: gather them for the jam, then land what the jam decided.
 
-**Load `_meta/skills/execution-discipline/SKILL.md` first.**
+**Load `execution-discipline` first** (in this plugin).
 
 ## Half one — the agenda ("prep the jam")
 
-1. **Collect** every open jam item: `## Open items needing a jam` sections across all `meetings/` files (line, toy box, each toy), unresolved jam mentions in `04 build/feedback/` summaries, and `Jam ·` tickets (label `Research`) on the Lia Toys project — live read.
+1. **Collect** every open jam item: `## Open items needing a jam` sections across all `meetings/` files (line, toy box, each toy), unresolved jam mentions in `05 build/feedback/` summaries, and `Jam ·` tickets (label `Research`) on the Lia Toys project — live read.
 2. **Dedupe and group** by toy, then by theme within a toy. Keep his words — an agenda item is the founder's phrasing plus its source link and timestamp, not a paraphrase.
 3. **Order** by age (oldest open first) and note anything blocking build work right now.
 4. **Flag, don't answer.** If an item touches one of the six open strategy questions (pricing, layers, price band, store count, live-toy cap, permanence), mark it as strategy-level — the jam may need Dan and Luke, and that's Chris's call to make, not the agenda's.
@@ -46,3 +46,7 @@ Input is whatever exists: a recording (route the transcript through `toy-feedbac
 ## Report back
 
 Agenda half: the page, and how many items, oldest first. Write-back half: each decision → where it landed, tickets touched, the proposed build list, and anything the jam raised that stayed open.
+
+## Changelog
+
+- **0.2.0 (2026-08-28, LIAB-1006 + LIAB-963)** — jam items are collected from `05 build/feedback/`: the line gained a `04 design/` stage on 28 Aug and build moved up one. The `execution-discipline` load line names the sibling seat in this plugin rather than the retired vault `_meta/skills/` path. First entry here; earlier versions are unrecorded.

@@ -11,9 +11,9 @@ description: >-
   writes a coverage report so you can see what was captured and what is missing. Use directly when
   someone says "capture the screens of a product", "grab screenshots of these pages", or "screenshot
   these CRM pages" — for the full capture-and-analyse flow, ui-teardown calls this automatically.
-version: 0.3.0
+version: 0.4.0
 created: 2026-06-26
-updated: 2026-06-26
+updated: 2026-08-28
 status: active
 type: skill
 maintainer: shared
@@ -172,15 +172,16 @@ cd "RUN_FOLDER"                                     # or pass --out
 npm i playwright && npx playwright install chromium
 
 # directed capture from a job file:
-node "VAULT/_meta/skills/ui-capture/scripts/capture.mjs" job.json --out .
+node "[this skill]/scripts/capture.mjs" job.json --out .
+# installed, the script sits at ${CLAUDE_PLUGIN_ROOT}/skills/ui-capture/scripts/capture.mjs
 
 # explore: discover candidate surfaces from a start URL first
-node "VAULT/_meta/skills/ui-capture/scripts/capture.mjs" --discover https://app.example.com --out .
+node "[this skill]/scripts/capture.mjs" --discover https://app.example.com --out .
 #   -> writes candidates.json; curate it into job.json, then run the directed capture
 
 # logged-in app (CRM): a persistent Chrome profile inherits your session; first run logs in by hand
 npm i playwright && npx playwright install chromium
-node "VAULT/_meta/skills/ui-capture/scripts/capture.mjs" job.json --out . \
+node "[this skill]/scripts/capture.mjs" job.json --out . \
   --user-data-dir ~/.lia/ui-capture/chrome-profile --channel chrome --login-wait 45
 ```
 
@@ -224,6 +225,10 @@ Per the founder decision: **capture, flag any PII, keep local.**
 
 ## Cross-founder
 
-Canonical here in `_meta/skills/`; Dan, CQ, and Luke all use the same engine, and the manifest is the
-shared contract between a capture run and a teardown run. The normal entry point is "teardown of X"
+Canonical here in the `lia-tools` plugin — script and all — since 26 Aug 2026; Dan, CQ, and Luke all
+use the same engine, and the manifest is the shared contract between a capture run and a teardown run. The normal entry point is "teardown of X"
 (see `ui-teardown`); reach for `ui-capture` directly when you want screens only.
+
+## Changelog
+
+- **0.4.0 (2026-08-28, LIAB-963)** — every command example invoked `VAULT/_meta/skills/ui-capture/scripts/capture.mjs`, a path retired on 26 Aug (LIAB-919) and one a plugin install has no way to reach. This plugin ships its own `scripts/capture.mjs` — verified byte-identical to the vault copy with `cmp` before the switch — so the examples now use the house form the other script-carrying skills use (`[this skill]/scripts/…`, with `${CLAUDE_PLUGIN_ROOT}` spelled out once for the installed path). §Cross-founder says canonical is the plugin, not the vault folder. No change to the capture method, the screenshot standard, or the manifest.

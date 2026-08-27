@@ -2,9 +2,9 @@
 name: design-reference
 slug: design-reference
 description: "Reference already in the vault, put to work — find the flows worth looking at, break them down screen by screen with every claim cited to a frame, then apply them to the feature at hand as take/adapt/drop with the open decisions named. Use when designing a screen or flow and someone asks what good looks like, or says shortcut this off the reference we captured."
-version: 0.1.1
+version: 0.2.0
 created: 2026-08-27
-updated: 2026-08-27
+updated: 2026-08-28
 status: active
 triggers:
   - "/design-reference"
@@ -102,7 +102,7 @@ A breakdown is a short document — a flow it takes ten minutes to read is a flo
   Still ours to decide
 ```
 
-It lives with the design work, named `reference-[source]-[flow].md`: beside the artefact in `design/[spec-name]/` in the repo, or — for vault-side work in the toys line — in the scope's `04 build/`, which the line README defines as the home for *"PRDs, specs, design docs, build notes, prototypes"* (`02 research/design inspiration/` is where the *frames* live, not the breakdown). Some scopes also carry an undocumented `04 design/`; that collision is the line's to settle, not this seat's to encode — write to the documented folder until it is. And **the applied half travels onto the ticket.** That matters for one reason: a builder must never need the vault to understand a design. Same rule `ticket-review` enforces on resolvable paths; a breakdown that only exists in a Drive folder is a breakdown the build stage can't see.
+It lives with the design work, named `reference-[source]-[flow].md`: beside the artefact in `design/[spec-name]/` in the repo, or — for vault-side work in the toys line — in the scope's **`04 design/`**, which the line README defines as the home for *"reference breakdowns, flows, hi-fi artefacts, personas, scenarios, design specs"* (`02 research/design inspiration/` is where the *frames* live, not the breakdown). And **the applied half travels onto the ticket.** That matters for one reason: a builder must never need the vault to understand a design. Same rule `ticket-review` enforces on resolvable paths; a breakdown that only exists in a Drive folder is a breakdown the build stage can't see.
 
 ## The standing rules
 
@@ -122,5 +122,6 @@ It lives with the design work, named `reference-[source]-[flow].md`: beside the 
 
 ## Changelog
 
+- **0.2.0 (2026-08-28, LIAB-1006)** — **the collision 0.1.1 deferred is settled.** Chris made design a stage on 28 Aug: `04 design/` is documented in the line README, `04 build/` became `05 build/`, and this seat's breakdowns go to `04 design/` — where the rest of the design bench's work already lives, and where it was always going once someone decided. The sentence hedging that the collision was "the line's to settle, not this seat's to encode" comes out with it: a skill that keeps deferring a made decision is wrong in a slower way than one pointing at the wrong folder.
 - **0.1.1 (2026-08-27, review round 1 on LIAB-1000)** — the write path stops naming `04 design/`, a folder the line's convention doesn't have and `toy-tidy` would report as drift; breakdowns go to the documented `04 build/` and the collision goes to the line as a question. Source 5 is exempt from §1's stop rule in so many words, so the one source standing rule 6 makes mandatory can no longer be skipped by a compliant run. The "cheap sources come first" claim, which its own Cost column contradicted, gives way to the rule that was always the real one — register before frames. `hifi-design` is three seats downstream, not one upstream.
 - **0.1.0 (2026-08-27, CQ + LIAB-1000)** — first version. The vault's reference material as a seat on the design bench: the five-source search order, the read budget and coverage honesty, the frame-cited breakdown, and the model check plus take/adapt/drop/doesn't-apply that lands it on the feature.

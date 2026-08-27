@@ -1,9 +1,9 @@
 ---
 name: execution-discipline
-description: How to execute any Lia skill or non-trivial task the way a stronger model would. Load at the start of every _meta/skills/ run (scheduled or interactive) and any multi-step task, for any founder's agent. Covers ground-truth rules (never invent paths, Linear statuses, labels, or commands), stop conditions (what to do when reality doesn't match the skill), verification (done means evidence, per-stage accounting, verify from a cold start so the check can actually fail), judgment calibration (err toward exclusion, quote before you claim), and output discipline. Written by Fable 5 on 2026-07-03 as a distillation of its own working habits for successor models.
-version: 1.1.0
+description: How to execute any Lia skill or non-trivial task the way a stronger model would. Load at the start of every Lia skill run (scheduled or interactive) and any multi-step task, for any founder's agent. Covers ground-truth rules (never invent paths, Linear statuses, labels, or commands), stop conditions (what to do when reality doesn't match the skill), verification (done means evidence, per-stage accounting, verify from a cold start so the check can actually fail), judgment calibration (err toward exclusion, quote before you claim), and output discipline. Written by Fable 5 on 2026-07-03 as a distillation of its own working habits for successor models.
+version: 1.2.0
 created: 2026-07-03
-updated: 2026-08-18
+updated: 2026-08-28
 status: active
 maintainer: dan
 author: dan
@@ -14,7 +14,7 @@ captured_by: dan-agent
 
 This vault's skills were largely written and refined by a stronger model, and are now executed by whatever model each founder is running today. The procedures survive that handoff; the judgment around them doesn't, unless it's written down. This file is the judgment, written down. It applies to any founder's agent (Dan, CQ, Luke).
 
-**When to load:** at the start of every `_meta/skills/` run, and at the start of any task with 3+ steps or any unattended (scheduled) run. **When not to load:** trivial single-step asks, pure conversation.
+**When to load:** at the start of every Lia skill run, and at the start of any task with 3+ steps or any unattended (scheduled) run. **When not to load:** trivial single-step asks, pure conversation.
 
 ---
 
@@ -80,3 +80,7 @@ Written 2026-07-03 by Fable 5 (Cowork session, Dan driving), following a 49-skil
 Re-verify on drift: when a Linear workflow, folder convention, or strategic spine changes in `CLAUDE.md`, check §1–2 examples here still name the right retirees.
 
 Related: `Wiki/synthesis/systems-are-learned-alone.md` — this file's "the judgment, written down" framing is one of that page's three evidence sources (promoted 2026-08-23, Dan-approved).
+
+## Changelog
+
+- **1.2.0 (2026-08-28, LIAB-963)** — this skill described itself by a home it no longer has. `_meta/skills/` was retired on 26 Aug (LIAB-919), and the `description:` is the string auto-triggering matches on, so "every `_meta/skills/` run" was both false and the most load-bearing sentence in the file. It now says *every Lia skill run*, which is what it always meant and stays true wherever canonical lives next. The §Grounding line naming Dan's `Drive Vault/_meta/skills/execution-discipline/` is **kept on purpose**: that is a real, separate file in his personal vault, maintained independently, and the note says so.

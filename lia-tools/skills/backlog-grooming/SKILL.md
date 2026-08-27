@@ -2,9 +2,9 @@
 name: backlog-grooming
 slug: backlog-grooming
 description: How Lia keeps an existing Linear backlog healthy — the maintenance pass, not authoring. Sweep a project/team/cluster, audit every ticket against the CURRENT ticket-builder standard, check board integrity (parent-vs-children status, dependencies-as-relations, stale/orphan/duplicate tickets, label + priority sanity), then apply the safe fixes and flag the rest. Use when someone says "groom the backlog", "tidy the board", "audit the tickets", "check the tickets against the skill", "are these up to standard", "board hygiene", "clean up the backlog", or after the ticket standard changes and the old tickets need re-sweeping. Companion to ticket-builder (which authors one ticket); not planning (cycles + product-management own that).
-version: 0.1.1
+version: 0.2.0
 created: 2026-06-25
-updated: 2026-08-26
+updated: 2026-08-28
 status: draft
 maintainer: dan
 reviewed_by: chris (draft 2026-06-25, CQ-driven — for Dan review)
@@ -57,7 +57,7 @@ Pick a clear boundary: one **project** (e.g. Musician OS), one **team**, one **c
 
 ## Step 2 — Load the current standard
 
-Read the live `_meta/skills/ticket-builder/SKILL.md` — note its **version**, the current **shapes** (Shape A / Shape B / epic JTBD), and the **Step 7 checklist**. That checklist is your conformance rubric; this skill adds the board-integrity checks on top. Confirm Linear coordinates/conventions from the Lia Vault `CLAUDE.md` (teams, statuses, labels) — those move too.
+Read the live `ticket-builder` — it is in this plugin, beside this file — and note its **version**, the current **shapes** (Shape A / Shape B / epic JTBD), and the **Step 7 checklist**. That checklist is your conformance rubric; this skill adds the board-integrity checks on top. Confirm Linear coordinates/conventions from the Lia Vault `CLAUDE.md` (teams, statuses, labels) — those move too.
 
 ## Step 3 — Pull the backlog
 
@@ -119,4 +119,5 @@ Apply the SAFE-FIX set. Produce a **findings table** — per ticket: verdict + w
 
 ## Changelog
 
+- **0.2.0 (2026-08-28, LIAB-963)** — Step 2 sent a grooming run to `_meta/skills/ticket-builder/SKILL.md`, retired on 26 Aug (LIAB-919), to fetch the standard the whole sweep audits against. It names the sibling seat in this plugin instead. The Lia Vault `CLAUDE.md` reference in the same step is kept: Linear coordinates, teams, statuses and labels genuinely still live there.
 - **0.1.0 (2026-06-25, CQ — draft):** Scaffolded from the Musician OS grooming passes (conformance sweep to ticket-builder v0.3.x + the parent-vs-children board rule). For Dan review.
