@@ -2,7 +2,7 @@
 name: hifi-design
 slug: hifi-design
 description: "The flows taken to hi-fi — every flow screen designed on the design system, expressed in its tokens and components, DS gaps named and routed never fudged, produced as the artefact the handoff will carry. Use when flows are ready for real screens, when asked for the hi-fi, or when a design needs to become a .dc.html or canvas artboard."
-version: 0.1.0
+version: 0.1.1
 created: 2026-08-27
 updated: 2026-08-27
 status: active
@@ -13,6 +13,7 @@ triggers:
   - "design the screens"
 companions:
   - design-flows
+  - design-reference
   - error-states
   - design-handoff
   - design-lead
@@ -55,4 +56,5 @@ Not screenshots of it, not prose about it: the folder — prototype plus its sid
 
 ## Changelog
 
+- **0.1.1 (2026-08-27, review round 1 on LIAB-1000)** — `design-reference` added to companions. It leans on this seat's on-system-or-named rule and was the one design-bench link left pointing only one way.
 - **0.1.0 (2026-08-27, CQ + LIAB-995)** — first version. The hi-fi step of CQ's design stage as its own seat: flows as the work list, the on-system-or-named rule carried upstream from `polish`, and the artefact (not pictures of it) as the output.

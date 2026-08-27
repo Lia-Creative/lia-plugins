@@ -2,7 +2,7 @@
 name: design-reference
 slug: design-reference
 description: "Reference already in the vault, put to work — find the flows worth looking at, break them down screen by screen with every claim cited to a frame, then apply them to the feature at hand as take/adapt/drop with the open decisions named. Use when designing a screen or flow and someone asks what good looks like, or says shortcut this off the reference we captured."
-version: 0.1.0
+version: 0.1.1
 created: 2026-08-27
 updated: 2026-08-27
 status: active
@@ -33,7 +33,9 @@ maintainer: cq
 
 ## 1. Find — the search order, in order
 
-Reference lives in more than one place and the cheap sources come first. **Read the register before the frames:** every source folder carries a README listing its flows, and a teardown has already done the looking. Stop as soon as you have enough for the feature; you are not surveying the vault.
+Reference lives in more than one place. **Read the register before the frames:** every source folder carries a README listing its flows, and a teardown has already done the looking — the index costs nothing, the frames cost the most. Stop as soon as you have enough for the feature; you are not surveying the vault.
+
+**Source 5 is exempt from that stop rule.** Whatever else you read or skip, check what we have already settled before proposing a pattern — standing rule 6. A run that stopped at source 1 and never opened source 5 is an incomplete run, not an efficient one.
 
 | Order | Where | What it is | Cost |
 |---|---|---|---|
@@ -100,13 +102,13 @@ A breakdown is a short document — a flow it takes ten minutes to read is a flo
   Still ours to decide
 ```
 
-It lives with the design work, named `reference-[source]-[flow].md`: beside the artefact in `design/[spec-name]/` in the repo, or in the scope's `04 design/` folder for vault-side work in the toys line (the line's own numbered shape — `02 research/design inspiration/` is where the *frames* live, not the breakdown). And **the applied half travels onto the ticket.** That matters for one reason: a builder must never need the vault to understand a design. Same rule `ticket-review` enforces on resolvable paths; a breakdown that only exists in a Drive folder is a breakdown the build stage can't see.
+It lives with the design work, named `reference-[source]-[flow].md`: beside the artefact in `design/[spec-name]/` in the repo, or — for vault-side work in the toys line — in the scope's `04 build/`, which the line README defines as the home for *"PRDs, specs, design docs, build notes, prototypes"* (`02 research/design inspiration/` is where the *frames* live, not the breakdown). Some scopes also carry an undocumented `04 design/`; that collision is the line's to settle, not this seat's to encode — write to the documented folder until it is. And **the applied half travels onto the ticket.** That matters for one reason: a builder must never need the vault to understand a design. Same rule `ticket-review` enforces on resolvable paths; a breakdown that only exists in a Drive folder is a breakdown the build stage can't see.
 
 ## The standing rules
 
 1. **Cite the frame or don't claim it.** Every statement about how the reference behaves carries a path. Memory of a product is not a source, however well you know it.
 2. **Reference is inspiration, not a spec.** The swipe file's own README: *"Nothing here is a Lia design."* This seat mines structure and decisions; it never hands over a screen to copy.
-3. **Structure travels, expression doesn't.** Borrow the shape of a flow; never the visual. Everything we draw is Toys DS in Toys DS terms — `hifi-design`'s on-system-or-named rule, one seat upstream.
+3. **Structure travels, expression doesn't.** Borrow the shape of a flow; never the visual. Everything we draw is Toys DS in Toys DS terms — `hifi-design`'s on-system-or-named rule, three seats downstream, where the borrowed structure finally gets drawn.
 4. **Don't lift their words or their assets.** Their microcopy is theirs, and the frames carry a third-party watermark (*"curated by Mobbin"*) — internal reference only, never into a shipped screen, a render, or anything outward-facing.
 5. **Coverage is stated, never implied.** What you didn't read is part of the output.
 6. **A settled decision beats a borrowed one.** Check source 5 before proposing a pattern we've already chosen against; the register wins, exactly as it does in `design-exploration`.
@@ -120,4 +122,5 @@ It lives with the design work, named `reference-[source]-[flow].md`: beside the 
 
 ## Changelog
 
+- **0.1.1 (2026-08-27, review round 1 on LIAB-1000)** — the write path stops naming `04 design/`, a folder the line's convention doesn't have and `toy-tidy` would report as drift; breakdowns go to the documented `04 build/` and the collision goes to the line as a question. Source 5 is exempt from §1's stop rule in so many words, so the one source standing rule 6 makes mandatory can no longer be skipped by a compliant run. The "cheap sources come first" claim, which its own Cost column contradicted, gives way to the rule that was always the real one — register before frames. `hifi-design` is three seats downstream, not one upstream.
 - **0.1.0 (2026-08-27, CQ + LIAB-1000)** — first version. The vault's reference material as a seat on the design bench: the five-source search order, the read budget and coverage honesty, the frame-cited breakdown, and the model check plus take/adapt/drop/doesn't-apply that lands it on the feature.
