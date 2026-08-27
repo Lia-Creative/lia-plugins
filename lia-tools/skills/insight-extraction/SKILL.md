@@ -2,9 +2,9 @@
 name: insight-extraction
 slug: insight-extraction
 description: "Mine a corpus for the insights that would change a decision — ranked by novelty times decision-relevance times evidence, each one sourced, deduped against the ledger and confidence-capped by what actually backs it. Use when pointed at the adventure chats, a research pack or a pile of feedback and asked what stands out."
-version: 0.1.0
+version: 0.2.0
 created: 2026-08-27
-updated: 2026-08-27
+updated: 2026-08-28
 status: active
 triggers:
   - "/insight-extraction"
@@ -69,7 +69,7 @@ CONFIDENCE  forming | firming | firm
 SO WHAT     the decision it would change
 ```
 
-**Where it lands.** For the toys line, the discovery ledger at `Products/Lia Toys/02 discovery/03 insights/insights-ledger.md`, newest at top, one entry per insight, updated in place as evidence arrives. When an insight grows big enough to need its own argument, it graduates to its own page there and the ledger entry points at it. Contradicting evidence goes **on the entry**, not in a drawer; an insight that stopped being true is marked `retired` with the source that killed it.
+**Where it lands.** For the toys line, the discovery ledger at `Products/Lia Tools/02 discovery/03 insights/insights-ledger.md`, newest at top, one entry per insight, updated in place as evidence arrives. When an insight grows big enough to need its own argument, it graduates to its own page there and the ledger entry points at it. Contradicting evidence goes **on the entry**, not in a drawer; an insight that stopped being true is marked `retired` with the source that killed it.
 
 ## 4. Hand off
 
@@ -90,4 +90,4 @@ SO WHAT     the decision it would change
 
 ## Changelog
 
-- **0.1.0 (2026-08-27, LIAB-996)** — first version. The rubric and the distilled-layer-first pass come from Chris's `cq:insight-extraction` (v0.5.0, 28 Jul 2026); the ledger, the evidence-capped confidence ladder, the relation weighting and the propose-never-promote rule come from the discovery backbone's own standing rules. The personal cross-project ledger and the diagram handoff stay in the `cq` bundle.
+- **0.2.0 (2026-08-28, LIAB-1020)** — the line is **Lia Tools**: `Products/Lia Toys/` → `Products/Lia Tools/`, `toy box/` → `toolbox/`, `toys/` → `tools/`, and the shape is six numbered stages (`02 analysis` replaced `03 strategy`; research left tool folders; requirements live in Linear) plus the line's unnumbered `standards/` · `research/` · `design/`. Paths only — no behaviour changed.- **0.1.0 (2026-08-27, LIAB-996)** — first version. The rubric and the distilled-layer-first pass come from Chris's `cq:insight-extraction` (v0.5.0, 28 Jul 2026); the ledger, the evidence-capped confidence ladder, the relation weighting and the propose-never-promote rule come from the discovery backbone's own standing rules. The personal cross-project ledger and the diagram handoff stay in the `cq` bundle.

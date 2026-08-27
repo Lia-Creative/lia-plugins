@@ -2,9 +2,9 @@
 name: pickup
 slug: pickup
 description: "How anyone takes on a Linear ticket — the dispatch rule (a prompt is a pointer), the reading order (ticket, parents, blockers, context doc), what each status means, and the hand-back path for rejected work. Use when picking up or handing back a single ticket; a whole epic loads build instead."
-version: 0.8.0
+version: 0.9.0
 created: 2026-08-12
-updated: 2026-08-26
+updated: 2026-08-28
 status: active
 triggers:
   - "/pickup"
@@ -106,7 +106,7 @@ What you're usually after:
 | Looking for | Where |
 |---|---|
 | What was decided and why | the product's build plan, in `01 planning/` or `Outputs/` |
-| How it's put together | the ADR in `Products/Platform/ADRs/`, then the product's `03 strategy/` |
+| How it's put together | the ADR in `Products/Platform/ADRs/`, then the product's `02 analysis/` |
 | The founder's actual words | the source recording page, quoted rather than paraphrased |
 | What the last session hit | the retro-log tail, and the ACTIVE handover if there is one (`wrap-up` owns those) |
 
@@ -205,7 +205,7 @@ Comment on the ticket, then move to another one. A blocked ticket said out loud 
 
 ## Changelog
 
-- **0.8.0 (2026-08-26, CQ voice memos + Fable 5)** — epic mode moves to the new `build` seat the same day it arrived; §0.5 becomes the pointer. Seam table updated for the orchestrator split (`project-manager` + `lead-engineer`); the hand-back and single-ticket flows unchanged.
+- **0.9.0 (2026-08-28, LIAB-1020)** — the line is **Lia Tools**: `Products/Lia Toys/` → `Products/Lia Tools/`, `toy box/` → `toolbox/`, `toys/` → `tools/`, and the shape is six numbered stages (`02 analysis` replaced `03 strategy`; research left tool folders; requirements live in Linear) plus the line's unnumbered `standards/` · `research/` · `design/`. Paths only — no behaviour changed.- **0.8.0 (2026-08-26, CQ voice memos + Fable 5)** — epic mode moves to the new `build` seat the same day it arrived; §0.5 becomes the pointer. Seam table updated for the orchestrator split (`project-manager` + `lead-engineer`); the hand-back and single-ticket flows unchanged.
 - **0.7.0 (2026-08-26, CQ voice memos + Fable 5)** — **epic mode** (§0.5): a builder takes a whole designed epic — plan mode first, the plan posted to the tickets, story-by-story commits on one branch, one PR, then the review loop with the orchestrator, who merges. **The vault posture reverses:** *never require the vault* — the ticket has to suffice, and a ticket that doesn't is handed back, not guessed around (§3 becomes depth-when-mounted). Retro lands on the dispatch ticket (vault log too when mounted). `gate:fail` reference removed — the `gate:*` labels were deleted 25 Aug. Seam table gains the writers, `ready-review` and `orchestrate`. Recorded in the [Decisions register](https://linear.app/lia-creative/document/decisions-register-lia-toys-34348df61a5f); the model is [Tool shop](https://linear.app/lia-creative/document/tool-shop-how-a-liatools-product-gets-built-4a9cfacc41c8).
 - **0.6.0 (2026-08-20, Dan) — logged retroactively on 2026-08-26**, having shipped without a changelog entry; recovered from §3.5's own dated revision note: you may close a ticket you neither built nor reviewed, but only against a verified merge, never a report.
 - **0.5.0 (2026-08-13, CQ + Cowork)** — added §3.5 *what each status means*. **Review = the PR is up; Done = it's on `main`.** Written the day four problems hid behind that conflation: a ticket Done with an open PR, two Done with their work stranded on a stacked branch (so CI ran against a trunk with no workflow for a day), and one Done with an unmeetable AC. Plus the split rule for ACs blocked on something outside the work, and *check the branch, not the board*. CQ: *"thats good to know re status. how do we fix that?"*
