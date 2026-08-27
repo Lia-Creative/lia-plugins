@@ -2,7 +2,7 @@
 name: ux-writing
 slug: ux-writing
 description: "Write the words in the interface — action labels, alerts, errors, empty states, notifications — to Apple's mechanics and Lia's voice: one verb per action from the shared lexicon, Apple-exact title case on labels, no blame, no system text, checked by a deterministic lint. Use when a screen needs its copy written or repaired, when button labels are being chosen, or when a flow's language has drifted."
-version: 0.1.1
+version: 0.1.2
 created: 2026-08-27
 updated: 2026-08-28
 status: active
@@ -168,6 +168,20 @@ ticket prose, and documentation. It also doesn't audit finished copy for AI tell
 
 ## Changelog
 
+- **0.1.2 (2026-08-28, review round 1 on PR #22)** — the status-code rule was narrowed
+  until it stopped catching what it exists for. `error` counted only as `error code`,
+  while the reverse-order pattern took a bare `404 error` — so `Error 404:`, the shape a
+  leaked status actually takes in error copy, had no rule at all. Every label word now
+  spells the same way round in both orders. Checking the neighbours found the same
+  asymmetry twice more, and inverted: `exception` fired on the ordinary English noun
+  ("the exception to that rule") and missed every exception *class name*, which is what
+  actually leaks; `ENOENT` had one errno hard-coded and its twelve siblings had none.
+  Class names and errno codes move to a case-sensitive list, because `\w+Error` under
+  `re.I` matches "an error" — the same reason `us` sits there. Nineteen fixtures added in
+  both directions, the must-stay-clean controls (`450 files were copied`, `408 items …
+  502 skipped`, `That error happened 500 times`) verified un-regressed rather than
+  assumed. A mis-formatted input file now says so instead of confidently failing every
+  line of prose on title case.
 - **0.1.1 (2026-08-28)** — first shipped version (LIAB-1004). `copy-lint.py` was run
   against real Australian product copy for the first time and produced four false
   positives, every one a hard error: it demanded "Add To Library" (a preposition pointing

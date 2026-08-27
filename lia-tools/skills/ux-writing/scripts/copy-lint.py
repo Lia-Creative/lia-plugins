@@ -115,13 +115,35 @@ BANNED_CASED = [
 SYSTEM_LEAK = [
     r"non-2xx", r"\bundefined\b", r"\bnull\b", r"\bNaN\b",
     # An HTTP status code, only where it says it is one. A bare three-digit
-    # number is a count far more often than it is a status.
-    r"\b(?:HTTP|status(?:\s+code)?|error\s+code|response(?:\s+code)?)\b\W{0,4}[45]\d{2}\b",
+    # number is a count far more often than it is a status — but every label
+    # word has to be spelled the same way round, in both orders. "error" was
+    # once only allowed as "error code", which left "Error 404:" — the shape a
+    # leaked status actually takes in error copy — with no rule at all.
+    r"\b(?:HTTP|status(?:\s+code)?|error(?:\s+code)?|response(?:\s+code)?)\b\W{0,4}[45]\d{2}\b",
     r"\b[45]\d{2}\b\s+(?:error|status|response)\b",
-    r"\bstatus code\b", r"\bexception\b", r"\bENOENT\b",
+    r"\bstatus code\b", r"\bENOENT\b",
+    # An exception is a leak when it was thrown, not when the word is used in
+    # its ordinary English sense ("the exception to that rule").
+    r"\bexception\b[^.]{0,20}\b(?:thrown|raised|caught)\b",
+    r"\b(?:threw|uncaught|unhandled|caught)\b[^.]{0,20}\bexception\b",
     r"\bstack (?:trace|frame)\b",
     r"\bEdge Function\b", r"\bfailed to fetch\b", r"\btraceback\b",
     r"\berror code\b", r"\btimeout of \d+", r"\bunhandled\b", r"\bECONN",
+]
+
+# System leaks where the capitalisation is the signal, so re.I would destroy
+# them. `\w+Error` under re.I matches "an error" and every other ordinary use
+# of the word; case-sensitive, it matches "TypeError" and leaves prose alone.
+# Same reason `us` sits in BANNED_CASED — see the note there.
+SYSTEM_LEAK_CASED = [
+    # Exception and error class names: the CamelCase is what makes them code.
+    # A lowercase letter must precede the suffix, so a bare "Error" at the
+    # start of a sentence is not a class name.
+    r"\b\w*[a-z]\w*(?:Exception|Error)\b",
+    # POSIX errno codes. ENOENT had its own line and its eight siblings had
+    # nothing — the same one-spelling-of-many problem as the status codes.
+    r"\bE(?:NOENT|ACCES|PERM|EXIST|NOTFOUND|TIMEDOUT|PIPE|AGAIN|ISDIR|NOTDIR|"
+    r"MFILE|NOSPC|ADDRINUSE)\b",
 ]
 
 US_SPELLING = [
@@ -216,6 +238,12 @@ def check(text, kind="label", where=None):
                 findings.append(("E-SYSTEM", "raw system text reaching a person — "
                                              f"matched /{pattern}/"))
                 break
+        else:
+            for pattern in SYSTEM_LEAK_CASED:
+                if re.search(pattern, text):
+                    findings.append(("E-SYSTEM", "raw system text reaching a person — "
+                                                 f"matched /{pattern}/"))
+                    break
 
     if _on("banned"):
         for pattern, code, message in BANNED:
@@ -343,12 +371,33 @@ FIXTURES = [
     # hard E-SYSTEM error.
     ("body", "450 files were copied.", []),
     ("body", "It stopped after 500 milliseconds.", []),
-    # …and a status code still is one when it says so.
+    ("body", "408 items were filed and 502 were skipped.", []),
+    ("body", "That error happened 500 times.", []),
+    # …and a status code still is one when it says so — in BOTH orders, and
+    # for every label word. "Error 404:" is how a leaked status actually reads
+    # in error copy, and it had no rule at all until PR #22's review: "error"
+    # counted only as "error code", while the reverse-order pattern took a bare
+    # "404 error". One ordering caught, its mirror missed.
     ("body", "The server returned status code 502.", ["E-SYSTEM"]),
     ("body", "It came back 503 error.", ["E-SYSTEM"]),
+    ("body", "Error 404: the server did not respond.", ["E-SYSTEM"]),
+    ("body", "Error: 503 from the service.", ["E-SYSTEM"]),
+    ("body", "Request failed with error 429.", ["E-SYSTEM"]),
+    ("body", "HTTP 404 returned.", ["E-SYSTEM"]),
     # "stack" is an ordinary English noun. Only a stack trace is a leak.
     ("body", "The stack of photos is ready.", []),
     ("body", "A stack trace was written to the log.", ["E-SYSTEM"]),
+    # Same asymmetry, found by checking the neighbours: `\bexception\b` fired on
+    # the ordinary English noun and missed every exception *class name*, which
+    # is the shape that actually leaks. `\bENOENT\b` had one errno hard-coded
+    # and its siblings had nothing.
+    ("body", "The exception to that rule is a run in progress.", []),
+    ("body", "An error occurred.", []),
+    ("body", "An exception was thrown.", ["E-SYSTEM"]),
+    ("body", "NullPointerException at line 12.", ["E-SYSTEM"]),
+    ("body", "Uncaught TypeError: cannot read property.", ["E-SYSTEM"]),
+    ("body", "EACCES: permission denied.", ["E-SYSTEM"]),
+    ("body", "ENOTFOUND api.lia.build", ["E-SYSTEM", "W-PUNCT"]),
     # "US" the place is not "us" the pronoun — the case is the whole signal.
     ("body", "The US team is on it.", []),
     ("body", "Send us a note.", ["E-FIRSTPERSON"]),
@@ -432,8 +481,9 @@ def main():
     parser.add_argument("paths", nargs="*", help=".txt (kind<TAB>string) or .json")
     parser.add_argument("--text", help="lint one string")
     parser.add_argument("--stdin", action="store_true", help="read strings from stdin")
-    parser.add_argument("--kind", default="label", choices=sorted(KINDS),
-                        help="kind for strings that don't declare one")
+    parser.add_argument("--kind", default=None, choices=sorted(KINDS),
+                        help="kind for strings that don't declare one "
+                             "(default: label)")
     parser.add_argument("--json", action="store_true", dest="as_json")
     parser.add_argument("--self-test", action="store_true", dest="selftest")
     args = parser.parse_args()
@@ -444,7 +494,21 @@ def main():
         parser.print_help()
         return 2
 
+    kind_was_given = args.kind is not None
+    args.kind = args.kind or "label"
+
     items = read_items(args)
+
+    # A .txt of bare prose lines silently becomes 400 labels, and every one of
+    # them fails title case with total confidence. Cheap to say so; the first
+    # person to run this hit it (PR #22 review).
+    if (items and not kind_was_given
+            and all(i["kind"] == "label" for i in items)
+            and not any(i["where"].startswith("--text") for i in items)
+            and sum(1 for i in items if " " in i["text"].strip()) >= 3):
+        print("note: no 'kind<TAB>string' column found — every line is being "
+              "read as a label.\n      Pass --kind body (or add the column) if "
+              "these are sentences.\n", file=sys.stderr)
     results, errors, warnings = [], 0, 0
     for item in items:
         for code, message in check(item["text"], item["kind"], item["where"]):
