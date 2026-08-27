@@ -2,7 +2,7 @@
 name: file-management
 slug: file-management
 description: "The seat for building anything that moves, renames, files or reorganises a person's own files — the ten bright lines that hold across every story, the person-outranks-the-tool rule, and trust as a build requirement rather than a marketing claim. Use when a story touches someone's files on disk, when a safety rule is being weighed against a deadline, or when picking up work in the file-management category."
-version: 0.1.0
+version: 0.2.0
 created: 2026-08-28
 updated: 2026-08-28
 status: active
@@ -47,7 +47,7 @@ Non-negotiable across every story in the category. A story that needs one relaxe
 | 9 | **The record lives with the files, not in the app** — so it survives a reinstall and travels when the library moves. |
 | 10 | **Infer freely, apply nothing silently.** Show the inference, say how confident it is, let the person correct it *before* anything moves. |
 
-Source of record: dump's requirement groups 5, 6 and 7 (never overwrite, never delete, record-first, copy-verify-remove, undo, halt-on-failure) and the folder-templates evidence for line 10. Both are cited in `04 build/` and `03 strategy/` of the file-management tool — **verify the current path before quoting one; the line is mid-restructure.**
+Source of record: dump's requirement groups 5, 6 and 7 (never overwrite, never delete, record-first, copy-verify-remove, undo, halt-on-failure) and the folder-templates evidence for line 10. Both are cited in `04 build/` and `02 analysis/` of the file-management tool, under `Products/Lia Tools/tools/`. The **problems and scenarios** behind them are at the line's `02 discovery/`.
 
 ## The person outranks the tool
 
@@ -81,4 +81,4 @@ Then `build-prep` writes the how, `acceptance-criteria` freezes the what, and th
 
 ## Changelog
 
-- **0.1.0 (2026-08-28, CQ + LIAB-1008)** — first version. The ten bright lines lifted from dump's requirement groups 5–7 and the folder-templates evidence, the person-outranks-the-tool rule, and trust framed as a build requirement. Rules travel in full; problems, scenarios and entities are cited rather than copied, because the line is mid-restructure and a copied path would be stale on arrival.
+- **0.2.0 (2026-08-28, LIAB-1020)** — the restructure landed, so the source-of-record paths stop hedging and name where the evidence actually is. The line is **Lia Tools**: `Products/Lia Toys/` → `Products/Lia Tools/`, `toy box/` → `toolbox/`, `toys/` → `tools/`, and the shape is six numbered stages (`02 analysis` replaced `03 strategy`; research left tool folders; requirements live in Linear) plus the line's unnumbered `standards/` · `research/` · `design/`. Paths only — no behaviour changed.- **0.1.0 (2026-08-28, CQ + LIAB-1008)** — first version. The ten bright lines lifted from dump's requirement groups 5–7 and the folder-templates evidence, the person-outranks-the-tool rule, and trust framed as a build requirement. Rules travel in full; problems, scenarios and entities are cited rather than copied, because the line is mid-restructure and a copied path would be stale on arrival.

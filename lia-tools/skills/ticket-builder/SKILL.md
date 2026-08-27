@@ -155,7 +155,7 @@ An epic is **not** a plan or a list of its own children — and on the tool shop
 What stays here, because it's cross-team:
 - **Don't list the sub-features.** The sub-issues *are* the list — repeating them as bullets is mush, and on the tool shop spine it's two homes for one fact.
 - **Keep it link-light.** The relation panel holds the dependencies and the seam; the description stays human.
-- **Match the siblings' naming — for epics.** File Runner legacy epics are `Epic · <name>`; Foundations and Lia Toys run lowercase-versioned (`brand 1.0`, `tool shop 1.0`) — the tool shop convention. **An epic's title carries the value (and its version).** Its children are named per Step 2's title rules.
+- **Match the siblings' naming — for epics.** File Runner legacy epics are `Epic · <name>`; Foundations and Lia Tools run lowercase-versioned (`brand 1.0`, `tool shop 1.0`) — the tool shop convention. **An epic's title carries the value (and its version).** Its children are named per Step 2's title rules.
 
 ---
 

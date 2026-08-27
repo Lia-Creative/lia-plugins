@@ -3,7 +3,7 @@ name: adventure-chat-ingest
 description: >-
   Ingest one of Chris's adventure chats — a recorded conversation with a real
   person about who they are, their adventure, and how they actually work —
-  into the discovery layer at Products/Lia Toys/02 discovery/. Input is a
+  into the discovery layer at Products/Lia Tools/02 discovery/. Input is a
   recording URL plus a transcript; output is a tidied transcript, a chat note,
   a created-or-updated adventurer profile, problem pages, scenario updates,
   insight candidates, and full housekeeping. Use when Chris says "ingest this
@@ -12,7 +12,7 @@ description: >-
   conversation with a person (not a product walkthrough — that's
   toy-feedback-ingest). Person-first, not product-first: the unit of work is
   the human, and every downstream page cites the chat.
-version: 0.2.0
+version: 0.3.0
 created: 2026-08-19
 updated: 2026-08-28
 status: active
@@ -24,7 +24,7 @@ companions: [toy-feedback-ingest, toy-pickup, execution-discipline, research-ver
 
 # Adventure chat ingest
 
-**What this is.** The intake for Lia's discovery backbone. Chris records conversations with real people — collaborators, users, people from the cast's world — that run story first (*who they are, where they've come from, where they are, where they're going*), workflow second. This skill turns one recording into durable, sourced product context across the five discovery layers at `Products/Lia Toys/02 discovery/`.
+**What this is.** The intake for Lia's discovery backbone. Chris records conversations with real people — collaborators, users, people from the cast's world — that run story first (*who they are, where they've come from, where they are, where they're going*), workflow second. This skill turns one recording into durable, sourced product context across the five discovery layers at `Products/Lia Tools/02 discovery/`.
 
 The theory it serves: our customers are our adventurers; Lia = solving people's problems, which gets them back to their adventure. The chat is where the problems come from.
 
@@ -37,9 +37,9 @@ Two intakes exist and they route differently:
 | The recording is... | Route |
 |---|---|
 | A conversation **with a person** about their adventure and how they work | **This skill.** |
-| Chris walking through **a toy or the toy box** (bugs, design, features) | `toy-feedback-ingest`. |
+| Chris walking through **a tool or the toolbox** (bugs, design, features) | `toy-feedback-ingest`. |
 
-A chat that wanders into product feedback stays **one chat note here**; route the product-feedback moments per `toy-feedback-ingest`'s conventions (per-toy summary in `05 build/feedback/`, bugs proposed) and cross-link, rather than writing two competing records. If genuinely ambiguous, ask — one question, widget where possible.
+A chat that wanders into product feedback stays **one chat note here**; route the product-feedback moments per `toy-feedback-ingest`'s conventions (per-toy summary in `04 build/feedback/`, bugs proposed) and cross-link, rather than writing two competing records. If genuinely ambiguous, ask — one question, widget where possible.
 
 Read `02 discovery/README.md` before the first run of a session — the standing rules (sourcing, no duplicates, adventure-not-private-life, internal-by-default) govern everything below.
 
@@ -93,7 +93,7 @@ Candidate patterns → entries (or evidence added to existing entries) in `03 in
 2. Row in `_meta/internal-videos.md` §Log.
 3. `_meta/index.md` — the chat note + any new pages.
 4. `_meta/log.md` — one `ingest` entry, **appended at the bottom of the file**.
-5. Retro entry in the **line** retro-log (`Products/Lia Toys/00 handover/retro-log.md`) — discovery is line-level work. If the chat also produced per-toy feedback, that toy's retro-log gets its own entry per `toy-feedback-ingest`.
+5. Retro entry in the **line** retro-log (`Products/Lia Tools/00 handover/retro-log.md`) — discovery is line-level work. If the chat also produced per-toy feedback, that toy's retro-log gets its own entry per `toy-feedback-ingest`.
 
 ## Step 10 — Report back
 
@@ -108,4 +108,4 @@ Short: the chat note path, profile created/updated, problems created/fed, scenar
 
 ## Changelog
 
-- **0.2.0 (2026-08-28, LIAB-1006 + LIAB-963)** — where a chat wanders into product feedback, the hand-off names `05 build/feedback/`: the line gained a `04 design/` stage on 28 Aug and build moved up one. The `execution-discipline` load line names the sibling seat in this plugin rather than the retired vault `_meta/skills/` path. `02 discovery/`, the line-level home this skill writes into, is unaffected by the renumber. First entry here; earlier versions are unrecorded.
+- **0.3.0 (2026-08-28, LIAB-1020)** — the line is **Lia Tools**: `Products/Lia Toys/` → `Products/Lia Tools/`, `toy box/` → `toolbox/`, `toys/` → `tools/`, and the shape is six numbered stages (`02 analysis` replaced `03 strategy`; research left tool folders; requirements live in Linear) plus the line's unnumbered `standards/` · `research/` · `design/`. Paths only — no behaviour changed.- **0.2.0 (2026-08-28, LIAB-1006 + LIAB-963)** — where a chat wanders into product feedback, the hand-off names `04 build/feedback/`: the line gained a `03 design/` stage on 28 Aug and build moved up one. The `execution-discipline` load line names the sibling seat in this plugin rather than the retired vault `_meta/skills/` path. `02 discovery/`, the line-level home this skill writes into, is unaffected by the renumber. First entry here; earlier versions are unrecorded.

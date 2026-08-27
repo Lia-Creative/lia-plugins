@@ -4,16 +4,16 @@ description: >-
   Ingest one of Chris's toys feedback videos into the Lia Vault and Linear.
   Input is a youtu.be URL plus a transcript; output is a tidied transcript, a
   meeting note in the right meetings/ folder, per-toy feedback summaries in
-  05 build/feedback/, bugs auto-ticketed to the toy's epic, and everything
+  04 build/feedback/, bugs auto-ticketed to the toy's epic, and everything
   else proposed as a tick-list. Use when Chris says "ingest this video",
-  "feedback video for the toys / for dump / for drip / for the toy box",
+  "feedback video for the toys / for dump / for drip / for the toolbox",
   "log the bugs and ideas from the video", "toys walkthrough", or drops an
   unlisted YouTube URL and transcript about toy work. Covers every video
   type he records: new ideas, scenario mapping, problem work, design
   feedback, bugs, feature feedback, process feedback. Toys mentioned
   generally files at the line level; a specific toy files into that toy's
   folder.
-version: 0.2.0
+version: 0.3.0
 created: 2026-08-16
 updated: 2026-08-28
 status: active
@@ -37,9 +37,9 @@ Read the first 30–40 lines of the transcript plus whatever Chris said in chat.
 
 | The video is about | The meeting note lands in |
 |---|---|
-| The toy line generally (strategy, process, several toys) | `Products/Lia Toys/meetings/` |
-| The toy box shell | `Products/Lia Toys/toy box/meetings/` |
-| One specific toy | `Products/Lia Toys/toys/<toy>/meetings/` |
+| The toy line generally (strategy, process, several toys) | `Products/Lia Tools/meetings/` |
+| The toolbox shell | `Products/Lia Tools/toolbox/meetings/` |
+| One specific toy | `Products/Lia Tools/tools/<toy>/meetings/` |
 
 One video → **one meeting note**, at the most general scope it genuinely spans. The per-toy feedback summaries (Step 5) do the specific work; don't duplicate the note per toy. Create the `meetings/` folder if it doesn't exist yet — it's part of the toy shape (CQ, 2026-08-16), unnumbered, sits alongside the numbered lifecycle folders.
 
@@ -92,15 +92,15 @@ Body, in order:
 
 ## Step 5 — Per-toy feedback summaries
 
-For each toy the video gives product feedback on (design, bugs, features, build quality), write `toys/<toy>/05 build/feedback/YYYY-MM-DD-<slug>.md` — a **clear summary of the feedback on that toy**, nothing else. This is what a build agent reads before the next feature: what's working, what's broken, what he asked for, each item linking back to the meeting note and its timestamp. Create the `feedback/` folder on first use.
+For each toy the video gives product feedback on (design, bugs, features, build quality), write `tools/<tool>/04 build/feedback/YYYY-MM-DD-<slug>.md` — a **clear summary of the feedback on that toy**, nothing else. This is what a build agent reads before the next feature: what's working, what's broken, what he asked for, each item linking back to the meeting note and its timestamp. Create the `feedback/` folder on first use.
 
-Substantial scenario-mapping content additionally becomes (or updates) a doc in the toy's `02 research/`. Ideas stay in the meeting note until Chris promotes them.
+Substantial scenario-mapping content additionally becomes (or updates) a doc in the toy's `research/` at the line. Ideas stay in the meeting note until Chris promotes them.
 
 ## Step 6 — Linear
 
 **Bugs go straight to tickets.** For each item in `## Bugs` (unless the stage gate said otherwise):
 
-- Team **Lia Build**, project **Lia Toys**, child of the toy's epic — verify the epic ID live (dump LIAB-608, drip LIAB-599, toy box LIAB-637 at time of writing; **check, never trust this list**).
+- Team **Lia Build**, project **Lia Tools**, child of the toy's epic — verify the epic ID live (dump LIAB-608, drip LIAB-599, toy box LIAB-637 at time of writing; **check, never trust this list**).
 - Title `Bug · <toy>: <symptom>`, label `Bug`, status Backlog, priority Medium.
 - Description: his words quoted, the video timestamp, expected vs actual where stated.
 - **Frame grab attached when the local `.mp4` exists**: `ffmpeg -nostdin -y -ss <HH:MM:SS> -i "<video>.mp4" -frames:v 1 -q:v 3 frame.jpg`, timestamp grepped from the `.srt`, uploaded via the Linear attachment flow (`prepare_attachment_upload` → `curl PUT` → `create_attachment_from_upload`).
@@ -127,5 +127,5 @@ Short: the meeting note path, the summaries written, tickets created (IDs), the 
 
 ## Changelog
 
-- **0.2.0 (2026-08-28, LIAB-1006)** — the line gained a design stage on 28 Aug and build moved up one, so per-toy summaries land in `05 build/feedback/`, not `04 build/feedback/` — in the `description:` as well as Step 5, since that string is what a session sees before it opens the skill. Nothing else about the ingest changes.
+- **0.3.0 (2026-08-28, LIAB-1020)** — the line is **Lia Tools**: `Products/Lia Toys/` → `Products/Lia Tools/`, `toy box/` → `toolbox/`, `toys/` → `tools/`, and the shape is six numbered stages (`02 analysis` replaced `03 strategy`; research left tool folders; requirements live in Linear) plus the line's unnumbered `standards/` · `research/` · `design/`. Paths only — no behaviour changed.- **0.2.0 (2026-08-28, LIAB-1006)** — the line gained a design stage on 28 Aug and build moved up one, so per-toy summaries land in `04 build/feedback/`, not `04 build/feedback/` — in the `description:` as well as Step 5, since that string is what a session sees before it opens the skill. Nothing else about the ingest changes.
 - **0.1.2 (2026-08-27, LIAB-997)** — the stage gate and the whisper recipe now point at `prototype-feedback-loop` in this plugin rather than the retired vault path, and the `execution-discipline` load line with them (found in the PR #19 review; the rest of that sweep stays LIAB-963's). No change to the ingest itself. First entry here; earlier versions are unrecorded.
