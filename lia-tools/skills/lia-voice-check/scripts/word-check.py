@@ -51,9 +51,19 @@ US_SPELLING = [
     r"\bhonor(s|ed|ing|able)?\b", r"\blabor(s|ed|ing)?\b", r"\bneighbor(s|hood|ing)?\b",
     r"\bcenter(s|ed|ing)?\b", r"\btheater(s)?\b", r"\bfiber(s)?\b",
     r"\bdefense\b", r"\boffense\b",
-    r"\bcatalog(s|ed|ing)?\b", r"\bdialog\b", r"\banalog\b",
-    r"\btraveled\b", r"\btraveling\b", r"\bmodeled\b", r"\bmodeling\b",
-    r"\bcanceled\b", r"\bfulfill\b", r"\benrollment\b",
+    r"\bcatalog(s|ed|ing)?\b", r"\banalog\b",
+    # The -lled family, one entry per US form. AU doubles the l before a
+    # vowel: travelled, modelled, cancelled, labelled, signalled, fuelled.
+    # Note what is NOT here: `enrolling` and `enrolled` are correct AU (enrol,
+    # enrols, enrolling, enrolled) — only `enroll`, `enrolls` and `enrollment`
+    # are US, and `cancelling` is correct AU too.
+    r"\btraveled\b", r"\btraveling\b", r"\btraveler(s)?\b",
+    r"\bmodeled\b", r"\bmodeling\b", r"\bmodeler(s)?\b",
+    r"\bcanceled\b", r"\bcanceling\b",
+    r"\blabeled\b", r"\blabeling\b",
+    r"\bsignaled\b", r"\bsignaling\b",
+    r"\bfueled\b", r"\bfueling\b",
+    r"\bfulfill(s|ment)?\b", r"\benroll(s|ment)?\b",
 ]
 # Spellings that are US in one sense and correct Australian in another. The
 # script cannot tell the senses apart, so it warns instead of blocking — a
@@ -63,6 +73,9 @@ US_SPELLING = [
 US_SPELLING_AMBIGUOUS = {
     r"\blicense(s|d|ing)?\b": "US for the noun; correct AU for the verb (licence = noun)",
     r"\bmeter(s)?\b": "US for the unit; correct AU for the device (metre = unit)",
+    r"\bpractice(s|d|ing)?\b": "US for the verb; correct AU for the noun (practise = verb)",
+    r"\bprogram(s|med|ming)?\b": "correct AU for software; programme for an event or curriculum",
+    r"\bdialog(s)?\b": "US for a conversation; correct in software (a dialog box, the HTML dialog element)",
 }
 
 # -ize words that are correct even in AU English (Macquarie): keep off the net,
@@ -73,7 +86,7 @@ US_SPELLING_AMBIGUOUS = {
 # allows `emphasizing` too, which is US (AU: emphasise). Stems drop their `e`
 # before an ending, so match on the stem without it.
 US_IZE_ALLOW = re.compile(
-    r"^(re|down|up|over|super|mid|out)?"
+    r"^(re|down|up|over|super|mid|out|under|un|right)?"
     r"(siz|priz|seiz|maiz|assiz|capsiz)"
     r"(e|es|ed|ing)?$",
     re.IGNORECASE,
@@ -153,13 +166,60 @@ def snip(line, n=90):
     return (line[:n] + "…") if len(line) > n else line
 
 
+# Known-good Australian copy the checker must NEVER hard-fail, and known-bad
+# copy it must always catch. This exists because the -ize allow-list has now
+# been extended four times, each time after it failed a correct word: a list
+# that grows by defect is a list that needs a regression test, not another
+# entry. Add a line here before adding a word above.
+SELF_TEST_CLEAN = [
+    "resize downsizing supersized capsized midsize outsized",
+    "undersize undersized undersizing unsized rightsized",
+    "prizes seized maize sizes",
+    "The parameter, the diameter, the perimeter, a thermometer, the speedometer.",
+    "We license the toy box to studios and the parking meter is on the corner.",
+    "Open the dialog box. The programme runs on Tuesday; the program compiles.",
+    "She enrolled, is enrolling, and we are cancelling the travelled route.",
+    "Colour, behaviour, centre, metre, catalogue, licence, defence.",
+]
+SELF_TEST_FLAGGED = [
+    "organize", "realized", "optimization", "emphasizing",
+    "analyze", "paralyzed", "kilometers", "liter",
+    "color", "behavior", "center", "traveled", "labeling", "fulfillment",
+    "leverage", "synergy", "seamless", "utilise", "utilize",
+]
+
+
+def self_test():
+    bad = []
+    for line in SELF_TEST_CLEAN:
+        hard = merge(find(HARD_AVOID, line), find(US_SPELLING, line, regex=True))
+        if hard:
+            bad.append(f"  correct AU copy hard-failed: {line!r} → {[h[1] for h in hard]}")
+    for word in SELF_TEST_FLAGGED:
+        hard = merge(find(HARD_AVOID, word), find(US_SPELLING, word, regex=True))
+        if not hard:
+            bad.append(f"  should have been caught and was not: {word!r}")
+    if bad:
+        print("✗ self-test FAILED:")
+        print("\n".join(bad))
+        return 1
+    print(f"✓ self-test — {len(SELF_TEST_CLEAN)} clean lines stay clean, "
+          f"{len(SELF_TEST_FLAGGED)} bad words still caught")
+    return 0
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("file", nargs="?")
     ap.add_argument("--text")
     ap.add_argument("--stdin", action="store_true")
     ap.add_argument("--json", action="store_true")
+    ap.add_argument("--self-test", action="store_true",
+                    help="prove the checker stays clean on correct Australian copy")
     a = ap.parse_args()
+
+    if a.self_test:
+        sys.exit(self_test())
 
     if a.text is not None:
         text = a.text

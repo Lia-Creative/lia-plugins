@@ -83,13 +83,18 @@ This is not a voice guide. It detects how AI writes by default and fixes it. The
 **31. American spelling slips.** Lia writes Australian English.
 - `-ize` → `-ise` (organize → organise, realize → realise)
 - `-or` → `-our` (color → colour, behavior → behaviour)
-- `-er` → `-re` (center → centre, meter → metre)
+- `-er` → `-re` (center → centre, meter → metre) — **but check the sense**: `metre` is the unit, while `meter` the *device* is correct (a parking meter, a power meter)
 - `-led` → `-lled` (traveled → travelled, modeled → modelled)
 - `-og` → `-ogue` (catalog → catalogue, dialog → dialogue)
 - `defense/offense` → `defence/offence`
 - `practice` (noun) vs `practise` (verb)
+- `licence` (noun) vs `license` (verb)
+- `dialog` → `dialogue` for a conversation — **but** `dialog` is correct in software (a dialog box, the HTML `dialog` element)
 - `program` (computing) vs `programme` (event/curriculum)
 
-Default to the Macquarie Dictionary, not Merriam-Webster.
+Default to the Macquarie Dictionary, not Merriam-Webster. The sense-dependent
+ones above (`meter`, `licence`, `practice`, `program`, `dialog`) are the words
+`word-check.py` reports in its sense-check tier rather than failing a run on —
+correct in one sense and US in the other, and only a reader can tell which.
 
 **32. Sentence-case headings.** Headings and labels use sentence case, not Title Case. "What done looks like", not "What Done Looks Like".

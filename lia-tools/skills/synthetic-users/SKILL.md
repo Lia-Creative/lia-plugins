@@ -51,6 +51,7 @@ A **discovery-stage specialist, called — not a gate.** `problem-definition` sa
 - A request for **real** research, recruitment or validation. This is the opposite — say so, and point at `adventure-chat-ingest`.
 - A single quick persona sketch nobody intends to interrogate. Overkill; write a short profile.
 - Anything that would reach a founder or a ticket without the assumption trace and the not-insight framing intact.
+
 ## The pipeline (4 stages)
 
 Run in order. Stages 1–2 build the panel; 3 assembles the engine; 4 operates it. For a thin-data start, Stage 1 begins with the proto-profiles prompt.
