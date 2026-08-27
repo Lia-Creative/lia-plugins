@@ -5,9 +5,24 @@ one product. Before you write a label, look here. If the action isn't here, add 
 last section says how.
 
 Status: seeded 27 Aug 2026 from the strings already shipping in `lia-toy-box`, plus the
-Apple verdicts in `apple-distilled.md`. Rows marked **(proposed)** are this skill's
-suggestion and want a founder's yes before they harden; everything else is either already
-in the product or is Apple's rule, which we've adopted.
+Apple verdicts in `apple-distilled.md`. Everything not marked below is either already in
+the product or is Apple's rule, which we've adopted.
+
+---
+
+## 0. Not settled — do not treat these as house rules
+
+These rows are this skill's suggestion and **have not had a founder's yes.** Each one is
+marked inline as well, because a table row gets read on its own far more often than a
+file's header does — an agent greps for a verb, finds a row, and ships it.
+
+| Row | What's open | Who decides |
+|---|---|---|
+| **Show Details** (§1) | Whether the disclosure control is called *Show Details*, and whether Lia wants that pattern at all rather than keeping the detail in the log. `patterns.md` §3 leans on it in the meantime. | Chris |
+
+Use a proposed word if you need one — but say in the PR that you did, and don't cite this
+file as the reason. Settling a row means Chris says yes, the marker comes off, and the
+changelog says when.
 
 ---
 
@@ -35,7 +50,7 @@ in the product or is Apple's rule, which we've adopted.
 | Mark a thing you already see | **Select** | Choose, Check, Tick, Highlight |
 | Give it a new name | **Rename** | Edit name, Change name |
 | Send words back to us | **Send Feedback** | Submit, Report, Contact Us |
-| Look at something in more detail | **Show Details** *(proposed)* | More info, Details…, Expand, Learn More |
+| Look at something in more detail | **Show Details** — **NOT SETTLED: proposed only, no founder's yes. Don't cite this row as house style.** (see §0) | More info, Details…, Expand, Learn More |
 | Go to a thing's own screen | **Open** | View, Go To, Launch |
 | Keep changes | **Save** | Apply, Commit, Update, Confirm |
 
@@ -96,7 +111,9 @@ When you need an action that isn't here:
 1. Check the product for a word already in use — `grep` the strings before you invent one.
 2. Check whether Apple has a verdict (`apple-distilled.md` §2, or the Style Guide itself).
 3. Pick the plainest verb that names the result, and write both halves of the pair.
-4. Add the row here, marked **(proposed)**, in the same PR as the copy that needed it.
+4. Add the row here **and** a line in §0, both marked *NOT SETTLED*, in the same PR as the
+   copy that needed it. The row's own cell has to say it — §0 alone isn't enough, because
+   a row gets read on its own.
 5. Say so in the PR description — a lexicon that grows silently is a lexicon nobody trusts.
 
 The point of this file isn't to be complete. It's that when two screens disagree about

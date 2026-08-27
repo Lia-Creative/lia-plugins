@@ -2,9 +2,9 @@
 name: ux-writing
 slug: ux-writing
 description: "Write the words in the interface — action labels, alerts, errors, empty states, notifications — to Apple's mechanics and Lia's voice: one verb per action from the shared lexicon, Apple-exact title case on labels, no blame, no system text, checked by a deterministic lint. Use when a screen needs its copy written or repaired, when button labels are being chosen, or when a flow's language has drifted."
-version: 0.1.0
+version: 0.1.1
 created: 2026-08-27
-updated: 2026-08-27
+updated: 2026-08-28
 status: active
 triggers:
   - "/ux-writing"
@@ -52,7 +52,8 @@ them. The mechanics are Apple's. The voice stays Lia's.
 ## The references — read before writing, every time
 
 1. `references/lexicon.md` — **first.** One action, one word. This is what stops the
-   product forking its own vocabulary.
+   product forking its own vocabulary. Read **§0 before §1**: some rows are proposed and
+   have no founder's yet — usable, but never quotable as house style.
 2. `references/patterns.md` — the shape for the surface you're writing (labels,
    confirmations, errors, empty states, waiting, permissions, settings, fields,
    notifications, first run, success).
@@ -88,7 +89,8 @@ Work through `patterns.md` for the surface. The rules that carry most of the wei
 - **A label is a verb that names the result.** "Send", not "Let's do it!". "Delete", not
   "OK". If the label needs the sentence above it to make sense, it isn't finished.
 - **Check the lexicon before you name an action.** If the action isn't there, add the row
-  in the same change, marked proposed.
+  in the same change, marked *NOT SETTLED* in the row itself and listed in `lexicon.md`
+  §0 — a marker only in the header is a marker the next grep won't see.
 - **Never blame.** Say what to do next: "Use only letters for your name", not
   "Invalid name".
 - **No "we", no "please", no "oops", no exclamation marks in a failure.**
@@ -121,9 +123,14 @@ answer for — the lint never overrules a writer, and one that blocked on judgme
 just get switched off.
 
 **The lint is a backstop, not the standard.** It can't tell whether a label names the
-right result. Run it after the writing, never instead of it. (`--self-test` proves the
-checks still go red, including a negative control that breaks a rule on purpose. Run it
-whenever you touch the script.)
+right result. Run it after the writing, never instead of it.
+
+`--self-test` switches off each of its nine rule families in turn and requires the fixture
+suite to go red every time — a rule no fixture exercises is reported `NOT COVERED` and
+fails the run. **Run it whenever you touch the script.** Half its fixtures are correct
+Australian product copy that must come back clean, because the expensive failures here
+have all been false positives, not misses: a lint that flags "450 files were copied" as a
+system leak is a lint the next writer ignores on the string that mattered.
 
 ### 6. Hand it over
 
@@ -161,7 +168,19 @@ ticket prose, and documentation. It also doesn't audit finished copy for AI tell
 
 ## Changelog
 
-- **0.1.0 (2026-08-27)** — first version. Apple's HIG (Writing, Alerts, Buttons,
+- **0.1.1 (2026-08-28)** — first shipped version (LIAB-1004). `copy-lint.py` was run
+  against real Australian product copy for the first time and produced four false
+  positives, every one a hard error: it demanded "Add To Library" (a preposition pointing
+  at an object isn't a phrasal particle, and Apple ships "Add to Home Screen"); it read any
+  three-digit number starting 4 or 5 as an HTTP status, so "450 files were copied" was a
+  system leak; it read the ordinary noun *stack* the same way; and it matched "us" case-
+  insensitively, so "the US team" was first person. All four fixed, each with a fixture
+  that keeps it fixed. `--self-test` grew from one negative control to a defect planted in
+  each of nine rule families, because one control proves one rule and the other eight
+  could have been deleted silently — the LIAB-959 lesson, one layer up. `lexicon.md`'s
+  proposed rows now carry the marker in the row itself, not only the file header, since a
+  row is what a grep returns.
+- **0.1.0 (2026-08-27)** — first version, parked unshipped. Apple's HIG (Writing, Alerts, Buttons,
   Notifications, Onboarding) and the June 2026 Apple Style Guide distilled into
   `references/apple-distilled.md`; the surface-by-surface `patterns.md` seeded from the
   strings shipping in `lia-toy-box`; `lexicon.md` seeded from the product's own verbs;

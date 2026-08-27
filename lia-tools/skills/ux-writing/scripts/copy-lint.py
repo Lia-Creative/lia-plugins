@@ -45,19 +45,28 @@ ALWAYS_LOWER = {
     "up", "with",
 }
 
-# Prepositions capitalised anyway when they are part of a phrasal verb.
+# Prepositions capitalised anyway when they are part of a phrasal verb — the
+# particle belongs to the verb, so it carries the verb's weight: "Turn On",
+# "Back Up", "Sign In". A preposition that merely points at an object is NOT a
+# particle and stays down: "Add to Library", "Go to Settings". Getting that
+# wrong makes the lint demand a capitalisation Apple itself doesn't ship
+# ("Add to Home Screen", "Add to Reading List"), so keep this table to real
+# phrasal verbs and let everything else fall through to ALWAYS_LOWER.
 PHRASAL = {
     "turn": {"on", "off"}, "sign": {"in", "out", "up"}, "log": {"in", "out"},
     "start": {"up", "over"}, "shut": {"down"}, "back": {"up"}, "set": {"up"},
     "put": {"back", "off"}, "pick": {"up"}, "hand": {"off", "over"},
     "clean": {"up"}, "tidy": {"up"}, "fill": {"in"}, "check": {"in", "out"},
-    "add": {"to"}, "opt": {"in", "out"}, "give": {"up"}, "clear": {"out"},
+    "opt": {"in", "out"}, "give": {"up"}, "clear": {"out"},
 }
 
 # Words that keep their own capitalisation whatever position they land in.
+# Single words only — `_fixed` compares one word at a time, so a multi-word
+# entry here would be dead weight that never matches. ("Toy Box" needs no
+# entry: both words capitalise on their own in title case.)
 FIXED_CASE = [
     "iPhone", "iPad", "iPod", "iCloud", "iMessage", "macOS", "iOS", "watchOS",
-    "tvOS", "visionOS", "AirDrop", "lia.tools", "lia.build", "Lia", "Toy Box",
+    "tvOS", "visionOS", "AirDrop", "lia.tools", "lia.build", "Lia",
 ]
 
 BANNED = [
@@ -70,8 +79,6 @@ BANNED = [
     (r"\bclick here\b", "E-BANNED", "a link names its destination"),
     (r"\bare you sure\b", "E-BANNED", "say what will happen instead"),
     (r"\billegal\b", "E-BANNED", "developer vocabulary aimed at a person"),
-    (r"\b(we|we're|we've|our|us)\b", "E-FIRSTPERSON",
-     "no first person — rewrite in terms of the reader or the product"),
     (r"\benabled?\b", "W-WORD", "'turn on' acts now; 'enable' is developer framing"),
     (r"\bdisabled?\b", "W-WORD", "'turn off', or 'dimmed' for a control that can't be used"),
     (r"\b(abort|kill|terminate|execute)\b", "W-WORD", "use stop, cancel, quit or end"),
@@ -83,16 +90,36 @@ BANNED = [
      "\u201cCouldn\u2019t \u2026\u201d reads as a product; \u201cFailed to \u2026\u201d reads as a stack trace"),
     (r"\b(leverage|empower|seamless|utili[sz]e|supercharge|effortless)\b",
      "W-WORD", "corporate vocabulary"),
-    (r"\b(simply|easily|actually|really)\b|\bjust\b(?! now\b)", "W-FILLER",
-     "filler — cut it"),
+    # "just now", "just under a minute", "just a moment" are measurements, not
+    # filler. Only the intensifier "just" is the tell.
+    (r"\b(simply|easily|actually|really)\b"
+     r"|\bjust\b(?!\s+(?:now|then|under|over|about|before|after|a|an|one|two|the)\b)",
+     "W-FILLER", "filler — cut it"),
     (r"\bAI-powered\b|\bpowered by\b|\bsmart\b|\bmagic\b",
      "W-WORD", "AI invisible, outcomes in front"),
 ]
 
-# Raw system text reaching a person. These are defects, not preferences.
+# Checked without re.I, because the case is the signal. "us" the pronoun is a
+# defect; "US" the country is not, and folding them together fails a correct
+# string — the exact class of bug that made `lia-voice-check`'s word-check
+# unusable on real Australian copy (LIAB-997 review).
+BANNED_CASED = [
+    (r"\b(?:[Ww]e|[Ww]e[’'](?:re|ve|ll|d)|[Oo]ur(?:s)?|us)\b", "E-FIRSTPERSON",
+     "no first person — rewrite in terms of the reader or the product"),
+]
+
+# Raw system text reaching a person. These are defects, not preferences — which
+# is why each pattern has to earn its severity. A pattern that fires on ordinary
+# English ("450 files were copied", "the stack of photos") turns a hard error
+# into noise, and a hard error nobody believes is a hard error someone removes.
 SYSTEM_LEAK = [
-    r"non-2xx", r"\bundefined\b", r"\bnull\b", r"\bNaN\b", r"\b[45]\d{2}\s",
-    r"\bstatus code\b", r"\bexception\b", r"\bstack\b", r"\bENOENT\b",
+    r"non-2xx", r"\bundefined\b", r"\bnull\b", r"\bNaN\b",
+    # An HTTP status code, only where it says it is one. A bare three-digit
+    # number is a count far more often than it is a status.
+    r"\b(?:HTTP|status(?:\s+code)?|error\s+code|response(?:\s+code)?)\b\W{0,4}[45]\d{2}\b",
+    r"\b[45]\d{2}\b\s+(?:error|status|response)\b",
+    r"\bstatus code\b", r"\bexception\b", r"\bENOENT\b",
+    r"\bstack (?:trace|frame)\b",
     r"\bEdge Function\b", r"\bfailed to fetch\b", r"\btraceback\b",
     r"\berror code\b", r"\btimeout of \d+", r"\bunhandled\b", r"\bECONN",
 ]
@@ -107,9 +134,18 @@ US_SPELLING = [
 
 WEAK_LABELS = {"ok", "yes", "no", "submit", "learn more", "more", "go", "here"}
 
-# Set by --self-test's negative control. A guard nobody has watched fail is a
-# guard nobody knows works (lia-plugins CLAUDE.md).
-_DISABLE_TITLECASE = False
+# The rule families --self-test can switch off one at a time to plant a defect
+# in the lint itself. A guard nobody has watched fail is a guard nobody knows
+# works (lia-plugins CLAUDE.md, "Make the check fail on purpose") — and a single
+# negative control only proves the one rule it breaks, so every family gets its
+# own. `_DISABLED` is empty in every real run.
+FAMILIES = ("titlecase", "punct", "system", "banned", "firstperson",
+            "spelling", "typography", "weak", "sentencecase")
+_DISABLED = set()
+
+
+def _on(family):
+    return family not in _DISABLED
 
 
 def _fixed(word):
@@ -148,7 +184,7 @@ def title_case(text):
         first_or_last = i == 0 or i == len(words) - 1
         phrasal = i > 0 and bare in PHRASAL.get(
             re.sub(r"[^\w'-]", "", words[i - 1]).lower(), set())
-        if _DISABLE_TITLECASE:
+        if not _on("titlecase"):
             out.append(w)
         elif bare in ALWAYS_LOWER and not first_or_last and not after_colon and not phrasal:
             fixed = _fixed(bare)
@@ -174,33 +210,42 @@ def check(text, kind="label", where=None):
     if kind not in KINDS:
         return [("E-KIND", f"unknown kind '{kind}' — one of {', '.join(sorted(KINDS))}")]
 
-    for pattern in SYSTEM_LEAK:
-        if re.search(pattern, text, re.I):
-            findings.append(("E-SYSTEM", "raw system text reaching a person — "
-                                         f"matched /{pattern}/"))
-            break
+    if _on("system"):
+        for pattern in SYSTEM_LEAK:
+            if re.search(pattern, text, re.I):
+                findings.append(("E-SYSTEM", "raw system text reaching a person — "
+                                             f"matched /{pattern}/"))
+                break
 
-    for pattern, code, message in BANNED:
-        if re.search(pattern, text, re.I):
-            findings.append((code, message))
+    if _on("banned"):
+        for pattern, code, message in BANNED:
+            if re.search(pattern, text, re.I):
+                findings.append((code, message))
 
-    for pattern, fix in US_SPELLING:
-        if re.search(pattern, text, re.I):
-            findings.append(("W-SPELLING", f"American spelling — use '{fix}'"))
+    if _on("firstperson"):
+        for pattern, code, message in BANNED_CASED:
+            if re.search(pattern, text):
+                findings.append((code, message))
 
-    if "..." in text:
-        findings.append(("W-ELLIPSIS", "use the ellipsis character … , not three dots"))
-    if "'" in text:
-        findings.append(("W-APOSTROPHE", "use the typographic apostrophe ’"))
-    if "!" in text:
-        findings.append(("W-EXCLAIM", "exclamation marks: essentially never, "
-                                      "and never in an error"))
+    if _on("spelling"):
+        for pattern, fix in US_SPELLING:
+            if re.search(pattern, text, re.I):
+                findings.append(("W-SPELLING", f"American spelling — use '{fix}'"))
+
+    if _on("typography"):
+        if "..." in text:
+            findings.append(("W-ELLIPSIS", "use the ellipsis character … , not three dots"))
+        if "'" in text:
+            findings.append(("W-APOSTROPHE", "use the typographic apostrophe ’"))
+        if "!" in text:
+            findings.append(("W-EXCLAIM", "exclamation marks: essentially never, "
+                                          "and never in an error"))
 
     if kind in TITLE_KINDS:
         expected = title_case(text)
         if expected != text:
             findings.append(("E-CASE", f"title case — expected “{expected}”"))
-        if re.search(r"[.,;:!?]$", text.strip()):
+        if _on("punct") and re.search(r"[.,;:!?]$", text.strip()):
             findings.append(("E-PUNCT", "no ending punctuation on a label or "
                                         "fragment title (… is the exception)"))
         # Count the words that carry meaning: "Export a Document as a PDF" is
@@ -210,17 +255,18 @@ def check(text, kind="label", where=None):
         if len(content) > 4:
             findings.append(("W-LENGTH",
                              f"{len(content)} content words — a label wants one to three"))
-        if text.strip().lower().rstrip(".") in WEAK_LABELS:
+        if _on("weak") and text.strip().lower().rstrip(".") in WEAK_LABELS:
             findings.append(("W-WEAK", "a label names the result — use the verb "
                                        "for what happens"))
     else:
-        if looks_title_cased(text):
+        if _on("sentencecase") and looks_title_cased(text):
             findings.append(("W-CASE", "sentence case for body and informative text"))
-        if kind in ("sentence", "body") and not re.search(r"[.?]$", text.strip()):
-            findings.append(("W-PUNCT", "a complete sentence ends in a full stop "
-                                        "or question mark"))
-        if kind == "placeholder" and re.search(r"[.]$", text.strip()):
-            findings.append(("W-PUNCT", "hint text takes no ending full stop"))
+        if _on("punct"):
+            if kind in ("sentence", "body") and not re.search(r"[.?]$", text.strip()):
+                findings.append(("W-PUNCT", "a complete sentence ends in a full stop "
+                                            "or question mark"))
+            if kind == "placeholder" and re.search(r"[.]$", text.strip()):
+                findings.append(("W-PUNCT", "hint text takes no ending full stop"))
 
     return [(c, m if where is None else f"{m}") for c, m in findings]
 
@@ -259,6 +305,13 @@ def read_items(args):
 
 FIXTURES = [
     # (kind, text, codes that must fire)
+    #
+    # Half of this suite is defects the checks must catch. The other half is
+    # correct Australian product copy the checks must leave alone — every one of
+    # them a false positive this lint actually produced on 28 Aug 2026, before
+    # anyone had run it on real strings. Those are the ones worth keeping: a
+    # lint that cries wolf on good copy is a lint that gets switched off, and
+    # the writer keeps the habit of ignoring it afterwards.
     ("label", "Add a Toy", []),
     ("label", "Put It Back", []),
     ("label", "Turn On Notifications", []),          # phrasal verb keeps its particle
@@ -280,6 +333,33 @@ FIXTURES = [
     ("body", "Choose Your Favorite Colors From The List.",
      ["W-CASE", "W-SPELLING"]),
     ("placeholder", "name@example.com", []),
+
+    # --- regressions: correct copy the lint used to fail -------------------
+    # A preposition pointing at an object is not a phrasal particle. Apple
+    # ships "Add to Home Screen"; the lint demanded "Add To Library".
+    ("label", "Add to Library", []),
+    ("label", "Go to Settings", []),
+    # A three-digit count is not an HTTP status. "450 files were copied" was a
+    # hard E-SYSTEM error.
+    ("body", "450 files were copied.", []),
+    ("body", "It stopped after 500 milliseconds.", []),
+    # …and a status code still is one when it says so.
+    ("body", "The server returned status code 502.", ["E-SYSTEM"]),
+    ("body", "It came back 503 error.", ["E-SYSTEM"]),
+    # "stack" is an ordinary English noun. Only a stack trace is a leak.
+    ("body", "The stack of photos is ready.", []),
+    ("body", "A stack trace was written to the log.", ["E-SYSTEM"]),
+    # "US" the place is not "us" the pronoun — the case is the whole signal.
+    ("body", "The US team is on it.", []),
+    ("body", "Send us a note.", ["E-FIRSTPERSON"]),
+    ("body", "We’ve saved your work.", ["E-FIRSTPERSON"]),
+    # "just" as a measurement, not an intensifier.
+    ("body", "It took just under a minute.", []),
+    ("body", "It just works.", ["W-FILLER"]),
+    # Australian spelling passes clean; American spelling is caught.
+    ("body", "The colour of the organiser is grey.", []),
+    ("body", "The run was cancelled and recategorised.", []),
+    ("body", "Your favourite catalogue is in the centre.", []),
 ]
 
 
@@ -298,7 +378,18 @@ def run_fixtures():
 
 
 def self_test():
-    global _DISABLE_TITLECASE
+    """Plant a defect in each rule family in turn and confirm it is caught.
+
+    Two halves, and both matter. First the suite must pass with the lint
+    intact — that is what proves the fixtures describe correct copy correctly.
+    Then every rule family is switched off one at a time, and the suite must go
+    red each time — that is what proves the fixtures are actually exercising
+    that rule rather than sitting next to it.
+
+    A single negative control (which is all this had until 28 Aug 2026) proves
+    exactly one rule. Eight others could have been deleted and it still printed
+    ok — the LIAB-959 failure repeated one layer up.
+    """
     print("self-test: running fixtures with the checks intact")
     failures = run_fixtures()
     if failures:
@@ -306,17 +397,33 @@ def self_test():
         for f in failures:
             print(f"  · {f}")
         return 1
+    print(f"self-test: ok — {len(FIXTURES)} fixtures clean")
 
-    print("self-test: negative control — disabling the title-case rule on purpose")
-    _DISABLE_TITLECASE = True
-    mutated = run_fixtures()
-    _DISABLE_TITLECASE = False
-    if not mutated:
-        print("FAIL — the suite still passes with the title-case rule removed. "
-              "The fixtures prove nothing; fix them before trusting a green run.")
+    print("self-test: planting a defect in each rule family, one at a time")
+    unproven = []
+    for family in FAMILIES:
+        _DISABLED.add(family)
+        try:
+            mutated = run_fixtures()
+        finally:
+            _DISABLED.discard(family)
+        if mutated:
+            print(f"  · {family:<13} switched off → {len(mutated)} fixture "
+                  f"failure(s)  [caught]")
+        else:
+            print(f"  · {family:<13} switched off → suite still green  "
+                  f"[NOT COVERED]")
+            unproven.append(family)
+
+    if unproven:
+        print("\nFAIL — these rules can be deleted without the fixtures "
+              "noticing: " + ", ".join(unproven))
+        print("The suite proves nothing about them. Add a fixture that fires "
+              "on each before trusting a green run.")
         return 1
 
-    print(f"self-test: ok — clean when intact, {len(mutated)} failure(s) when broken")
+    print(f"\nself-test: ok — clean when intact, red for all "
+          f"{len(FAMILIES)} families when broken")
     return 0
 
 

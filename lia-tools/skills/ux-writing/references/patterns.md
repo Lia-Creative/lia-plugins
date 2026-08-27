@@ -76,7 +76,8 @@ plainly, then say nothing was lost.** Keep it.
 - No "we" — the product isn't a committee having a hard time.
 - **No raw system text, ever.** Status codes, exception names, `undefined`, `null`,
   stack fragments and library messages are for the log. If the underlying detail matters
-  to support, put it behind a "Show Details" disclosure, not in the sentence.
+  to support, put it behind a "Show Details" disclosure, not in the sentence. (*"Show
+  Details" is a proposed label, not settled — `lexicon.md` §0.*)
 - If a single message can't rescue the situation, the message isn't the problem — the
   interaction is. Raise it rather than writing a better apology.
 

@@ -2,9 +2,9 @@
 name: design-handoff
 slug: design-handoff
 description: "How a design reaches a builder — the .dc.html prototype folder, how to read it (markup, DS helmet, the state class that lists the real interaction states), and the rule that the artefact outranks ticket prose. Use when a story carries a design spec, when opening a .dc.html, or when writing a design onto a ticket."
-version: 0.2.0
+version: 0.2.1
 created: 2026-08-26
-updated: 2026-08-27
+updated: 2026-08-28
 status: active
 triggers:
   - "/design-handoff"
@@ -18,6 +18,7 @@ companions:
   - build
   - design-lead
   - error-states
+  - ux-writing
 maintainer: cq
 ---
 
@@ -86,5 +87,6 @@ This seat is the **final step of the design bench** (`design-lead`'s pipeline, a
 
 ## Changelog
 
+- **0.2.1 (2026-08-28, LIAB-1004)** — names `ux-writing` back, closing the one-way link. The artefact-beats-prose rule covers the artefact's words too, which is the half `ux-writing` authors.
 - **0.2.0 (2026-08-27, CQ + LIAB-995)** — the return path written down (§5): the HTML committed into the build repo's `design/` folder or attached whole, the notes that ride with it, and this seat placed as the design bench's final step under `design-lead`.
 - **0.1.0 (2026-08-26, LIAB-921 + Fable 5)** — first version, written against the two real prototypes in lia-toy-box `design/` (opened and probed, not recalled); the older base64 variant documented from the prior session's unpack with a readability check to tell them apart. LIAB-859 points here rather than repeating it.

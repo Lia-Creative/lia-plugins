@@ -2,9 +2,9 @@
 name: lia-voice-check
 slug: lia-voice-check
 description: "Audit already-drafted Lia copy for AI tells and voice drift — the structural pattern scan, the deterministic word-check backstop, and the brand and product-voice checks, reported before anything is changed. Use before shipping any Lia-facing words: product UI text, empty states, onboarding, release notes, site or store copy."
-version: 0.2.3
+version: 0.2.4
 created: 2026-07-06
-updated: 2026-08-27
+updated: 2026-08-28
 status: active
 triggers:
   - "/lia-voice-check"
@@ -17,6 +17,7 @@ companions:
   - design-handoff
   - story-writer
   - review-and-merge
+  - ux-writing
 maintainer: shared
 ---
 
@@ -127,6 +128,7 @@ If the scan surfaces a new AI pattern the references don't cover, or a Lia-voice
 
 ## Changelog
 
+- **0.2.4 (2026-08-28, LIAB-1004)** — names `ux-writing` back, closing the one-way link. The two are author and audit on the same words: `ux-writing` writes interface copy against the lexicon and Apple's mechanics, this audits any finished draft for AI tells and voice drift. Running this on copy that seat never wrote stays normal.
 - **0.2.3 (2026-08-27, PR #19 third review)** — the `-ize` allow-list gains `under`, `un` and `right` (`an undersized tap target` was failing a run), and **the sequence ends**: `--self-test` now holds eight lines of correct Australian copy the checker must never hard-fail and nineteen words it must always catch, proven to go red before it was trusted to say green. Add a line there before adding a word to a list. Also: `ai-patterns.md` §31 outranks this script and flatly said `meter → metre`, so the LLM scan would have "corrected" a parking meter the script deliberately let through — §31 now carries the sense qualification, plus the missing `licence`/`license` line. `practice`, `program` and `dialog` join the sense-check tier (`dialog` leaves the hard tier — `a dialog box` is standard in software, and this plugin is for people building products; a voice call, reversible). Coverage: the `-lled` family (`traveler`, `labeling`, `signaled`, `fueled`, `canceling`), `fulfills`/`fulfillment`, `enroll`/`enrollment` — and deliberately not `enrolling`, `enrolled` or `cancelling`, which are correct AU.
 - **0.2.2 (2026-08-27, PR #19 second review)** — five more script defects, all reproduced before fixing. The `-ize` allow-list matched on `startswith`, so every prefixed correct word (`resize`, `downsizing`, `supersized`) hard-failed a draft; it now matches listed prefixes plus e-dropping stems, and still catches `emphasizing`. The US-spelling net gained the `-yze` family and the metric units (`kilometer`, `liter`) — as an explicit list, because a general `\w+meter` net would fail on `parameter`, `diameter` and `thermometer`, which are correct. Multi-word phrases now match across a hard wrap (they silently no-opped on wrapped markdown, which is most of the vault). `utilise` joins `utilize` in the hard tier — one word, one verdict. The sense-check notes are printed instead of defined and dropped. And the tier table above now says what the script actually enforces.
 - **0.2.1 (2026-08-27, PR #19 review)** — two script defects found in review. One match now reports once (`utilize` sat in both the corporate-verb list and the `-ize` pattern and was counted twice, in a report the skill tells you to quote counts from). And `license` and `meter` stop blocking correct Australian English — the verb and the device are standard AU, the script cannot read the sense, so they moved to a warn-only sense-check tier instead of failing the run.

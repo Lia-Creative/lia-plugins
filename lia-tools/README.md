@@ -85,6 +85,7 @@ The process the skills implement is written down in [Tool shop — how a lia.too
 | `design-flows` | Every scenario walked as screens, states and transitions. |
 | `hifi-design` | The screens for real, on the design system, as the artefact. |
 | `error-states` | The sweep — error, empty, loading, edge: designed or ruled out loud. |
+| `ux-writing` | The words in the interface, written — one verb per action, Apple-exact title case, no blame, checked by a lint. |
 | `design-handoff` | How a design reaches a builder — the `.dc.html` folder, how to read it, the HTML home, artefact beats prose. |
 
 **Recon + the judgment layer**
