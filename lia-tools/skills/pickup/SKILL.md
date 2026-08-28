@@ -196,7 +196,7 @@ Comment on the ticket, then move to another one. A blocked ticket said out loud 
 | `epic-builder` / `story-writer` / `task-writer` | Writing the work in the first place. |
 | `ready-review` | Gating it ready before anything downstream spends work on it. |
 | `project-manager` | The dispatch and the board — the seat that sent you this ticket. |
-| `lead-engineer` (`build-prep` · `ticket-review` · `review-and-merge`) | The other end: prep before you start, the pickability check at dispatch, the review loop and the merge when you hold. |
+| `lead-engineer` (`build-prep` · `ticket-review` · `review-and-merge`) | The other end: prep before you start, the pickability check at dispatch, and the review loop when you hold. The merge is any lead's, in its own lane. |
 | `wrap-up` | Ending a session and resuming your own thread later. Different axis: across time, same person. |
 | `execution-discipline` | How to execute anything well once you've started. |
 | `product-retro` | The mandatory retro entry. |

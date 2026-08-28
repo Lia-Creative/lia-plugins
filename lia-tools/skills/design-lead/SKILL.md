@@ -79,5 +79,5 @@ A step not covered is a dispatch, not a footnote. **Skipping a step is deliberat
 ## Changelog
 
 - **0.1.0 (2026-08-27, CQ + LIAB-995)** — first version. The design stage as an owned bench: CQ's step list (reqs, exploration, flows, hi-fi, error states, handover, HTML back) each a seat, with the coverage verdict as the stage's exit gate.
-- **0.3.0 (2026-08-28, LIAB-1025)** — new rule 7: this seat reviews and lands design work in its own lane, on CQ's call that approving and managing PRs is a lead's job rather than a permission. Rule 1 (*the design lead does not design*) is named as the thing that qualifies the seat to judge, so the widening reads as a duty redistributed, not a gate loosened.
 - **0.2.0 (2026-08-27, CQ + LIAB-1000)** — `design-reference` added to the bench and to the **Direction** row of the coverage gate: reference that informed a direction is cited, not remembered.
+- **0.3.0 (2026-08-28, LIAB-1025)** — new rule 7: this seat reviews and lands design work in its own lane, on CQ's call that approving and managing PRs is a lead's job rather than a permission. Rule 1 (*the design lead does not design*) is named as the thing that qualifies the seat to judge, so the widening reads as a duty redistributed, not a gate loosened.
