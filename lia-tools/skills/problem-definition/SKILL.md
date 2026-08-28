@@ -54,4 +54,5 @@ When the ask is the map, not one problem:
 
 ## Changelog
 
-- **0.2.0 (2026-08-28, LIAB-1020)** — the line is **Lia Tools**: `Products/Lia Toys/` → `Products/Lia Tools/`, `toy box/` → `toolbox/`, `toys/` → `tools/`, and the shape is six numbered stages (`02 analysis` replaced `03 strategy`; research left tool folders; requirements live in Linear) plus the line's unnumbered `standards/` · `research/` · `design/`. Paths only — no behaviour changed.- **0.1.0 (2026-08-26, CQ voice memos + Fable 5)** — first version. The formalising seat over atom 16 / atom 20 and the toys discovery backbone.
+- **0.2.0 (2026-08-28, LIAB-1020)** — the line is **Lia Tools**: `Products/Lia Toys/` → `Products/Lia Tools/`, `toy box/` → `toolbox/`, `toys/` → `tools/`, and the shape is six numbered stages (`02 analysis` replaced `03 strategy`; research left tool folders; requirements live in Linear) plus the line's unnumbered `standards/` · `research/` · `design/`. Paths only — no behaviour changed.
+- **0.1.0 (2026-08-26, CQ voice memos + Fable 5)** — first version. The formalising seat over atom 16 / atom 20 and the toys discovery backbone.
