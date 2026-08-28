@@ -226,7 +226,9 @@ step below, and the way back out is the rollback next to it.
    git fetch origin && git push origin origin/main:release
    ```
 
-   A fast-forward of `release` to `main`. Team machines follow on `/plugin marketplace update lia-plugins`, then `claude plugin update lia-tools@lia-plugins` — or automatically, if auto-update is switched on for the marketplace (`/plugin` → **Marketplaces** → `lia-plugins` → **Enable auto-update**; it is off by default for third-party marketplaces).
+   A fast-forward of `release` to `main`. Team machines follow on `/plugin marketplace update lia-plugins`, then `claude plugin update lia-tools@lia-plugins`.
+
+   **Do those two by hand, and do not wait for auto-update.** Measured 28 Aug 2026: a session was running 1.6.1 against a released 1.8.0 with *both* settings correct — `autoUpdates: true` in `~/.claude.json` and `autoUpdate: true` on the marketplace. **`DISABLE_AUTOUPDATER=1` is set in the Claude Desktop session environment** (the desktop app manages its own binary), and the plugin pass short-circuits on it — `Plugin autoupdate: skipped (auto-updater disabled)` — **before the per-marketplace flag is ever read**. So the marketplace setting is correct *and irrelevant* there. Even where it does run, the pass sleeps a random 0–10 minutes first, and headless `claude -p` never runs it at all. Nothing here is fixable from settings; the manual pull is the mechanism, not a fallback.
 4. **Roll back.** Also one command — move the ref back to the last good commit (find it in `git log origin/release`):
 
    ```
@@ -264,13 +266,17 @@ their plugins fresh at session start, so they always run whatever the `release`
 ref serves that day — they are auto-updating by construction, whatever the
 flags say. And the `autoUpdate` key's documented home is *managed* settings;
 whether Claude Code honors it at project scope is not established. It stays in
-the snippet because it states the intent and costs nothing — but the switch
-that is *known* to turn auto-update on for a CLI or desktop machine is the
-per-machine toggle: `/plugin` → **Marketplaces** → `lia-plugins` →
-**Enable auto-update**. Once it is on, the machine refreshes the marketplace
-shortly after session start and picks up whatever `release` serves — the
-renames migration included (watched in [AUDIT.md](AUDIT.md#the-renames-migration-watched-working-liab-989)),
-with no command typed.
+the snippet because it states the intent and costs nothing.
+
+**On CLI and desktop machines, do not rely on the per-machine toggle**
+(`/plugin` → **Marketplaces** → `lia-plugins` → **Enable auto-update**). This
+paragraph used to say it was *known* to work; step 3 above now records why it
+doesn't on desktop — `DISABLE_AUTOUPDATER=1` is set in that environment and the
+plugin pass returns on it before the toggle is read. Switch it on if you like;
+it costs nothing and is right if the gate ever moves. Then pull by hand anyway.
+(The renames migration was watched working in
+[AUDIT.md](AUDIT.md#the-renames-migration-watched-working-liab-989) — that
+record stands, and it was a manual update.)
 
 Without it, a cloud session falls back to whatever account-level skills happen to
 sync into it, which is exactly the shadowing LIAB-924 exists to end. **Add it to

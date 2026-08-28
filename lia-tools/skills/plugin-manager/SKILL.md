@@ -2,7 +2,7 @@
 name: plugin-manager
 slug: plugin-manager
 description: "The lia-plugins marketplace's own seat — skill-change review and merges, the promotion to release and the rollback back, version and frontmatter hygiene, the pins and renames watched. Use when a skill PR needs reviewing or landing, a merge needs promoting to machines, a bad build needs rolling back, or the roster needs a hygiene pass."
-version: 0.2.0
+version: 0.3.0
 created: 2026-08-27
 updated: 2026-08-28
 status: active
@@ -45,7 +45,7 @@ maintainer: cq
 ## The standing rules — each one paid for on 26 Aug 2026
 
 1. **The version bump is the delivery mechanism, not bookkeeping.** Machines only receive an update when the plugin's version field changes — an unbumped promotion ships to nobody while the repo says otherwise. CI remembers (`scripts/check-version-bump.mjs`); this seat understands *why*.
-2. **Merge lands, promotion ships — and promotion is deliberate.** The stop between a bad merge and every machine is the whole point of the release ref (LIAB-986). Never promote as a reflex after a merge; promote when the landed state is what machines should run, and verify a real install received it.
+2. **Merge lands, promotion ships — and promotion is deliberate.** The stop between a bad merge and every machine is the whole point of the release ref (LIAB-986). Never promote as a reflex after a merge; promote when the landed state is what machines should run, and **verify a real install received it** — which is not a formality, because **auto-update does not deliver on a CLI or desktop machine.** `DISABLE_AUTOUPDATER=1` is set in that session environment and the plugin pass returns on it before the marketplace's own `autoUpdate` flag is read, so both settings can be correct while nothing updates (measured 28 Aug 2026: 1.6.1 installed against a released 1.8.0). Cloud and web sessions are the exception — they provision fresh each time and run whatever `release` serves — so *"it updated for me"* from a cloud session is not evidence about anyone's laptop. A promotion is not delivered until an install has been pulled and invoked. Full account: README §How a change publishes, step 3.
 3. **Rollback is a force-move of `release`, and `release` is the one ref where that is legitimate.** Demonstrated end to end, not asserted: the downgrade delivers because the version *changes* — different, not greater.
 4. **A check nobody has watched fail is a check nobody knows works.** Self-tests run before real checks, and a new guard gets broken deliberately before its green is trusted — `CLAUDE.md` §Make the check fail on purpose carries the three-layer failure that earned this.
 5. **Verify by invoking, never by reading.** `claude --plugin-dir` in a fresh session before a merge; a real install after a promotion (repo rule 4). A skill that reads well and loads wrong has already happened here (LIAB-959).
@@ -61,5 +61,6 @@ maintainer: cq
 
 ## Changelog
 
+- **0.3.0 (2026-08-28, LIAB-1030)** — rule 2 says *why* verifying a real install is not a formality: auto-update does not deliver here. `DISABLE_AUTOUPDATER=1` is set in the desktop session environment and the plugin pass returns on it before the marketplace's `autoUpdate` flag is read, so both settings read correct while nothing updates. Scoped to CLI and desktop: cloud and web sessions provision fresh each time and are unaffected, so an update seen there says nothing about a laptop. Measured, not inferred — 1.6.1 installed against a released 1.8.0, and the gate found in the shipped code.
 - **0.2.0 (2026-08-28, LIAB-1025)** — rule 7's claim to the merge authority now points at `review-and-merge` §5.6, which names this seat among the leads. The claim was already here and §5.6 contradicted it, naming the lead engineer specifically; the widening resolves that rather than creating it. Rule 7 also loses **both** narrowing qualifiers, *unreviewed* and *on the current head*: with §5.7 in place, a self-review would otherwise have satisfied the first, turning a dead loophole into a live one. It now reads flat — *a session never lands its own work* — with the declared §5.7 path named as the only exception. Both caught in review.
 - **0.1.0 (2026-08-27, CQ + LIAB-995)** — first version. The marketplace's own seat, written the day after the pipeline it runs: the moments table, and the standing rules earned building LIAB-986/988/989 — version-gates-delivery, deliberate promotion, legitimate force-push, checks watched failing, invoke-don't-read, sha-not-ref.

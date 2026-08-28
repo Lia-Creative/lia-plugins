@@ -15,7 +15,7 @@ Then install what you need:
 /plugin install design-and-refine@lia-plugins
 ```
 
-That's it. New tools added here later show up with a `/plugin marketplace update lia-plugins`, and updates to a plugin you already have come with `claude plugin update lia-tools@lia-plugins` — or on their own, if you switch on auto-update for the marketplace (`/plugin` → **Marketplaces** → `lia-plugins`), which is off by default.
+That's it. New tools added here later show up with a `/plugin marketplace update lia-plugins`, and updates to a plugin you already have come with `claude plugin update lia-tools@lia-plugins`. **Run both by hand** — auto-update for the marketplace exists (`/plugin` → **Marketplaces** → `lia-plugins`, off by default) but does not fire on a desktop machine, for a reason recorded in [lia-tools/README.md](lia-tools/README.md#how-a-change-publishes) step 3. Cloud and web sessions are the exception: they provision fresh each time and always run what `release` serves.
 
 **Cloud and web sessions** (claude.ai/code, the mobile app) have no `/plugin` command. They pick these up only where a repo declares them in `.claude/settings.json` — see [lia-tools/README.md](lia-tools/README.md#the-one-gap-worth-knowing-about).
 

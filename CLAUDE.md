@@ -62,8 +62,14 @@ along with the hand-carried `.plugin` zip.
    only fetch when the version field changes — and CI fails a `lia-tools/**`
    PR without one (`scripts/check-version-bump.mjs`). Machines follow on
    `/plugin marketplace update lia-plugins` and `claude plugin update
-   lia-tools@lia-plugins`, or automatically with auto-update enabled for the
-   marketplace (off by default for third-party marketplaces). There is no
+   lia-tools@lia-plugins` — **by hand, both of them.** Marketplace auto-update
+   exists and does not fire on a desktop machine: `DISABLE_AUTOUPDATER=1` is
+   set in that session environment and the plugin pass returns on it before
+   the marketplace's own flag is read (LIAB-1030, measured — 1.6.1 installed
+   against a released 1.8.0 with both settings correct). A promotion is not
+   delivered until an install has been pulled and invoked. Cloud and web
+   sessions are the exception: they provision fresh each time and always run
+   what `release` serves. There is no
    second channel to republish to and no zip to build.
 
    **Cloud and web sessions are the exception worth remembering:** they have no
