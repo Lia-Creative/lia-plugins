@@ -8,7 +8,7 @@
     Linear ticket <KEY-NNN> (live, with relations) · <distillation doc> · <current doc section(s)> ·
     the house-style refs the ticket names.
 
-    Job: draft the "<section>" section of <doc> to the ticket\'s acceptance criteria. One job —
+    Job: draft the "<section>" section of <doc> to the ticket's acceptance criteria. One job —
     respect Scope / non-goals. Strategy stays at the 12-month level; tactics point to the 90-day plan.
     Write into <working file>; do not touch other sections. Set the execution-order status to "drafted".
 
@@ -17,8 +17,8 @@
     You did not write this draft. Load ONLY: <gate-rubric instance> · Linear ticket <KEY-NNN> ·
     the drafted section at <path>.
 
-    Run Tier 1 mechanical checks, then Tier 2 judgment checks, then the ticket\'s acceptance
-    criteria + quality metric. Output the verdict in the rubric\'s format. Do not fix anything yourself.
+    Run Tier 1 mechanical checks, then Tier 2 judgment checks, then the ticket's acceptance
+    criteria + quality metric. Output the verdict in the rubric's format. Do not fix anything yourself.
 
 ## Revise
 

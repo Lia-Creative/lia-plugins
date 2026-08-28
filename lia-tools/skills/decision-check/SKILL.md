@@ -15,7 +15,6 @@ triggers:
   - "are we rushing this"
 companions:
   - execution-discipline
-  - brainstorm
   - architecture
   - lead-engineer
 maintainer: cq
@@ -48,7 +47,7 @@ maintainer: cq
 ## What this seat is not
 
 - **Not a decision record.** Where a settled call gets written down is the decisions register; this is the pass *before* that.
-- **Not a brainstorm.** `brainstorm` opens the space; this closes it on one option.
+- **Not idea generation.** Opening the space is a different job; this closes it on one option that is already on the table.
 - **Not an architecture review.** A technical call with system consequences goes to `architecture`; this is the general shape underneath.
 
 ## Changelog

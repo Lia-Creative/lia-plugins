@@ -239,7 +239,7 @@ writing"*. Saying so explicitly is the row.
 | `7a73874` — the other benches, PR #18 (27 Aug, LIAB-995) | `design-exploration` · `design-flows` · `design-lead` · `discovery-lead` · `error-states` · `hifi-design` · `plugin-manager` |
 | `c9603e4` — PR #20 (27 Aug, LIAB-1000) | `design-reference` |
 | `7819b12` — PR #22 (**28 Aug**, LIAB-1004) | `ux-writing` |
-| PR #34 (28 Aug, LIAB-1028) | `doc-iteration-loop` — see the ports below; it superseded a vault copy, not nothing |
+| PR #34 (28 Aug, LIAB-1028) | *(none — both skills in this PR were ports; see §The later ports)* |
 | `6f49080` — PR #25 (28 Aug, LIAB-1008) | `file-management` |
 
 ## Ports out of the vault — PR #19, LIAB-997
@@ -273,7 +273,7 @@ since PR #19. `figma-dls-build` was considered and **stays out**.
 
 | Skill | Came from | Version at the port | What happened to it |
 |---|---|---|---|
-| `doc-iteration-loop` | `Lia Vault/_meta/skills/doc-iteration-loop/` | `0.1.0` | Copied **byte-identical** (`cmp` clean on `SKILL.md` and all three templates), then repaired in place: it carried **no `description:`** — the field a session's skill listing shows and auto-triggering runs on, so CI would have refused it — and its templates pointed at retired `_meta/skills/` paths a plugin install cannot reach. Method unchanged. Vault copy frozen per rule 1. |
+| `doc-iteration-loop` | `Lia Vault/_meta/skills/doc-iteration-loop/` | `0.1.0` | Copied **byte-identical** (`cmp` clean on `SKILL.md` and all three templates) **and then repaired**, because the source carried four defects. It had **no `description:`** — the field a session's skill listing shows and auto-triggering runs on, so it would have installed invisible and CI would have refused it. Its templates and ticket prompt pointed at retired `_meta/skills/` paths a plugin install cannot reach, and one bare relative path (`execution-discipline/SKILL.md`) that nothing resolves. **Its frontmatter said `version: 0.1.0` while its changelog's newest entry was `0.2.0`** — one skill, two answers, the exact failure rule 3 exists to stop; it lands here as **0.3.0**, following the changelog. And **21 escaped apostrophes** across all four files. Method unchanged. Vault copy frozen per rule 1. *(The port was faithful and the defects are the source's — worth recording, because "copied byte-identical" and "arrived correct" are not the same claim.)* |
 | `decision-check` | `cq` 0.5.0 (`chris vault/00 inbox/_agent/cq-install/cq.plugin`, 28 Jul 2026) | `0.1.0` in `cq`, unversioned frontmatter | **Rewritten, not moved.** The original ran on *"Chris's slow-brain check"*, triggered on *"when Chris says"*, and closed with *"don't make the decision for Chris"*. A straight port would have put one founder's habit in a shared roster. The five checks are unchanged; the framing is now the seat, and the 13 May reset is kept as attributed provenance. |
 
 **On `decision-check` specifically:** this is the "which copy won" question with a
