@@ -176,3 +176,121 @@ they pass the one that matters here: they exist in exactly one place, editable
 from a web UI, with no history and no diff. A git repo with the same PR shape as
 this one fixes that without mixing personal tooling into the build plugin. Which
 repo is Chris's call; that they need one is not.
+
+---
+
+# After the audit — the 28 skills added since (LIAB-1003)
+
+The tables above are a dated measurement of the LIAB-918 roster and are **not a
+live list** — nothing here edits them. But `AUDIT.md` answers one question per
+skill (*which copy won, and how do we know*) so a later session doesn't re-derive
+it, and by 28 Aug 2026 **34 of the 52 skills had no answer recorded**.
+
+The gap was larger than it looked, twice over. The ticket named 13 from two PRs.
+Listing `skills/` and grepping this file for each name found 28 — and **that
+count was still wrong**, because a grep for the name matches a skill *mentioned*
+anywhere, including as a destination in someone else's row. Six seats named at
+the end of §The winners as *"not part of this audit"* (`epic-builder`,
+`story-writer`, `task-writer`, `ready-review`, `build-prep`, `review-and-merge`)
+were therefore counted as covered while having no origin recorded anywhere. A
+reviewer caught it. **The check's blind spot was in the shape of what it
+enumerated** — mentions, not rows — which is the same failure this file keeps
+recording about guards, arriving in a hand-grep. The six are answered below.
+
+**Every row here was established from the repo, not from memory:** the commit
+that first added each `SKILL.md` (`git log --diff-filter=A`) and that skill's
+own earliest changelog entry.
+
+**The PR numbers were confirmed against `gh pr view`, not inferred.** They are
+the one column here that cannot be established from the repo alone — three of
+these merge commits carry no `(#NN)` in their subject. Confirmed: #19 → `8826a17`,
+#20 → `c9603e4`, #22 → `7819b12`, #25 → `6f49080`.
+
+One of them reads like a contradiction and is not, so it is written down once:
+`CLAUDE.md` rule 8 says the unloadable `ux-writing/references/*.md` diff *"passed
+green on PR #20 (LIAB-1005)"*, while the table below attributes #20 to
+`design-reference`. Both are true — those files sat on **PR #20's branch** and
+were removed before it merged, which is what rule 8 means by *"it never reached
+`main`: a human reading the diff stopped it."* PR #20's merged file list contains
+no `ux-writing` path; the guard that came out of it is PR #21.
+
+**The dates are commit dates, not authoring dates**, and the two differ. A first
+draft of this table said `ux-writing` landed 27 Aug because its changelog entry
+is dated 27 Aug; `7819b12` is dated the 28th. Caught in review, and every other
+date in the table re-checked against `git log` afterwards rather than only the
+one that was reported.
+
+## New writing, no competing copy
+
+Nothing was superseded — these were written for this plugin and have never
+existed anywhere else. The answer to *which copy won* is *there was only one*.
+
+This includes the tool-shop seats that §The winners set aside as *"content work
+layered on top of the named winners … not part of this audit"*. That was right
+for a roster audit of competing copies — there were none to compare — but it
+left six seats named and unanswered, which is not the same as answered *"new
+writing"*. Saying so explicitly is the row.
+
+| Landed | Skills |
+|---|---|
+| `436b2b6` — tool shop 1.0, the writer seats + the ready gate (26 Aug, CQ voice memos + Fable 5) | `epic-builder` · `story-writer` · `task-writer` · `ready-review` |
+| `a886164` — tool shop 1.1, the seats filled (26 Aug, CQ voice memos + Fable 5) | `acceptance-criteria` · `architecture` · `build` · `build-prep` · `jtbd` · `lead-engineer` · `polish` · `problem-definition` · `project-manager` · `review-and-merge` · `scenario-builder` · `schema-manager` · `security` |
+| `555986a` — the toys nine + the design pair, 1.2.0 (26 Aug, LIAB-921) | `design-handoff` |
+| `7a73874` — the other benches, PR #18 (27 Aug, LIAB-995) | `design-exploration` · `design-flows` · `design-lead` · `discovery-lead` · `error-states` · `hifi-design` · `plugin-manager` |
+| `c9603e4` — PR #20 (27 Aug, LIAB-1000) | `design-reference` |
+| `7819b12` — PR #22 (**28 Aug**, LIAB-1004) | `ux-writing` |
+| `6f49080` — PR #25 (28 Aug, LIAB-1008) | `file-management` |
+
+## Ports out of the vault — PR #19, LIAB-997
+
+These **supersede a `_meta/skills/` copy that CLAUDE.md rule 1 now freezes.**
+The version at the moment of the port is recorded so the freeze has a record,
+and so a future sync attempt has something concrete to refuse against.
+
+| Skill | Frozen vault copy | Vault version | Plugin version at 28 Aug |
+|---|---|---|---|
+| `product-retro` | `Lia Vault/_meta/skills/product-retro/` | `1.0.0` | `1.2.0` |
+| `prototype-feedback-loop` | `Lia Vault/_meta/skills/prototype-feedback-loop/` | `0.5.0` | `0.6.0` |
+| `synthetic-users` | `Lia Vault/_meta/skills/synthetic-users/` | `2026-06-25` (pre-semver) | `1.0.0` |
+| `lia-voice-check` | `Lia Vault/_meta/skills/lia-voice-check/` | `0.1.0` | `0.2.4` |
+
+**The vault copies still exist and are not to be deleted** — LIAB-919's freeze
+holds. They are frozen, not canonical: every one of them is now behind, which is
+the point. Never sync *from* them.
+
+*(Vault versions were re-read from `Lia Vault/_meta/skills/` on 28 Aug 2026 by
+the session that wrote this row — that vault **was** mounted, unlike Chris's
+personal one below. They are current as at that date; the plugin versions move,
+so treat the right-hand column as the moment of this row, not a live figure. A
+reviewer without the Lia Vault mounted cannot re-check this column, which is why
+it says who read it and when.)*
+
+## Ports out of Chris's personal `cq` bundle — PR #19, LIAB-996
+
+| Skill | Source artifact | What was left behind |
+|---|---|---|
+| `feature-definition` | `cq.plugin` v0.5.0, 28 Jul 2026 | recorded in the skill's own §"What was not ported" |
+| `insight-extraction` | `cq.plugin` v0.5.0, 28 Jul 2026 | recorded in the skill's own §"What was not ported" |
+
+The artifact is a plain zip at `chris vault/00 inbox/_agent/cq-install/cq.plugin`
+— **cited from the LIAB-996 record, not re-verified in this pass: Chris's
+personal vault was not mounted in the session that wrote these rows.** Anyone
+re-checking should mount it and confirm before relying on the path. LIAB-996 had
+been parked on the premise that a claude.ai upload cannot be read from a
+filesystem, which is true of the upload and false of this artifact.
+
+## When a row is owed
+
+**Every PR that adds a skill owes its row here, in that PR.** Not afterwards, and
+not in a follow-up ticket — this section exists because eight PRs' worth of
+additions each looked too small to be worth a line, and the answer to *where did
+this come from* then costs an archaeology session instead of a sentence.
+
+A row is three things: **where it came from · what it superseded (or that
+nothing did) · how that was established.** One line is a complete row when the
+answer is *new writing, no competing copy*.
+
+This is `CLAUDE.md` rule 9, so it is a repo rule rather than something to
+remember. Nothing enforces it mechanically — a guard that reads intent would
+have to know what a skill's provenance *is* — so it is a review question, and
+`review-and-merge`'s reviewer is the one who asks it.
