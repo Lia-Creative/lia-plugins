@@ -182,6 +182,12 @@ function checkSkills(root, mergeBase, changed) {
       // delivery mechanism, so that is where a bad version does its harm — but
       // the argument got weaker once the code to close it sat three lines
       // away, and an unparseable skill version is a version nobody can order.
+      //
+      // Known edge: this also fires when the BASE is unparseable and the head
+      // is a genuine repair (v0.1.0 -> 0.2.0), because the pair still cannot
+      // be ordered. No such base exists on the tree today, and it fails loudly
+      // rather than passing silently, which is the right direction to be wrong
+      // in. If one ever does, fix the base in its own commit first.
       if (direction !== 1) {
         offences.push({ kind: "skill-unconfirmed", file: rel, detail: `version: cannot be confirmed to move forward, ${baseVersion} -> ${headVersion} — either it does not parse as numeric components, or its numeric core is unchanged while the string differs.` });
         continue;
