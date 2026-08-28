@@ -266,13 +266,17 @@ their plugins fresh at session start, so they always run whatever the `release`
 ref serves that day — they are auto-updating by construction, whatever the
 flags say. And the `autoUpdate` key's documented home is *managed* settings;
 whether Claude Code honors it at project scope is not established. It stays in
-the snippet because it states the intent and costs nothing — but the switch
-that is *known* to turn auto-update on for a CLI or desktop machine is the
-per-machine toggle: `/plugin` → **Marketplaces** → `lia-plugins` →
-**Enable auto-update**. Once it is on, the machine refreshes the marketplace
-shortly after session start and picks up whatever `release` serves — the
-renames migration included (watched in [AUDIT.md](AUDIT.md#the-renames-migration-watched-working-liab-989)),
-with no command typed.
+the snippet because it states the intent and costs nothing.
+
+**On CLI and desktop machines, do not rely on the per-machine toggle**
+(`/plugin` → **Marketplaces** → `lia-plugins` → **Enable auto-update**). This
+paragraph used to say it was *known* to work; step 3 above now records why it
+doesn't on desktop — `DISABLE_AUTOUPDATER=1` is set in that environment and the
+plugin pass returns on it before the toggle is read. Switch it on if you like;
+it costs nothing and is right if the gate ever moves. Then pull by hand anyway.
+(The renames migration was watched working in
+[AUDIT.md](AUDIT.md#the-renames-migration-watched-working-liab-989) — that
+record stands, and it was a manual update.)
 
 Without it, a cloud session falls back to whatever account-level skills happen to
 sync into it, which is exactly the shadowing LIAB-924 exists to end. **Add it to
