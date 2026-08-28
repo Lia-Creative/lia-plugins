@@ -17,6 +17,7 @@ companions:
   - architecture
   - schema-manager
   - build
+  - file-management
 maintainer: cq
 ---
 

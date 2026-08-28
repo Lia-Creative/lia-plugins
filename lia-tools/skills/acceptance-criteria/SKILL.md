@@ -17,6 +17,7 @@ companions:
   - story-writer
   - build-prep
   - review-and-merge
+  - file-management
 maintainer: cq
 ---
 
