@@ -176,3 +176,85 @@ they pass the one that matters here: they exist in exactly one place, editable
 from a web UI, with no history and no diff. A git repo with the same PR shape as
 this one fixes that without mixing personal tooling into the build plugin. Which
 repo is Chris's call; that they need one is not.
+
+---
+
+# After the audit — the 28 skills added since (LIAB-1003)
+
+The tables above are a dated measurement of the LIAB-918 roster and are **not a
+live list** — nothing here edits them. But `AUDIT.md` answers one question per
+skill (*which copy won, and how do we know*) so a later session doesn't re-derive
+it, and by 28 Aug 2026 **28 of the 52 skills had no answer recorded**.
+
+The gap was larger than it looked: the ticket named 13 from two PRs, and the
+count was taken by listing the skills and grepping this file for each, rather
+than by trusting that list. Same reason the rule below exists.
+
+**Every row here was established from the repo, not from memory:** the commit
+that first added each `SKILL.md` (`git log --diff-filter=A`) and that skill's
+own earliest changelog entry.
+
+## New writing, no competing copy
+
+Nothing was superseded — these were written for this plugin and have never
+existed anywhere else. The answer to *which copy won* is *there was only one*.
+
+| Landed | Skills |
+|---|---|
+| `a886164` — tool shop 1.1, the seats filled (26 Aug, CQ voice memos + Fable 5) | `acceptance-criteria` · `architecture` · `build` · `jtbd` · `lead-engineer` · `polish` · `problem-definition` · `project-manager` · `scenario-builder` · `schema-manager` · `security` |
+| `555986a` — the toys nine + the design pair, 1.2.0 (26 Aug, LIAB-921) | `design-handoff` |
+| `7a73874` — the other benches, PR #18 (27 Aug, LIAB-995) | `design-exploration` · `design-flows` · `design-lead` · `discovery-lead` · `error-states` · `hifi-design` · `plugin-manager` |
+| `c9603e4` — PR #20 (27 Aug, LIAB-1000) | `design-reference` |
+| `7819b12` — PR #22 (27 Aug, LIAB-1004) | `ux-writing` |
+| `6f49080` — PR #25 (28 Aug, LIAB-1008) | `file-management` |
+
+## Ports out of the vault — PR #19, LIAB-997
+
+These **supersede a `_meta/skills/` copy that CLAUDE.md rule 1 now freezes.**
+The version at the moment of the port is recorded so the freeze has a record,
+and so a future sync attempt has something concrete to refuse against.
+
+| Skill | Frozen vault copy | Vault version | Plugin version at 28 Aug |
+|---|---|---|---|
+| `product-retro` | `Lia Vault/_meta/skills/product-retro/` | `1.0.0` | `1.2.0` |
+| `prototype-feedback-loop` | `Lia Vault/_meta/skills/prototype-feedback-loop/` | `0.5.0` | `0.6.0` |
+| `synthetic-users` | `Lia Vault/_meta/skills/synthetic-users/` | `2026-06-25` (pre-semver) | `1.0.0` |
+| `lia-voice-check` | `Lia Vault/_meta/skills/lia-voice-check/` | `0.1.0` | `0.2.4` |
+
+**The vault copies still exist and are not to be deleted** — LIAB-919's freeze
+holds. They are frozen, not canonical: every one of them is now behind, which is
+the point. Never sync *from* them.
+
+*(Vault versions re-read from disk on 28 Aug 2026 and are current as at that
+date; the plugin versions move, so treat the right-hand column as the moment of
+this row, not a live figure.)*
+
+## Ports out of Chris's personal `cq` bundle — PR #19, LIAB-996
+
+| Skill | Source artifact | What was left behind |
+|---|---|---|
+| `feature-definition` | `cq.plugin` v0.5.0, 28 Jul 2026 | recorded in the skill's own §"What was not ported" |
+| `insight-extraction` | `cq.plugin` v0.5.0, 28 Jul 2026 | recorded in the skill's own §"What was not ported" |
+
+The artifact is a plain zip at `chris vault/00 inbox/_agent/cq-install/cq.plugin`
+— **cited from the LIAB-996 record, not re-verified in this pass: Chris's
+personal vault was not mounted in the session that wrote these rows.** Anyone
+re-checking should mount it and confirm before relying on the path. LIAB-996 had
+been parked on the premise that a claude.ai upload cannot be read from a
+filesystem, which is true of the upload and false of this artifact.
+
+## When a row is owed
+
+**Every PR that adds a skill owes its row here, in that PR.** Not afterwards, and
+not in a follow-up ticket — this section exists because eight PRs' worth of
+additions each looked too small to be worth a line, and the answer to *where did
+this come from* then costs an archaeology session instead of a sentence.
+
+A row is three things: **where it came from · what it superseded (or that
+nothing did) · how that was established.** One line is a complete row when the
+answer is *new writing, no competing copy*.
+
+This is `CLAUDE.md` rule 9, so it is a repo rule rather than something to
+remember. Nothing enforces it mechanically — a guard that reads intent would
+have to know what a skill's provenance *is* — so it is a review question, and
+`review-and-merge`'s reviewer is the one who asks it.

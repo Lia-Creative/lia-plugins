@@ -102,9 +102,9 @@ along with the hand-carried `.plugin` zip.
    [lia-tools/README.md](lia-tools/README.md#whats-in-it) is a skill nobody
    knows we carry, and a row with no directory points at nothing.
    `node scripts/check-skill-roster.mjs` is the guard; CI runs it on every PR.
-   *(Numbered last on purpose — the rule numbers here are cited from skills and
-   scripts, so a new rule goes on the end rather than shifting five references
-   and a plugin version with it.)*
+   *(Rules go on the end as they arrive — the numbers here are cited from
+   skills and scripts, so inserting one would shift five references and a
+   plugin version with it.)*
 
 ## Make the check fail on purpose
 
@@ -139,6 +139,28 @@ before believing what it says.
 And when you find a gap you are not fixing: **it becomes a ticket, not a
 paragraph.** Three gaps recorded in READMEs this day were invisible until
 someone asked.
+
+9. **A PR that adds a skill owes it a row in
+   [lia-tools/AUDIT.md](lia-tools/AUDIT.md), in that PR.** The row answers
+   three things: **where it came from · what it superseded (or that nothing
+   did) · how that was established.** One line is a complete row when the
+   answer is *new writing, no competing copy* — the point is that there *is*
+   an answer, not that it is long.
+
+   This is rule 3's question one level up: rule 3 makes a version mean
+   something, this makes the skill's origin mean something. It exists because
+   **28 of 52 skills had no row by 28 Aug 2026** (LIAB-1003) — eight PRs'
+   worth, each addition individually too small to seem worth a line, and the
+   answer to *where did this come from* then costs an archaeology session
+   instead of a sentence. It matters most for the ports: four skills supersede
+   a frozen vault copy and two came out of Chris's personal `cq` bundle, which
+   is exactly the "which copy won" question `AUDIT.md` was written to answer.
+
+   **Nothing enforces this mechanically** — a guard cannot read what a skill's
+   provenance *is* — so it is a review question, and `review-and-merge`'s
+   reviewer is the one who asks it. The dated LIAB-918 measurement tables at
+   the top of that file are a record of a moment, not a live list: add to the
+   section below them, never edit them.
 
 Roster and what belongs: [lia-tools/README.md](lia-tools/README.md). The
 audit trail of which copy won, why, and what was retired:
