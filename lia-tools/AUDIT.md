@@ -184,28 +184,48 @@ repo is Chris's call; that they need one is not.
 The tables above are a dated measurement of the LIAB-918 roster and are **not a
 live list** — nothing here edits them. But `AUDIT.md` answers one question per
 skill (*which copy won, and how do we know*) so a later session doesn't re-derive
-it, and by 28 Aug 2026 **28 of the 52 skills had no answer recorded**.
+it, and by 28 Aug 2026 **34 of the 52 skills had no answer recorded**.
 
-The gap was larger than it looked: the ticket named 13 from two PRs, and the
-count was taken by listing the skills and grepping this file for each, rather
-than by trusting that list. Same reason the rule below exists.
+The gap was larger than it looked, twice over. The ticket named 13 from two PRs.
+Listing `skills/` and grepping this file for each name found 28 — and **that
+count was still wrong**, because a grep for the name matches a skill *mentioned*
+anywhere, including as a destination in someone else's row. Six seats named at
+the end of §The winners as *"not part of this audit"* (`epic-builder`,
+`story-writer`, `task-writer`, `ready-review`, `build-prep`, `review-and-merge`)
+were therefore counted as covered while having no origin recorded anywhere. A
+reviewer caught it. **The check's blind spot was in the shape of what it
+enumerated** — mentions, not rows — which is the same failure this file keeps
+recording about guards, arriving in a hand-grep. The six are answered below.
 
 **Every row here was established from the repo, not from memory:** the commit
 that first added each `SKILL.md` (`git log --diff-filter=A`) and that skill's
 own earliest changelog entry.
+
+**The dates are commit dates, not authoring dates**, and the two differ. A first
+draft of this table said `ux-writing` landed 27 Aug because its changelog entry
+is dated 27 Aug; `7819b12` is dated the 28th. Caught in review, and every other
+date in the table re-checked against `git log` afterwards rather than only the
+one that was reported.
 
 ## New writing, no competing copy
 
 Nothing was superseded — these were written for this plugin and have never
 existed anywhere else. The answer to *which copy won* is *there was only one*.
 
+This includes the tool-shop seats that §The winners set aside as *"content work
+layered on top of the named winners … not part of this audit"*. That was right
+for a roster audit of competing copies — there were none to compare — but it
+left six seats named and unanswered, which is not the same as answered *"new
+writing"*. Saying so explicitly is the row.
+
 | Landed | Skills |
 |---|---|
-| `a886164` — tool shop 1.1, the seats filled (26 Aug, CQ voice memos + Fable 5) | `acceptance-criteria` · `architecture` · `build` · `jtbd` · `lead-engineer` · `polish` · `problem-definition` · `project-manager` · `scenario-builder` · `schema-manager` · `security` |
+| `436b2b6` — tool shop 1.0, the writer seats + the ready gate (26 Aug, CQ voice memos + Fable 5) | `epic-builder` · `story-writer` · `task-writer` · `ready-review` |
+| `a886164` — tool shop 1.1, the seats filled (26 Aug, CQ voice memos + Fable 5) | `acceptance-criteria` · `architecture` · `build` · `build-prep` · `jtbd` · `lead-engineer` · `polish` · `problem-definition` · `project-manager` · `review-and-merge` · `scenario-builder` · `schema-manager` · `security` |
 | `555986a` — the toys nine + the design pair, 1.2.0 (26 Aug, LIAB-921) | `design-handoff` |
 | `7a73874` — the other benches, PR #18 (27 Aug, LIAB-995) | `design-exploration` · `design-flows` · `design-lead` · `discovery-lead` · `error-states` · `hifi-design` · `plugin-manager` |
 | `c9603e4` — PR #20 (27 Aug, LIAB-1000) | `design-reference` |
-| `7819b12` — PR #22 (27 Aug, LIAB-1004) | `ux-writing` |
+| `7819b12` — PR #22 (**28 Aug**, LIAB-1004) | `ux-writing` |
 | `6f49080` — PR #25 (28 Aug, LIAB-1008) | `file-management` |
 
 ## Ports out of the vault — PR #19, LIAB-997
@@ -225,9 +245,12 @@ and so a future sync attempt has something concrete to refuse against.
 holds. They are frozen, not canonical: every one of them is now behind, which is
 the point. Never sync *from* them.
 
-*(Vault versions re-read from disk on 28 Aug 2026 and are current as at that
-date; the plugin versions move, so treat the right-hand column as the moment of
-this row, not a live figure.)*
+*(Vault versions were re-read from `Lia Vault/_meta/skills/` on 28 Aug 2026 by
+the session that wrote this row — that vault **was** mounted, unlike Chris's
+personal one below. They are current as at that date; the plugin versions move,
+so treat the right-hand column as the moment of this row, not a live figure. A
+reviewer without the Lia Vault mounted cannot re-check this column, which is why
+it says who read it and when.)*
 
 ## Ports out of Chris's personal `cq` bundle — PR #19, LIAB-996
 

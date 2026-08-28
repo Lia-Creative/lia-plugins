@@ -149,7 +149,7 @@ someone asked.
 
    This is rule 3's question one level up: rule 3 makes a version mean
    something, this makes the skill's origin mean something. It exists because
-   **28 of 52 skills had no row by 28 Aug 2026** (LIAB-1003) — eight PRs'
+   **34 of 52 skills had no row by 28 Aug 2026** (LIAB-1003) — eight PRs'
    worth, each addition individually too small to seem worth a line, and the
    answer to *where did this come from* then costs an archaeology session
    instead of a sentence. It matters most for the ports: four skills supersede
