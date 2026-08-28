@@ -1,6 +1,6 @@
 #!/usr/bin/env node
-// Guard: a lia-tools change without a version bump is a publish that reaches
-// nobody.
+// Guard: a lia-tools change that does not move the numbers is a publish that
+// reaches nobody — or, worse, one that reaches everybody with a lie attached.
 //
 // Why this exists (LIAB-986): machines install `lia-tools` from the `release`
 // ref, and Claude Code only delivers an update when the plugin's `version`
@@ -8,16 +8,50 @@
 // this field changes". So the bump is not bookkeeping, it is the delivery
 // mechanism: promote a commit whose version matches what a machine already
 // has, and that machine keeps the old build while the repo says otherwise.
-// CLAUDE.md rule 3 already demands the bump; this makes CI remember it,
-// because version numbers have lied here before (lia-tools/AUDIT.md has the
-// story) and 1.2.1-with-no-enforcement was the worst of both worlds.
 //
-// What it checks: if anything under lia-tools/ differs between the base ref
-// and the working tree, lia-tools/.claude-plugin/plugin.json must carry a
-// different `version` than it does at the base. Different, not greater — a
-// revert that moves the version backwards still delivers, because the string
-// still changes. Everything under lia-tools/ counts, docs included: the whole
-// directory ships to installers.
+// CLAUDE.md rule 3 has three parts:
+//
+//   "A content change bumps the skill's `version:` **with a changelog line**,
+//    and bumps lia-tools/.claude-plugin/plugin.json."
+//
+// Until LIAB-1016 this guard enumerated the *manifest* and nothing else, so
+// two of those three parts were outside what it could report. A skill could
+// change its content, ship to every machine, and carry a version number that
+// had not moved and a changelog that did not mention it — green. That is the
+// precise failure `lia-tools/AUDIT.md` records having happened before, and
+// rule 3's own sentence says "the changelog line is what makes them mean
+// something". The changelog line was the half nothing checked.
+//
+// The lesson it is an instance of (CLAUDE.md, "Make the check fail on
+// purpose"): a guard's blind spot is not in what it checks, it is in the
+// shape of what it enumerates.
+//
+// What it checks:
+//
+//   1. MANIFEST MOVED. If anything under lia-tools/ differs between the base
+//      ref and the working tree, lia-tools/.claude-plugin/plugin.json must
+//      carry a different `version` than it does at the base.
+//   2. MANIFEST MOVED FORWARD (LIAB-1002). Not merely different. A version
+//      that goes backwards still *delivers* — the string changed — so every
+//      machine silently rolls back to an older build with nothing saying so.
+//      Found live twice on PR #19: main was at 1.3.0 while the branch carried
+//      1.2.5, and resolving the conflict by keeping 1.2.5 would have gone
+//      green in CI while publishing a downgrade. A deliberate rollback has its
+//      own sanctioned path — the `release` force-push in lia-tools/README.md
+//      §Roll back — which does not run this check.
+//   3. EACH CHANGED SKILL BUMPED. A changed file under lia-tools/skills/<name>/
+//      means that skill's own `version:` moved in the same diff.
+//   4. THE BUMP IS CHANGELOGGED. A moved `version:` has a line naming it in
+//      that skill's `## Changelog`, and the section exists at all.
+//
+// Deliberately not checked: whether a changelog line is any *good*. Presence
+// of a line naming the new version is the bar; the rest is review's job.
+//
+// Known boundary: the diff is `git diff <merge-base>`, which does not see
+// untracked files. In CI that is exactly right — everything on a PR head is
+// committed — but a local run before `git add` will not flag a brand-new file.
+// CI is the authority; a green local run on an uncommitted tree is not a
+// clean bill of health.
 //
 //   node scripts/check-version-bump.mjs                     # against origin/main
 //   node scripts/check-version-bump.mjs --base origin/main  # explicit base
@@ -31,10 +65,115 @@ import { fileURLToPath } from "node:url";
 
 const REPO_ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 const PLUGIN_DIR = "lia-tools/";
+const SKILLS_DIR = "lia-tools/skills/";
 const MANIFEST = "lia-tools/.claude-plugin/plugin.json";
 
 const git = (cwd, ...args) =>
   execFileSync("git", args, { cwd, encoding: "utf8", stdio: ["ignore", "pipe", "pipe"] }).trim();
+
+const gitShow = (cwd, ref, path) => {
+  try {
+    return execFileSync("git", ["show", `${ref}:${path}`], { cwd, encoding: "utf8", stdio: ["ignore", "pipe", "pipe"] });
+  } catch {
+    return null;
+  }
+};
+
+// Frontmatter is read with a deliberately small parser rather than a YAML
+// dependency: the only fields that matter here are flat scalars, and the
+// frontmatter guard already owns the question of whether a block is
+// well-formed at all.
+function frontmatterVersion(source) {
+  if (source == null) return null;
+  const m = /^---\r?\n([\s\S]*?)\r?\n---/.exec(source.replace(/^﻿/, ""));
+  if (!m) return null;
+  const v = /^version:[ \t]*(\S+)[ \t]*$/m.exec(m[1]);
+  return v ? v[1].replace(/^["']|["']$/g, "") : null;
+}
+
+function changelogBody(source) {
+  if (source == null) return null;
+  const m = /^##[ \t]+Changelog[ \t]*$/m.exec(source);
+  return m ? source.slice(m.index + m[0].length) : null;
+}
+
+// Numeric where it can be, string-inequality where it cannot. A version this
+// cannot parse is not silently treated as forward: it falls back to "changed",
+// which keeps rule 1 enforced and declines to guess about rule 2.
+function compareVersions(a, b) {
+  const parse = (v) => {
+    const core = String(v).split(/[-+]/)[0].split(".");
+    if (core.length === 0 || core.some((p) => !/^\d+$/.test(p))) return null;
+    return core.map(Number);
+  };
+  const pa = parse(a);
+  const pb = parse(b);
+  if (!pa || !pb) return a === b ? 0 : null;
+  for (let i = 0; i < Math.max(pa.length, pb.length); i += 1) {
+    const d = (pa[i] ?? 0) - (pb[i] ?? 0);
+    if (d !== 0) return d > 0 ? 1 : -1;
+  }
+  return 0;
+}
+
+// The skills touched by this diff, by directory name. A change anywhere under
+// a skill — its references/, its scripts/, its templates/ — is a content
+// change to that skill, which is what rule 3 governs.
+function touchedSkills(changed) {
+  const names = new Set();
+  for (const path of changed) {
+    if (!path.startsWith(SKILLS_DIR)) continue;
+    const rest = path.slice(SKILLS_DIR.length);
+    const slash = rest.indexOf("/");
+    if (slash > 0) names.add(rest.slice(0, slash));
+  }
+  return [...names].sort();
+}
+
+function checkSkills(root, mergeBase, changed) {
+  const offences = [];
+  for (const name of touchedSkills(changed)) {
+    const rel = `${SKILLS_DIR}${name}/SKILL.md`;
+    let head;
+    try {
+      head = readFileSync(join(root, rel), "utf8");
+    } catch {
+      // No SKILL.md in the working tree: either the skill was deleted, or the
+      // directory cannot load at all. The roster guard owns that question and
+      // reports it properly; failing here too would just be a second voice
+      // saying the same thing in worse words.
+      continue;
+    }
+    const headVersion = frontmatterVersion(head);
+    if (headVersion == null) {
+      offences.push({ kind: "skill-no-version", file: rel, detail: `changed, but its frontmatter carries no version: field — rule 3 has nothing to move.` });
+      continue;
+    }
+
+    const base = gitShow(root, mergeBase, rel);
+    const baseVersion = frontmatterVersion(base);
+    const isNew = base == null;
+
+    if (!isNew && baseVersion === headVersion) {
+      offences.push({ kind: "skill-no-bump", file: rel, detail: `content changed but version: is "${headVersion}" on both sides — this ships with a version number that did not move.` });
+      continue;
+    }
+    if (!isNew && baseVersion != null && compareVersions(headVersion, baseVersion) === -1) {
+      offences.push({ kind: "skill-regressed", file: rel, detail: `version: moved backwards, ${baseVersion} -> ${headVersion}.` });
+      continue;
+    }
+
+    const body = changelogBody(head);
+    if (body == null) {
+      offences.push({ kind: "skill-no-changelog", file: rel, detail: `version: is "${headVersion}" but the file has no "## Changelog" section — the line is what makes the number mean something.` });
+      continue;
+    }
+    if (!body.includes(headVersion)) {
+      offences.push({ kind: "skill-no-changelog-line", file: rel, detail: `version: moved to "${headVersion}" but no line in ## Changelog names it.` });
+    }
+  }
+  return offences;
+}
 
 // What a PR shows: merge-base of the base ref and HEAD, against the working
 // tree — so the check answers the same question locally with uncommitted
@@ -44,14 +183,16 @@ function check(root, base) {
   try {
     mergeBase = git(root, "merge-base", base, "HEAD");
   } catch {
-    return { ok: false, kind: "unreadable", detail: `cannot resolve merge-base of ${base} and HEAD — fetch the base ref first.` };
+    return { ok: false, kind: "unreadable", detail: `cannot resolve merge-base of ${base} and HEAD — fetch the base ref first.`, skills: [] };
   }
 
   const changed = git(root, "diff", "--name-only", mergeBase).split("\n").filter(Boolean);
   const touched = changed.filter((path) => path.startsWith(PLUGIN_DIR));
   if (touched.length === 0) {
-    return { ok: true, kind: "untouched", detail: `no lia-tools/ change against ${base}` };
+    return { ok: true, kind: "untouched", detail: `no lia-tools/ change against ${base}`, skills: [] };
   }
+
+  const skills = checkSkills(root, mergeBase, changed);
 
   let baseVersion;
   try {
@@ -59,39 +200,65 @@ function check(root, base) {
   } catch {
     // No manifest at the base: the plugin is being introduced, there is no
     // installed version to signal against.
-    return { ok: true, kind: "new", detail: `${MANIFEST} does not exist at ${base}` };
+    return { ok: skills.length === 0, kind: "new", detail: `${MANIFEST} does not exist at ${base}`, skills };
   }
 
   let headVersion;
   try {
     headVersion = JSON.parse(readFileSync(join(root, MANIFEST), "utf8")).version;
   } catch (error) {
-    return { ok: false, kind: "unreadable", detail: `${MANIFEST} unreadable in the working tree (${error.message}).` };
+    return { ok: false, kind: "unreadable", detail: `${MANIFEST} unreadable in the working tree (${error.message}).`, skills };
   }
 
   if (baseVersion === headVersion) {
-    return {
-      ok: false,
-      kind: "no-bump",
-      detail: `${touched.length} lia-tools file(s) changed but version is "${headVersion}" on both sides`,
-      touched,
-    };
+    return { ok: false, kind: "no-bump", detail: `${touched.length} lia-tools file(s) changed but version is "${headVersion}" on both sides`, touched, skills };
   }
-  return { ok: true, kind: "bumped", detail: `version ${baseVersion} -> ${headVersion} for ${touched.length} lia-tools file(s)` };
+  if (compareVersions(headVersion, baseVersion) === -1) {
+    return { ok: false, kind: "regressed", detail: `version moves backwards, ${baseVersion} -> ${headVersion}`, touched, skills, baseVersion, headVersion };
+  }
+  return { ok: skills.length === 0, kind: "bumped", detail: `version ${baseVersion} -> ${headVersion} for ${touched.length} lia-tools file(s)`, touched, skills };
 }
 
+const list = (offences) => offences.map(({ file, detail }) => `  ${file}\n    ${detail}\n`).join("");
+
 function report(outcome) {
+  const skills = outcome.skills ?? [];
+
   if (outcome.ok) {
-    console.log(`ok — ${outcome.detail}`);
+    const suffix = skills.length === 0 ? "" : "";
+    console.log(`ok — ${outcome.detail}${suffix}`);
     return 0;
   }
+
   if (outcome.kind === "no-bump") {
     console.error(`lia-tools changed with no version bump — this promotion would deliver to nobody:\n`);
     for (const path of outcome.touched) console.error(`  ${path}`);
     console.error(`\n  → Bump "version" in ${MANIFEST} (and the changed skills' version: frontmatter, per CLAUDE.md rule 3).\n`);
-  } else {
+  } else if (outcome.kind === "regressed") {
+    console.error(`lia-tools version moves BACKWARDS: ${outcome.baseVersion} -> ${outcome.headVersion}\n`);
+    console.error(`  A decrease delivers exactly the way an increase does — the served version changed — so every\n  install would silently roll back to an older build with nothing anywhere saying so. This is what a\n  bad conflict resolution looks like, and the guard cannot tell it from a deliberate one.\n`);
+    console.error(`  → Set "version" in ${MANIFEST} above ${outcome.baseVersion}.\n`);
+    console.error(`  → A genuine rollback is the release force-push in lia-tools/README.md §Roll back, not a lower number on main.\n`);
+  } else if (outcome.kind !== "bumped" && outcome.kind !== "new") {
     console.error(`NOT CHECKED — ${outcome.detail}\n`);
     console.error(`  → The guard could not compare versions, so this change is unverified, not clean.\n`);
+  }
+
+  if (skills.length) {
+    const of = (kind) => skills.filter((s) => s.kind === kind);
+    const nobump = [...of("skill-no-bump"), ...of("skill-no-version"), ...of("skill-regressed")];
+    const nolog = [...of("skill-no-changelog"), ...of("skill-no-changelog-line")];
+    if (nobump.length) {
+      console.error(`Skills changed without their own version moving (${nobump.length}) — CLAUDE.md rule 3, first half:\n`);
+      console.error(list(nobump));
+      console.error(`  → Bump version: in the skill's frontmatter.\n`);
+    }
+    if (nolog.length) {
+      console.error(`Version bumps with nothing in the changelog (${nolog.length}) — CLAUDE.md rule 3, second half:\n`);
+      console.error(list(nolog));
+      console.error(`  → Add a "- **<version> (<date>, <ticket>)** — what changed" line under ## Changelog.\n`);
+      console.error(`  → Add the line; never sweep an existing one. A dated entry is a record, not prose to update.\n`);
+    }
   }
   return 1;
 }
@@ -107,7 +274,14 @@ function selfTest() {
     writeFileSync(join(dir, path), body);
   };
   const manifest = (version) => JSON.stringify({ name: "lia-tools", version }, null, 2);
+  // A well-formed skill: frontmatter version, and a changelog naming it. The
+  // fixtures below deform exactly one thing at a time from this.
+  const skill = (version, { changelog = version, section = true } = {}) =>
+    ["---", "name: demo", "description: fixture", `version: ${version}`, "---", "", "# fixture", ""]
+      .concat(section ? ["## Changelog", "", `- **${changelog} (2026-08-28, LIAB-1016)** — fixture.`, ""] : [])
+      .join("\n");
   const reset = () => {
+    git(dir, "reset", "-q");
     git(dir, "checkout", "-q", "--", ".");
     git(dir, "clean", "-qfd");
   };
@@ -115,57 +289,99 @@ function selfTest() {
   try {
     git(dir, "init", "-q", "-b", "main");
     write("lia-tools/.claude-plugin/plugin.json", manifest("1.0.0"));
-    write("lia-tools/skills/demo/SKILL.md", "---\nname: demo\ndescription: fixture\n---\n");
+    write("lia-tools/skills/demo/SKILL.md", skill("0.1.0"));
     write("README.md", "# fixture\n");
     git(dir, "add", "-A");
     git(dir, "-c", "user.email=guard@self.test", "-c", "user.name=guard", "commit", "-qm", "base");
 
+    const bump = (v) => write("lia-tools/.claude-plugin/plugin.json", manifest(v));
+
     const scenarios = [
       {
-        name: "skill changed, no bump",
-        mutate: () => write("lia-tools/skills/demo/SKILL.md", "---\nname: demo\ndescription: edited\n---\n"),
-        expect: { ok: false, kind: "no-bump" },
+        name: "skill changed, no manifest bump",
+        mutate: () => write("lia-tools/skills/demo/SKILL.md", skill("0.2.0")),
+        expect: { ok: false, kind: "no-bump", skills: [] },
       },
       {
-        name: "skill changed, version bumped",
-        mutate: () => {
-          write("lia-tools/skills/demo/SKILL.md", "---\nname: demo\ndescription: edited\n---\n");
-          write("lia-tools/.claude-plugin/plugin.json", manifest("1.0.1"));
-        },
-        expect: { ok: true, kind: "bumped" },
+        name: "skill changed, everything bumped and changelogged (the must-stay-green control)",
+        mutate: () => { write("lia-tools/skills/demo/SKILL.md", skill("0.2.0")); bump("1.0.1"); },
+        expect: { ok: true, kind: "bumped", skills: [] },
       },
       {
         name: "root docs changed only",
         mutate: () => write("README.md", "# fixture, edited\n"),
-        expect: { ok: true, kind: "untouched" },
+        expect: { ok: true, kind: "untouched", skills: [] },
       },
       {
-        name: "version moved backwards still counts as a change",
-        mutate: () => {
-          write("lia-tools/skills/demo/SKILL.md", "---\nname: demo\ndescription: reverted\n---\n");
-          write("lia-tools/.claude-plugin/plugin.json", manifest("0.9.9"));
-        },
-        expect: { ok: true, kind: "bumped" },
+        // LIAB-1002. This scenario used to assert green, and its comment read
+        // as a considered decision, which is why it survived: "different, not
+        // greater — a revert that moves the version backwards still delivers".
+        // It does still deliver. That is the bug, not the justification.
+        name: "manifest version moves backwards",
+        mutate: () => { write("lia-tools/skills/demo/SKILL.md", skill("0.2.0")); bump("0.9.9"); },
+        expect: { ok: false, kind: "regressed", skills: [] },
       },
       {
         name: "manifest made unreadable",
-        mutate: () => {
-          write("lia-tools/skills/demo/SKILL.md", "---\nname: demo\ndescription: edited\n---\n");
-          write("lia-tools/.claude-plugin/plugin.json", "{ not json");
-        },
-        expect: { ok: false, kind: "unreadable" },
+        mutate: () => { write("lia-tools/skills/demo/SKILL.md", skill("0.2.0")); write("lia-tools/.claude-plugin/plugin.json", "{ not json"); },
+        expect: { ok: false, kind: "unreadable", skills: [] },
+      },
+      {
+        // LIAB-1016 finding 1, reproduced from the ticket to the letter: the
+        // manifest moves, the skill's own number does not.
+        name: "manifest bumped, skill's own version left behind",
+        mutate: () => { write("lia-tools/skills/demo/SKILL.md", skill("0.1.0").replace("# fixture", "# fixture, edited")); bump("1.0.1"); },
+        expect: { ok: false, kind: "bumped", skills: ["skill-no-bump"] },
+      },
+      {
+        // LIAB-1016 finding 2.
+        name: "skill version bumped, no changelog line naming it",
+        mutate: () => { write("lia-tools/skills/demo/SKILL.md", skill("0.2.0", { changelog: "0.1.0" })); bump("1.0.1"); },
+        expect: { ok: false, kind: "bumped", skills: ["skill-no-changelog-line"] },
+      },
+      {
+        // LIAB-1016 finding 3.
+        name: "skill version bumped, no ## Changelog section at all",
+        mutate: () => { write("lia-tools/skills/demo/SKILL.md", skill("0.2.0", { section: false })); bump("1.0.1"); },
+        expect: { ok: false, kind: "bumped", skills: ["skill-no-changelog"] },
+      },
+      {
+        name: "a skill's own version moves backwards",
+        mutate: () => { write("lia-tools/skills/demo/SKILL.md", skill("0.0.9")); bump("1.0.1"); },
+        expect: { ok: false, kind: "bumped", skills: ["skill-regressed"] },
+      },
+      {
+        // A file beside SKILL.md is a content change to the skill, so rule 3
+        // applies to it — this is the shape that would otherwise slip through,
+        // since the skill's own file never appears in the diff.
+        name: "only a reference file changed, skill version left behind",
+        mutate: () => { write("lia-tools/skills/demo/references/lexicon.md", "# edited\n"); bump("1.0.1"); },
+        expect: { ok: false, kind: "bumped", skills: ["skill-no-bump"] },
+      },
+      {
+        name: "a brand-new skill needs no bump, only a changelog",
+        mutate: () => { write("lia-tools/skills/fresh/SKILL.md", skill("0.1.0")); bump("1.1.0"); },
+        expect: { ok: true, kind: "bumped", skills: [] },
       },
     ];
 
     const failures = [];
     for (const { name, mutate, expect } of scenarios) {
       mutate();
+      // Intent-to-add, so a *new* fixture file appears in `git diff` the way a
+      // committed one does in CI. Without this, the two scenarios that add a
+      // file rather than editing one were green because the guard never saw
+      // them — a fixture that cannot fail, which is the thing this repo has
+      // already been bitten by three times (CLAUDE.md, "Make the check fail on
+      // purpose"). It was the self-test that caught it, on its first run.
+      git(dir, "add", "-A", "-N");
       const outcome = check(dir, "main");
+      const kinds = (outcome.skills ?? []).map((s) => s.kind).sort();
       // Kind is asserted, not just ok/red: a no-bump reported as unreadable
       // (or the reverse) is the guard being red for the wrong reason, which
       // is how a deleted core check hides behind a crashing one.
-      if (outcome.ok !== expect.ok || outcome.kind !== expect.kind) {
-        failures.push(`  ${name}: expected ${expect.ok ? "green" : "red"}/${expect.kind}, got ${outcome.ok ? "green" : "red"}/${outcome.kind} (${outcome.detail})`);
+      if (outcome.ok !== expect.ok || outcome.kind !== expect.kind || String(kinds) !== String([...expect.skills].sort())) {
+        failures.push(`  ${name}: expected ${expect.ok ? "green" : "red"}/${expect.kind}/[${expect.skills}], got ${outcome.ok ? "green" : "red"}/${outcome.kind}/[${kinds}] (${outcome.detail})`);
       }
       reset();
     }
@@ -175,7 +391,7 @@ function selfTest() {
       for (const line of failures) console.error(line);
       return 1;
     }
-    console.log(`self-test ok — ${scenarios.length} scenarios: no-bump caught, bump and backwards-bump pass, root-only change ignored, unreadable manifest reported as unchecked`);
+    console.log(`self-test ok — ${scenarios.length} scenarios: no-bump caught, backwards-bump CAUGHT (manifest and skill), skill-version-left-behind caught (SKILL.md and a sibling file), missing changelog line and missing section caught, bump-and-changelog and root-only and new-skill left green, unreadable manifest reported as unchecked`);
     return 0;
   } finally {
     rmSync(dir, { recursive: true, force: true });

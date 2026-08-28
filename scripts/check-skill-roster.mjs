@@ -27,6 +27,18 @@
 //   2. UNDOCUMENTED / PHANTOM. A skill the plugin's README never names, or a
 //      roster row naming a directory that isn't there. Same drift, other way:
 //      the roster is how anyone knows what the plugin carries.
+//   3. MISNAMED (LIAB-1016). A `name:` in the frontmatter that is not the
+//      directory it sits in. Neither existing guard could see this: the
+//      frontmatter guard reads `description:` and scans for angle brackets and
+//      has no opinion on `name:`; this guard matched README rows against
+//      *directory* names, so a mismatched `name:` was invisible to it too.
+//      Reproduced on ba3343c by renaming polish's frontmatter to
+//      `name: polished` and leaving the directory — both guards green. The
+//      LIAB-1005 author checked this by hand, found no drift and added no
+//      guard; "checked once by a person" is the state that precedes every
+//      drift this repo has had, so it is a guard now. It belongs here rather
+//      than with the version guard because the question is the same one this
+//      file already asks — is the roster true? — one layer further in.
 //
 // Deliberately left alone, because a guard that fails on correct input is a
 // guard someone deletes in a hurry:
@@ -99,6 +111,15 @@ const ROSTER_ROW = /^\|\s*`([a-z0-9][a-z0-9.-]*)`\s*\|/gm;
 
 const rosterRows = (readme) => [...readme.matchAll(ROSTER_ROW)].map((m) => m[1]);
 
+// Small parser rather than a YAML dependency: `name:` is a flat scalar, and
+// whether the block is well-formed at all is the frontmatter guard's question.
+function frontmatterName(source) {
+  const m = /^---\r?\n([\s\S]*?)\r?\n---/.exec(source.replace(/^\uFEFF/, ""));
+  if (!m) return null;
+  const n = /^name:[ \t]*(\S+)[ \t]*$/m.exec(m[1]);
+  return n ? n[1].replace(/^["']|["']$/g, "") : null;
+}
+
 function scan(root) {
   const offences = [];
   const checked = { plugins: 0, skills: 0 };
@@ -118,6 +139,19 @@ function scan(root) {
       checked.skills += 1;
       if (existsSync(join(dir, "SKILL.md"))) {
         loadable.push(name);
+        let declared = null;
+        try {
+          declared = frontmatterName(readFileSync(join(dir, "SKILL.md"), "utf8"));
+        } catch {
+          // Unreadable is the frontmatter guard's to report, not this one's.
+        }
+        if (declared !== null && declared !== name) {
+          offences.push({
+            kind: "misnamed",
+            file: `${relative(root, join(dir, "SKILL.md"))}`,
+            detail: `frontmatter says \`name: ${declared}\` but the directory is \`${name}/\` — the loader keys on the directory, so the roster and the file disagree about what this skill is called.`,
+          });
+        }
         continue;
       }
       if (!holdsFiles(dir)) continue;
@@ -182,6 +216,7 @@ function report({ offences, checked }) {
   const unloadable = offences.filter((o) => o.kind === "unloadable");
   const undocumented = offences.filter((o) => o.kind === "undocumented");
   const phantom = offences.filter((o) => o.kind === "phantom");
+  const misnamed = offences.filter((o) => o.kind === "misnamed");
   const unchecked = offences.filter((o) => o.kind === "unchecked");
 
   if (unloadable.length) {
@@ -198,6 +233,11 @@ function report({ offences, checked }) {
     console.error(`Roster rows with no skill behind them (${phantom.length}):\n`);
     console.error(list(phantom));
     console.error(`  → Drop the row, or restore the skill it names.\n`);
+  }
+  if (misnamed.length) {
+    console.error(`Skills whose name: does not match their directory (${misnamed.length}):\n`);
+    console.error(list(misnamed));
+    console.error(`  → Make the two agree. The directory is what the loader keys on, so it is usually the frontmatter that is wrong.\n`);
   }
   if (unchecked.length) {
     console.error(`NOT CHECKED (${unchecked.length}) — the guard could not read the roster, so these are unverified, not clean:\n`);
@@ -233,11 +273,15 @@ function selfTest() {
     write("plugin-a/skills/mis-nested/inner/SKILL.md", skillMd("inner"));
     // Loads fine, but the roster never heard of it.
     write("plugin-a/skills/ghost/SKILL.md", skillMd("ghost"));
+    // LIAB-1016 finding 2, reproduced from the ticket: the frontmatter says
+    // one thing, the directory says another, and before this rule both guards
+    // were green on it.
+    write("plugin-a/skills/polish/SKILL.md", skillMd("polished"));
     // A row pointing at nothing.
     write("plugin-a/skills/kept/SKILL.md", skillMd("kept"));
     write(
       "plugin-a/README.md",
-      ["# plugin-a", "", "| Skill | The seat |", "|---|---|", "| `kept` | Still here. |", "| `vanished` | Deleted last week. |", ""].join("\n"),
+      ["# plugin-a", "", "| Skill | The seat |", "|---|---|", "| `kept` | Still here. |", "| `polish` | Misnamed inside. |", "| `vanished` | Deleted last week. |", ""].join("\n"),
     );
 
     // --- plugin-b: correct input, must stay green -------------------------
@@ -263,6 +307,7 @@ function selfTest() {
       { file: "plugin-a/skills/ux-writing/", kind: "unloadable" },
       { file: "plugin-a/skills/mis-nested/", kind: "unloadable" },
       { file: "plugin-a/skills/ghost/", kind: "undocumented" },
+      { file: "plugin-a/skills/polish/SKILL.md", kind: "misnamed" },
       { file: "plugin-a/README.md", kind: "phantom" },
       { file: "plugin-c/README.md", kind: "unchecked" },
     ];
@@ -294,7 +339,7 @@ function selfTest() {
       return 1;
     }
     console.log(
-      `self-test ok — ${expected.length} planted defects caught (the ux-writing case, a mis-nested SKILL.md, an undocumented skill, a phantom roster row, a plugin with no README); a skill's own references/, a prose-documented skill and a non-skills folder left alone`,
+      `self-test ok — ${expected.length} planted defects caught (the ux-writing case, a mis-nested SKILL.md, an undocumented skill, a misnamed skill, a phantom roster row, a plugin with no README); a skill's own references/, a prose-documented skill and a non-skills folder left alone`,
     );
     return 0;
   } finally {
