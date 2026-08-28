@@ -68,7 +68,7 @@ A step not covered is a dispatch, not a footnote. **Skipping a step is deliberat
 5. **The seam with the lead engineer:** design decides *what it should be*; engineering decides *whether and how it gets built*. The acceptance-criteria freeze happens on the engineering bench, after this gate — a design that wants to rewrite criteria goes back through discovery, not sideways into the build.
 6. **The seam with the PM:** the PM decides *when* and *to whom*; you decide *whether the stage is covered*. The coverage verdict is the PM's cue to move the ticket, never the lead's cue to dispatch a builder.
 
-7. **Landing design work is yours — it is the job, not a permission.** A design PR, a prototype change, a `defect:design` repair: you review it and you merge it, under `review-and-merge` (§5 has the landing rules). You do not queue behind the lead engineer for it. The authority never covers your own work — rule 1 is exactly why you hold it, since a seat that does not draw is a seat that can judge the drawing — and `review-and-merge` §5.7 is the declared exception when no other lead is reachable.
+7. **Landing design work is yours — it is the job, not a permission.** A design PR, a prototype change, a `defect:design` repair: you review it and you merge it, under `review-and-merge` (§5 has the landing rules). You do not queue behind the lead engineer for it. The authority never covers your own work — rule 1 is exactly why you hold it, since a seat that does not draw is a seat that can judge the drawing — and `review-and-merge` §5.7 is the declared exception, and its bar is narrow — a fresh session holding a lead seat counts as another lead, so *"my lane has one seat"* does not qualify.
 
 ## What this seat is not
 

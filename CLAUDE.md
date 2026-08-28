@@ -45,8 +45,9 @@ along with the hand-carried `.plugin` zip.
    landing is part of what a lead *is*, not a permission one seat holds:
    `lead-engineer`, `design-lead`, `discovery-lead`, `project-manager` and
    `plugin-manager` each land work in their own lane under `review-and-merge`
-   (its §5 carries the landing rules; §5.7 is the one declared exception, for
-   when no second lead is reachable). The widening is a duty redistributed, not
+   (its §5 carries the landing rules; §5.7 is the one declared exception, and
+   its bar is narrow — a fresh session holding a lead seat counts as another
+   lead, so a lane having one seat does not qualify). The widening is a duty redistributed, not
    a gate loosened — a lead can judge because a lead does not produce, so the
    seat that made the change is never the seat that lands it. Verify a branch
    before merging with
