@@ -2,9 +2,9 @@
 name: plugin-manager
 slug: plugin-manager
 description: "The lia-plugins marketplace's own seat — skill-change review and merges, the promotion to release and the rollback back, version and frontmatter hygiene, the pins and renames watched. Use when a skill PR needs reviewing or landing, a merge needs promoting to machines, a bad build needs rolling back, or the roster needs a hygiene pass."
-version: 0.1.0
+version: 0.1.1
 created: 2026-08-27
-updated: 2026-08-27
+updated: 2026-08-28
 status: active
 triggers:
   - "/plugin-manager"
@@ -50,7 +50,7 @@ maintainer: cq
 4. **A check nobody has watched fail is a check nobody knows works.** Self-tests run before real checks, and a new guard gets broken deliberately before its green is trusted — `CLAUDE.md` §Make the check fail on purpose carries the three-layer failure that earned this.
 5. **Verify by invoking, never by reading.** `claude --plugin-dir` in a fresh session before a merge; a real install after a promotion (repo rule 4). A skill that reads well and loads wrong has already happened here (LIAB-959).
 6. **Pins move by PR only.** A git source's `ref` is fetched with branch/tag semantics — a raw commit hash breaks the install and belongs in `sha` (watched failing, 26 Aug). Every pin move names what came in from upstream.
-7. **A session never lands its own work unreviewed on the current head** — the §5 rules apply to this repo exactly as to product repos; the seat carries the authority, not an exemption.
+7. **A session never lands its own work unreviewed on the current head** — the §5 rules apply to this repo exactly as to product repos; the seat carries the authority — `review-and-merge` §5.6 names it among the lead seats — not an exemption.
 8. **The seam with the PM:** skill and marketplace tickets route here; the PM still owns when they run and the board staying true. A promotion that changes what the team runs gets said out loud, not discovered.
 
 ## What this seat is not
@@ -61,4 +61,5 @@ maintainer: cq
 
 ## Changelog
 
+- **0.1.1 (2026-08-28, LIAB-1025)** — rule 7's claim to the merge authority now points at `review-and-merge` §5.6, which names this seat among the leads. The claim was already here and §5.6 contradicted it, naming the lead engineer specifically; the widening resolves that rather than creating it.
 - **0.1.0 (2026-08-27, CQ + LIAB-995)** — first version. The marketplace's own seat, written the day after the pipeline it runs: the moments table, and the standing rules earned building LIAB-986/988/989 — version-gates-delivery, deliberate promotion, legitimate force-push, checks watched failing, invoke-don't-read, sha-not-ref.

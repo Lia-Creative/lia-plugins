@@ -41,8 +41,15 @@ along with the hand-carried `.plugin` zip.
    bumps `lia-tools/.claude-plugin/plugin.json`.** Version numbers have lied
    here before (`lia-tools/AUDIT.md` has the story) — the changelog line is
    what makes them mean something.
-4. **One ticket, one PR; the lead engineer merges** under `review-and-merge`
-   (its §5 carries the landing rules). Verify a branch before merging with
+4. **One ticket, one PR; a lead merges — never their own work.** Reviewing and
+   landing is part of what a lead *is*, not a permission one seat holds:
+   `lead-engineer`, `design-lead`, `discovery-lead`, `project-manager` and
+   `plugin-manager` each land work in their own lane under `review-and-merge`
+   (its §5 carries the landing rules; §5.7 is the one declared exception, for
+   when no second lead is reachable). The widening is a duty redistributed, not
+   a gate loosened — a lead can judge because a lead does not produce, so the
+   seat that made the change is never the seat that lands it. Verify a branch
+   before merging with
    `claude --plugin-dir <path-to-lia-tools> -p` — invoke the changed skills in
    a fresh session; don't just read them.
 5. **Publishing: merge lands, promotion ships.** The marketplace serves

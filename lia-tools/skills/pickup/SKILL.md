@@ -2,7 +2,7 @@
 name: pickup
 slug: pickup
 description: "How anyone takes on a Linear ticket — the dispatch rule (a prompt is a pointer), the reading order (ticket, parents, blockers, context doc), what each status means, and the hand-back path for rejected work. Use when picking up or handing back a single ticket; a whole epic loads build instead."
-version: 0.9.0
+version: 0.10.0
 created: 2026-08-12
 updated: 2026-08-28
 status: active
@@ -55,7 +55,7 @@ Everything the agent needs is already where it belongs: the ticket (the spec), t
 
 **Choosing what to work when no ticket is named:** unblocked (nothing unfinished in blocked-by) and highest priority in your lane. **The order lives in Linear — priority and blocked-by — never in a doc, a prompt, or a memory of a conversation.** A run-order written anywhere else is a cached copy of the board, and it's stale the moment anyone moves a ticket.
 
-Who does what, so dispatch stays this small: the writers (`epic-builder` / `story-writer` / `task-writer`) make the work ready · `ready-review` gates it · the `project-manager` dispatches it · this skill is how it's picked up (`build` for a whole epic) · the lead engineer's `review-and-merge` is how the result gets checked.
+Who does what, so dispatch stays this small: the writers (`epic-builder` / `story-writer` / `task-writer`) make the work ready · `ready-review` gates it · the `project-manager` dispatches it · this skill is how it's picked up (`build` for a whole epic) · a lead's `review-and-merge` is how the result gets checked.
 
 ---
 
@@ -143,7 +143,7 @@ What you're usually after:
 
 - Load `execution-discipline` first. It's the judgment layer and it isn't restated here.
 - Move the ticket to the status that's true. **Never close your own work** — if you built or reviewed it, that's the approver's.
-- **Open a PR and hold at Review.** In epic mode (`build`), the lead engineer reviews and loops with you, then merges. Standalone, a fresh review checks it — and who clicks merge is the standing rule of the repo you're in (the orchestrator where one is running; see `LIAB-861` for the written form). **Either way it is never you.**
+- **Open a PR and hold at Review.** In epic mode (`build`), the lead engineer reviews and loops with you, then merges. Standalone, a fresh review checks it, and the lead whose lane the work sits in lands it — any lead seat may, in its own lane (`review-and-merge` §5.6). **Either way it is never you.**
 - Append a retro entry before you finish — as a comment on the ticket you were dispatched at; to the product's retro-log too when the vault is mounted. `product-retro` owns the shape.
 
 ---
@@ -205,6 +205,7 @@ Comment on the ticket, then move to another one. A blocked ticket said out loud 
 
 ## Changelog
 
+- **0.10.0 (2026-08-28, LIAB-1025)** — who lands a standalone ticket is now *the lead whose lane the work sits in*, pointing at `review-and-merge` §5.6 rather than at the orchestrator (a seat split up on 26 Aug) and a closed `LIAB-861`. **Never you** is unchanged. This skill was outside the ticket's list of seats and stated the merge rule anyway — the exact drift `LIAB-861` existed to kill.
 - **0.9.0 (2026-08-28, LIAB-1020)** — the line is **Lia Tools**: `Products/Lia Toys/` → `Products/Lia Tools/`, `toy box/` → `toolbox/`, `toys/` → `tools/`, and the shape is six numbered stages (`02 analysis` replaced `03 strategy`; research left tool folders; requirements live in Linear) plus the line's unnumbered `standards/` · `research/` · `design/`. Paths only — no behaviour changed.
 - **0.8.0 (2026-08-26, CQ voice memos + Fable 5)** — epic mode moves to the new `build` seat the same day it arrived; §0.5 becomes the pointer. Seam table updated for the orchestrator split (`project-manager` + `lead-engineer`); the hand-back and single-ticket flows unchanged.
 - **0.7.0 (2026-08-26, CQ voice memos + Fable 5)** — **epic mode** (§0.5): a builder takes a whole designed epic — plan mode first, the plan posted to the tickets, story-by-story commits on one branch, one PR, then the review loop with the orchestrator, who merges. **The vault posture reverses:** *never require the vault* — the ticket has to suffice, and a ticket that doesn't is handed back, not guessed around (§3 becomes depth-when-mounted). Retro lands on the dispatch ticket (vault log too when mounted). `gate:fail` reference removed — the `gate:*` labels were deleted 25 Aug. Seam table gains the writers, `ready-review` and `orchestrate`. Recorded in the [Decisions register](https://linear.app/lia-creative/document/decisions-register-lia-toys-34348df61a5f); the model is [Tool shop](https://linear.app/lia-creative/document/tool-shop-how-a-liatools-product-gets-built-4a9cfacc41c8).
