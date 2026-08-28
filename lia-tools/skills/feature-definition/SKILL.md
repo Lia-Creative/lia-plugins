@@ -2,9 +2,9 @@
 name: feature-definition
 slug: feature-definition
 description: "Shape a raw idea into a defined feature before an epic is written — the idea captured verbatim, the context block (source, insight, surrounding variables, data with known split from inferred), and mandatory analogue research into what the world already does. Use when an idea, complaint or hunch is about to become work and nobody has looked at how it has been solved elsewhere."
-version: 0.1.0
+version: 0.2.0
 created: 2026-08-27
-updated: 2026-08-27
+updated: 2026-08-28
 status: active
 triggers:
   - "/feature-definition"
@@ -93,7 +93,7 @@ Then hand off, and stop:
 | The criteria frozen as the contract | `acceptance-criteria` |
 | Anything reaching the board | `ticket-builder` |
 
-The definition lives with the work: on the epic, in the toy's `01 planning/` or `03 strategy/`, or in the product's Outputs. **Say where you are about to write it before you write it**, and let it be redirected in one sentence.
+The definition lives with the work: on the epic, in the toy's `01 planning/` or `02 analysis/`, or in the product's Outputs. **Say where you are about to write it before you write it**, and let it be redirected in one sentence.
 
 ## What this seat is not
 
@@ -108,4 +108,5 @@ The source skill's later stages are deliberately absent (LIAB-996 asks for this 
 
 ## Changelog
 
+- **0.2.0 (2026-08-28, LIAB-1020)** — the line is **Lia Tools**: `Products/Lia Toys/` → `Products/Lia Tools/`, `toy box/` → `toolbox/`, `toys/` → `tools/`, and the shape is six numbered stages (`02 analysis` replaced `03 strategy`; research left tool folders; requirements live in Linear) plus the line's unnumbered `standards/` · `research/` · `design/`. Paths only — no behaviour changed.
 - **0.1.0 (2026-08-27, LIAB-996)** — first version. Ported from Chris's `cq` bundle (`feature-definition`, v0.5.0, 28 Jul 2026) and scoped to what the bench lacked: capture, the context block, and mandatory analogue research; `references/analogue-research.md` carried over intact. Stories, criteria and the Linear push dropped to their owning seats.

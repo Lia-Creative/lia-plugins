@@ -2,9 +2,9 @@
 name: wrap-up
 slug: wrap-up
 description: "Land a working session — finish or deliberately park loose ends, write the pick-up-here handover (one ACTIVE per thread), append the retro, do the housekeeping; the pickup side reads the ACTIVE handover before any work resumes. Use at end of day, on 'wrap up', or when closing out a session with work carrying forward."
-version: 1.2.3
+version: 1.3.0
 created: 2026-07-25
-updated: 2026-08-27
+updated: 2026-08-28
 status: active
 triggers:
   - "/wrap-up"
@@ -136,7 +136,7 @@ tags: [handover, <project-slug>]
 
 ## Legacy
 
-**Migration complete 2026-08-19 — there are no loose handovers left.** All 67 legacy files (every pre-2026-07-25 naming pattern: `handover-<date>-<slug>`, `<slug>-handover-<date>`, `session-handover-<date>`, bare `HANDOVER.md`) were swept into their work home's `handovers/` folder, and all 93 now carry a `thread:`. The opportunistic "migrate when next touched" rule below is therefore spent — kept as the record of how it worked. **Two exceptions that are correctly filed and must not be swept:** anything under `Products/Lia Toys/**/00 handover/` (the toy line's own numbered-lifecycle shape) and `_meta/cowork-history/` (append-only session archive). Original wording: handovers written before 2026-07-25 sat loose in Context folders, product roots and `_meta/ops/`; they stayed valid where they were until their thread was next touched — then they migrated into the home's `handovers/` subfolder as part of the supersede sweep (CLOSE step 4), with index rows updated and moves logged. `Products/File Runner/Context/handovers/` is the worked example — migrated and status-normalised 2026-07-25. (This skill itself shipped as `handover` and was renamed `wrap-up` the same day; older log entries reference `_meta/skills/handover/`, which is this folder.)
+**Migration complete 2026-08-19 — there are no loose handovers left.** All 67 legacy files (every pre-2026-07-25 naming pattern: `handover-<date>-<slug>`, `<slug>-handover-<date>`, `session-handover-<date>`, bare `HANDOVER.md`) were swept into their work home's `handovers/` folder, and all 93 now carry a `thread:`. The opportunistic "migrate when next touched" rule below is therefore spent — kept as the record of how it worked. **Two exceptions that are correctly filed and must not be swept:** anything under `Products/Lia Tools/**/00 handover/` (the toy line's own numbered-lifecycle shape) and `_meta/cowork-history/` (append-only session archive). Original wording: handovers written before 2026-07-25 sat loose in Context folders, product roots and `_meta/ops/`; they stayed valid where they were until their thread was next touched — then they migrated into the home's `handovers/` subfolder as part of the supersede sweep (CLOSE step 4), with index rows updated and moves logged. `Products/File Runner/Context/handovers/` is the worked example — migrated and status-normalised 2026-07-25. (This skill itself shipped as `handover` and was renamed `wrap-up` the same day; older log entries reference `_meta/skills/handover/`, which is this folder.)
 
 ## Related
 
@@ -148,5 +148,6 @@ tags: [handover, <project-slug>]
 
 ## Changelog
 
+- **1.3.0 (2026-08-28, LIAB-1020)** — the line is **Lia Tools**: `Products/Lia Toys/` → `Products/Lia Tools/`, `toy box/` → `toolbox/`, `toys/` → `tools/`, and the shape is six numbered stages (`02 analysis` replaced `03 strategy`; research left tool folders; requirements live in Linear) plus the line's unnumbered `standards/` · `research/` · `design/`. Paths only — no behaviour changed.
 - **1.2.3 (2026-08-27, LIAB-997)** — `product-retro` and `execution-discipline` stop being named as absent: both are in the plugin now, and §Related says so.
 - **1.2.2 (2026-08-26, LIAB-959)** — the three `<project>` placeholders in `triggers:` become `[project]`, per the frontmatter rule that came out of the Cowork install failure. First entry here: this skill reached the plugin without a changelog, so earlier versions are unrecorded.

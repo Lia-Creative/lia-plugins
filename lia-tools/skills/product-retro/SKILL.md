@@ -2,9 +2,9 @@
 name: product-retro
 slug: product-retro
 description: "The mandatory per-session product entry — one short retro appended to the product's retro-log by every session that touched it, no judgment call on whether. Use at the end of any session that did build, feedback, discovery, strategy or cleanup work on a product; wrap-up and pickup both call it."
-version: 1.1.0
+version: 1.2.0
 created: 2026-07-07
-updated: 2026-08-27
+updated: 2026-08-28
 status: active
 triggers:
   - "(automatic — every product-touching session, see The rule)"
@@ -56,7 +56,7 @@ There is deliberately no category enum for the "what this was about" field — a
 
 | The work | The log |
 |---|---|
-| Anything under `Products/Lia Toys/` — the line, the toy box, a toy | that scope's `00 handover/retro-log.md` (the line's own numbered shape) |
+| Anything under `Products/Lia Tools/` — the line, the toolbox, a toy | that scope's `00 handover/retro-log.md` (the line's own numbered shape) |
 | A standard-shape product (Context / Outputs / Resources) | `Products/[Product]/Context/retro-log.md` |
 | A product that keeps loose docs at its root | `retro-log.md` at the product root, matching that product's convention |
 | A new product from the template | already seeded — `Products/_Product Template/Context/retro-log.md` ships empty |
@@ -78,5 +78,6 @@ No log yet? Create it, in the place the table names, with its frontmatter filled
 
 ## Changelog
 
+- **1.2.0 (2026-08-28, LIAB-1020)** — the line is **Lia Tools**: `Products/Lia Toys/` → `Products/Lia Tools/`, `toy box/` → `toolbox/`, `toys/` → `tools/`, and the shape is six numbered stages (`02 analysis` replaced `03 strategy`; research left tool folders; requirements live in Linear) plus the line's unnumbered `standards/` · `research/` · `design/`. Paths only — no behaviour changed.
 - **1.1.0 (2026-08-27, LIAB-997)** — lands in the plugin. The toys-line log path (`00 handover/retro-log.md`) promoted into the location table; the 2026-07-07 seeding list and its retired scenario-OS products dropped (those products are archived, the rule is not); vault `_meta/skills/` pointers replaced with the seats that now carry the work.
 - **1.0.0 (2026-07-07, CQ)** — the standing rule: mandatory per-session entry, four-field template, append-only, one log per product.

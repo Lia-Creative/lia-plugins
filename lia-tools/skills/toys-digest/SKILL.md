@@ -7,7 +7,7 @@ description: >-
   Chris reviews and sends. Runs on a Monday-morning schedule and on demand
   when Chris says "toys digest", "draft the toys update", "what happened
   with the toys this week", or "catch the channel up".
-version: 0.2.0
+version: 0.3.0
 created: 2026-08-17
 updated: 2026-08-28
 status: active
@@ -29,8 +29,8 @@ The last 7 days (or since the previous digest if Chris names a gap). Everything 
 
 ## Gather
 
-1. **Board movement** — Lia Toys project, live: tickets moved to Review or Done this week, new tickets from feedback rounds, promotions run (and their register rows).
-2. **Feedback that landed** — new `meetings/` notes and `05 build/feedback/` summaries this week: one line each, with the video link.
+1. **Board movement** — Lia Tools project, live: tickets moved to Review or Done this week, new tickets from feedback rounds, promotions run (and their register rows).
+2. **Feedback that landed** — new `meetings/` notes and `04 build/feedback/` summaries this week: one line each, with the video link.
 3. **Waiting on a founder** — tickets sitting in Review, promotion gates needing a call on the ticket, jam items that aged past two weeks. This is usually the most useful section.
 4. **Vault movement** — `_meta/log.md` toys entries this week, anything structural (new toy, convention change).
 
@@ -52,4 +52,5 @@ Nothing is written to the vault except when a digest surfaces drift worth record
 
 ## Changelog
 
-- **0.2.0 (2026-08-28, LIAB-1006 + LIAB-963)** — the week's feedback is read from `05 build/feedback/`: the line gained a `04 design/` stage on 28 Aug and build moved up one. The `execution-discipline` load line names the sibling seat in this plugin rather than the retired vault `_meta/skills/` path. First entry here; earlier versions are unrecorded.
+- **0.3.0 (2026-08-28, LIAB-1020)** — the line is **Lia Tools**: `Products/Lia Toys/` → `Products/Lia Tools/`, `toy box/` → `toolbox/`, `toys/` → `tools/`, and the shape is six numbered stages (`02 analysis` replaced `03 strategy`; research left tool folders; requirements live in Linear) plus the line's unnumbered `standards/` · `research/` · `design/`. Paths only — no behaviour changed.
+- **0.2.0 (2026-08-28, LIAB-1006 + LIAB-963)** — the week's feedback is read from `04 build/feedback/`: the line gained a `03 design/` stage on 28 Aug and build moved up one. The `execution-discipline` load line names the sibling seat in this plugin rather than the retired vault `_meta/skills/` path. First entry here; earlier versions are unrecorded.

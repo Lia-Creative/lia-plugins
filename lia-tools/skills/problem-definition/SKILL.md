@@ -2,9 +2,9 @@
 name: problem-definition
 slug: problem-definition
 description: "Formalise a problem — one line, evidence cited, a home on the board — and map problems across the board (atom 16 brief shape, atom 20 systemic mapping). Use when a raw observation, complaint, or friction needs to become a formal problem before a job or epic is written, or when asked which problems exist and recur."
-version: 0.1.0
+version: 0.2.0
 created: 2026-08-26
-updated: 2026-08-26
+updated: 2026-08-28
 status: active
 triggers:
   - "/problem-definition"
@@ -26,7 +26,7 @@ maintainer: cq
 
 **Why it exists.** CQ, 26 Aug 2026: discovery had writers but nothing that formalised the problem itself, so epics were being grounded in whatever prose was nearest. Everything downstream — the job, the epic, the stories — cites a problem; a mushy one propagates mush.
 
-**Canon this seat runs on (vault-mounted — this is a discovery seat):** the problem-brief schema is **atom 16** (`Operations/Agentic Workflows/Assets/16 — Problem-brief schema.md`; template at `Assets/templates/problem-brief.md`); cross-problem structure is **atom 20** (`20 — Systemic-problem mapping + stage tracking.md`; template `systemic-problem.md`). For toys work, the discovery backbone at `Products/Lia Toys/02 discovery/` holds the problem pages, adventurer profiles and the insights ledger — evidence accumulates there, sourced to a chat and a timestamp. Point at these; don't restate them.
+**Canon this seat runs on (vault-mounted — this is a discovery seat):** the problem-brief schema is **atom 16** (`Operations/Agentic Workflows/Assets/16 — Problem-brief schema.md`; template at `Assets/templates/problem-brief.md`); cross-problem structure is **atom 20** (`20 — Systemic-problem mapping + stage tracking.md`; template `systemic-problem.md`). For toys work, the discovery backbone at `Products/Lia Tools/02 discovery/` holds the problem pages, adventurer profiles and the insights ledger — evidence accumulates there, sourced to a chat and a timestamp. Point at these; don't restate them.
 
 ---
 
@@ -54,4 +54,5 @@ When the ask is the map, not one problem:
 
 ## Changelog
 
+- **0.2.0 (2026-08-28, LIAB-1020)** — the line is **Lia Tools**: `Products/Lia Toys/` → `Products/Lia Tools/`, `toy box/` → `toolbox/`, `toys/` → `tools/`, and the shape is six numbered stages (`02 analysis` replaced `03 strategy`; research left tool folders; requirements live in Linear) plus the line's unnumbered `standards/` · `research/` · `design/`. Paths only — no behaviour changed.
 - **0.1.0 (2026-08-26, CQ voice memos + Fable 5)** — first version. The formalising seat over atom 16 / atom 20 and the toys discovery backbone.

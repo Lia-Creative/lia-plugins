@@ -2,7 +2,7 @@
 name: design-reference
 slug: design-reference
 description: "Reference already in the vault, put to work — find the flows worth looking at, break them down screen by screen with every claim cited to a frame, then apply them to the feature at hand as take/adapt/drop with the open decisions named. Use when designing a screen or flow and someone asks what good looks like, or says shortcut this off the reference we captured."
-version: 0.2.0
+version: 0.3.0
 created: 2026-08-27
 updated: 2026-08-28
 status: active
@@ -39,7 +39,7 @@ Reference lives in more than one place. **Read the register before the frames:**
 
 | Order | Where | What it is | Cost |
 |---|---|---|---|
-| 1 | `Products/Lia Toys/toy box/02 research/design inspiration/[source]/` | The swipe file — full-resolution screens grouped by source product, then by flow. Each source's `README.md` is the flow index. | Frames: expensive. Register: free. |
+| 1 | `Products/Lia Tools/design/inspiration/[source]/` | The swipe file — full-resolution screens grouped by source product, then by flow. Each source's `README.md` is the flow index. | Frames: expensive. Register: free. |
 | 2 | `Research/Competitors/[product]/` | `ui-teardown` runs — analysis already written, claims already cited. A finished teardown beats re-reading its screenshots. | Cheap |
 | 3 | `Products/[product]/Resources/` and `Research/Competitors/[run]/captures/` | `ui-capture` runs from either our products or theirs, with manifests. | Medium |
 | 4 | `Research/Design/` | Brand culture studies — for tone and posture questions, not flow structure. | Cheap |
@@ -102,7 +102,7 @@ A breakdown is a short document — a flow it takes ten minutes to read is a flo
   Still ours to decide
 ```
 
-It lives with the design work, named `reference-[source]-[flow].md`: beside the artefact in `design/[spec-name]/` in the repo, or — for vault-side work in the toys line — in the scope's **`04 design/`**, which the line README defines as the home for *"reference breakdowns, flows, hi-fi artefacts, personas, scenarios, design specs"* (`02 research/design inspiration/` is where the *frames* live, not the breakdown). And **the applied half travels onto the ticket.** That matters for one reason: a builder must never need the vault to understand a design. Same rule `ticket-review` enforces on resolvable paths; a breakdown that only exists in a Drive folder is a breakdown the build stage can't see.
+It lives with the design work, named `reference-[source]-[flow].md`: beside the artefact in `design/[spec-name]/` in the repo, or — for vault-side work in the toys line — in the scope's **`03 design/`**, which the line README defines as the home for *"reference breakdowns, flows, `.dc.html` artefacts, design specs"* (`design/inspiration/` at the line is where the *frames* live, not the breakdown). And **the applied half travels onto the ticket.** That matters for one reason: a builder must never need the vault to understand a design. Same rule `ticket-review` enforces on resolvable paths; a breakdown that only exists in a Drive folder is a breakdown the build stage can't see.
 
 ## The standing rules
 
@@ -122,6 +122,7 @@ It lives with the design work, named `reference-[source]-[flow].md`: beside the 
 
 ## Changelog
 
-- **0.2.0 (2026-08-28, LIAB-1006)** — **the collision 0.1.1 deferred is settled.** Chris made design a stage on 28 Aug: `04 design/` is documented in the line README, `04 build/` became `05 build/`, and this seat's breakdowns go to `04 design/` — where the rest of the design bench's work already lives, and where it was always going once someone decided. The sentence hedging that the collision was "the line's to settle, not this seat's to encode" comes out with it: a skill that keeps deferring a made decision is wrong in a slower way than one pointing at the wrong folder.
-- **0.1.1 (2026-08-27, review round 1 on LIAB-1000)** — the write path stops naming `04 design/`, a folder the line's convention doesn't have and `toy-tidy` would report as drift; breakdowns go to the documented `04 build/` and the collision goes to the line as a question. Source 5 is exempt from §1's stop rule in so many words, so the one source standing rule 6 makes mandatory can no longer be skipped by a compliant run. The "cheap sources come first" claim, which its own Cost column contradicted, gives way to the rule that was always the real one — register before frames. `hifi-design` is three seats downstream, not one upstream.
+- **0.3.0 (2026-08-28, LIAB-1020)** — the line is **Lia Tools**: `Products/Lia Toys/` → `Products/Lia Tools/`, `toy box/` → `toolbox/`, `toys/` → `tools/`, and the shape is six numbered stages (`02 analysis` replaced `03 strategy`; research left tool folders; requirements live in Linear) plus the line's unnumbered `standards/` · `research/` · `design/`. Paths only — no behaviour changed. The swipe file is at the line's `design/inspiration/`, and the write path is the scope's `03 design/` — the collision this skill deferred is settled.
+- **0.2.0 (2026-08-28, LIAB-1006)** — **the collision 0.1.1 deferred is settled.** Chris made design a stage on 28 Aug: `03 design/` is documented in the line README, `04 build/` became `05 build/`, and this seat's breakdowns go to `03 design/` — where the rest of the design bench's work already lives, and where it was always going once someone decided. The sentence hedging that the collision was "the line's to settle, not this seat's to encode" comes out with it: a skill that keeps deferring a made decision is wrong in a slower way than one pointing at the wrong folder.
+- **0.1.1 (2026-08-27, review round 1 on LIAB-1000)** — the write path stops naming `03 design/`, a folder the line's convention doesn't have and `toy-tidy` would report as drift; breakdowns go to the documented `04 build/` and the collision goes to the line as a question. Source 5 is exempt from §1's stop rule in so many words, so the one source standing rule 6 makes mandatory can no longer be skipped by a compliant run. The "cheap sources come first" claim, which its own Cost column contradicted, gives way to the rule that was always the real one — register before frames. `hifi-design` is three seats downstream, not one upstream.
 - **0.1.0 (2026-08-27, CQ + LIAB-1000)** — first version. The vault's reference material as a seat on the design bench: the five-source search order, the read budget and coverage honesty, the frame-cited breakdown, and the model check plus take/adapt/drop/doesn't-apply that lands it on the feature.

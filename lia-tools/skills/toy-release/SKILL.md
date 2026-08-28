@@ -1,7 +1,7 @@
 ---
 name: toy-release
-description: How any agent works a toy through the Lia Toys environments — versioning a toy correctly, knowing which stage it may move, running a promotion after the founder gate, and verifying the result. Load whenever a session creates a toy, bumps a toy's version, or is asked to promote a toy to test, uat, or production. Canonical model lives in Products/Lia Toys/toy box/03 strategy/toy-versioning-and-environments-2026-08-13.md — this skill is the runbook, not the model.
-version: 0.3.0
+description: How any agent works a toy through the Lia Tools environments — versioning a toy correctly, knowing which stage it may move, running a promotion after the founder gate, and verifying the result. Load whenever a session creates a toy, bumps a toy's version, or is asked to promote a toy to test, uat, or production. Canonical model lives in Products/Lia Tools/standards/toy-versioning-and-environments-2026-08-13.md — this skill is the runbook, not the model.
+version: 0.4.0
 created: 2026-08-13
 updated: 2026-08-28
 status: active
@@ -14,7 +14,7 @@ captured_by: cq-cowork
 
 Load `execution-discipline` first (in this plugin), as with any skill run. Then this.
 
-**The model in one breath:** four stages (`build → test → uat → production`), three account groups (`internal / uat / external`), one app. Stage lives in the release register (server); the version number echoes it pre-1.0. Read the full standard before your first promotion: `Products/Lia Toys/toy box/03 strategy/toy-versioning-and-environments-2026-08-13.md`.
+**The model in one breath:** four stages (`build → test → uat → production`), three account groups (`internal / uat / external`), one app. Stage lives in the release register (server); the version number echoes it pre-1.0. Read the full standard before your first promotion: `Products/Lia Tools/standards/toy-versioning-and-environments-2026-08-13.md`.
 
 ## Rule zero — the gates
 
@@ -56,7 +56,7 @@ After the gate is confirmed **on the ticket**:
 
 ## Git, in one breath
 
-Full conventions: `Products/Lia Toys/toy box/03 strategy/git-and-release-conventions-2026-08-13.md`. What you need while working:
+Full conventions: `Products/Lia Tools/standards/git-and-release-conventions-2026-08-13.md`. What you need while working:
 
 - **Branch:** the one Linear generated (`chris/liab-689-…`). Don't invent one.
 - **Commits:** `type(scope): subject`, where **scope is the toy's id** — `feat(dump): read capture time from exif`. Shell work is `shell`; tooling is `repo`.
@@ -72,12 +72,13 @@ Full conventions: `Products/Lia Toys/toy box/03 strategy/git-and-release-convent
 
 ## Grounding
 
-- `Products/Lia Toys/toy box/03 strategy/toy-versioning-and-environments-2026-08-13.md` — the standard (the four jam calls, 13 Aug 2026)
-- `Products/Lia Toys/toy box/05 build/requirements/prd-06-environments.md` + `prd-07-groups-and-register.md` — what the app and service do with what you write
-- `Products/Lia Toys/toy box/03 strategy/toy-contract-2026-08-12.md` — the manifest `version` field
-- `Products/Lia Toys/toy box/03 strategy/git-and-release-conventions-2026-08-13.md` — branches, commit scopes, the release PR shape, tags
+- `Products/Lia Tools/standards/toy-versioning-and-environments-2026-08-13.md` — the standard (the four jam calls, 13 Aug 2026)
+- `Products/Lia Tools/toolbox/04 build/requirements/prd-06-environments.md` + `prd-07-groups-and-register.md` — what the app and service do with what you write
+- `Products/Lia Tools/standards/toy-contract-2026-08-12.md` — the manifest `version` field
+- `Products/Lia Tools/standards/git-and-release-conventions-2026-08-13.md` — branches, commit scopes, the release PR shape, tags
 - `execution-discipline` — in this plugin — load first, always
 
 ## Changelog
 
-- **0.3.0 (2026-08-28, LIAB-1006 + LIAB-963)** — the environments PRD pointer was stale twice: the toy box renumbered `04 build/` to `05 build/` on 28 Aug (CQ, LIAB-1006), and the PRDs sit in a `requirements/` subfolder, not at the build root — verified on disk, both halves fixed. `execution-discipline` is named as the sibling seat in this plugin rather than pathed at the retired vault `_meta/skills/`. The versioning model itself is untouched; the standard in `03 strategy/` remains canonical and did not move. First entry here; earlier versions are unrecorded.
+- **0.4.0 (2026-08-28, LIAB-1020)** — the line is **Lia Tools**: `Products/Lia Toys/` → `Products/Lia Tools/`, `toy box/` → `toolbox/`, `toys/` → `tools/`, and the shape is six numbered stages (`02 analysis` replaced `03 strategy`; research left tool folders; requirements live in Linear) plus the line's unnumbered `standards/` · `research/` · `design/`. Paths only — no behaviour changed.
+- **0.3.0 (2026-08-28, LIAB-1006 + LIAB-963)** — the environments PRD pointer was stale twice: the toy box renumbered `04 build/` to `04 build/` on 28 Aug (CQ, LIAB-1006), and the PRDs sit in a `requirements/` subfolder, not at the build root — verified on disk, both halves fixed. `execution-discipline` is named as the sibling seat in this plugin rather than pathed at the retired vault `_meta/skills/`. The versioning model itself is untouched; the standard in `02 analysis/` remains canonical and did not move. First entry here; earlier versions are unrecorded.

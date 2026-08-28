@@ -2,9 +2,9 @@
 name: epic-builder
 slug: epic-builder
 description: "Shape a versioned chunk of value into an epic — charts 1.0, scope read from its stories, value/why-now/what-it-is-not/how-you'd-know body, no ACs on the parent. Use when opening a piece of work, shaping the next version of a tool, or asked 'epic: [name]'."
-version: 0.2.1
+version: 0.3.0
 created: 2026-08-26
-updated: 2026-08-26
+updated: 2026-08-28
 status: active
 triggers:
   - "/epic-builder"
@@ -45,7 +45,7 @@ Three rules that follow, each load-bearing:
 
 The epic answers *what changes for a person* — and since the discovery seats landed (26 Aug pm), it stands on their output: a `problem-definition` brief says what hurts, and `jtbd` names the job being hired for — **cite the job; don't re-derive it.** Then find the person:
 
-- **The adventure chats are the guide** (`Products/Lia Toys/02 discovery/` when the vault is mounted; the discovery material linked from the project otherwise). Where the who-we-serve cast and a real adventurer disagree, **the adventurer wins** (register, 25 Aug).
+- **The adventure chats are the guide** (`Products/Lia Tools/02 discovery/` when the vault is mounted; the discovery material linked from the project otherwise). Where the who-we-serve cast and a real adventurer disagree, **the adventurer wins** (register, 25 Aug).
 - **Check the [Decisions register](https://linear.app/lia-creative/document/decisions-register-lia-toys-34348df61a5f) before shaping** — the call you're about to re-derive is probably in it.
 - **Record sources as relations and links, not prose chips.** If you can't name one real source, it's not an epic yet — it's an `idea` label or a Research ticket.
 
@@ -90,6 +90,7 @@ Mechanics — team routing, `save_issue`, relations, sequencing, the wrap-up —
 
 ## Changelog
 
+- **0.3.0 (2026-08-28, LIAB-1020)** — the line is **Lia Tools**: `Products/Lia Toys/` → `Products/Lia Tools/`, `toy box/` → `toolbox/`, `toys/` → `tools/`, and the shape is six numbered stages (`02 analysis` replaced `03 strategy`; research left tool folders; requirements live in Linear) plus the line's unnumbered `standards/` · `research/` · `design/`. Paths only — no behaviour changed.
 - **0.2.1 (2026-08-26, LIAB-959)** — the `<name>` placeholder in `description:` and in two `triggers:` becomes `[name]`. Cowork's validator parsed the angle brackets as an XML tag and refused the whole plugin; the git channel had accepted it. Wording and behaviour unchanged.
 - **0.2.0 (2026-08-26 pm, Fable 5)** — the discovery seats land upstream: the epic cites `jtbd`'s job statement and `problem-definition`'s brief instead of carrying the JTBD lens itself. Shape unchanged.
 - **0.1.0 (2026-08-26, CQ voice memos + Fable 5)** — first version. Carved out of `ticket-builder` 0.4.0's epic half (the JTBD/User/Success/Why thinking survives as the discovery lens; the written shape follows the 25 Aug shape doc). New here: the version in the name, scope-read-from-stories, next-version-is-a-new-epic, and the not-too-chunky rule sized to one build run.

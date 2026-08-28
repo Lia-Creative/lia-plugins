@@ -2,7 +2,7 @@
 name: schema-manager
 slug: schema-manager
 description: "Map the core entities of a problem across three layers — shared typed code is the truth, the Linear map is the directory, the vault holds the analysis and never a field list. Use when a scenario or feature touches data, when an entity crosses a tool seam and needs a contract in code, when tools need to talk to each other, or when asked what data moves where."
-version: 0.2.0
+version: 0.3.0
 created: 2026-08-26
 updated: 2026-08-28
 status: active
@@ -26,7 +26,7 @@ maintainer: cq
 
 **Why it exists.** CQ, 26 Aug 2026: *"incredibly important for building tools/toys that talk to each other… it will essentially manage a big schema map of all data moving around the product and inform all other parts of the process."* Without it, every feature re-derives its entities and the seams between tools become guesswork — and the seams are where pipelines fail.
 
-**The map lives in Linear** — [Schema map — lia.tools](https://linear.app/lia-creative/document/schema-map-liatools-7c33b96fb34b) in the Lia Toys project — because every seat including a vault-less build agent must be able to read it. Its header carries its own rules; they match §3 below.
+**The map lives in Linear** — [Schema map — lia.tools](https://linear.app/lia-creative/document/schema-map-liatools-7c33b96fb34b) in the Lia Tools project — because every seat including a vault-less build agent must be able to read it. Its header carries its own rules; they match §3 below.
 
 ## The three layers — read this first
 
@@ -74,7 +74,7 @@ For each scenario `scenario-builder` hands over (or any feature entering design)
 
 > **`clip`** — one captured media file as dump sees it.
 > Variables: `path` (local, absolute) · `capturedAt` (ISO) · `camera` (string, display name) · `sidecars` (list) …
-> Lives: the toy's own store (local, never synced). Code: `src/toys/dump/shared/…`.
+> Lives: the toy's own store (local, never synced). Code: `src/tools/dump/shared/…`.
 > Produced by: ingest. Consumed by: the library, undo, (future) the longitudinal story.
 > Notes: sidecar pairing rules are the code's; see the file.
 
@@ -96,5 +96,6 @@ Short, citing, connective. The map is a directory, not a spec dump.
 
 ## Changelog
 
+- **0.3.0 (2026-08-28, LIAB-1020)** — the line is **Lia Tools**: `Products/Lia Toys/` → `Products/Lia Tools/`, `toy box/` → `toolbox/`, `toys/` → `tools/`, and the shape is six numbered stages (`02 analysis` replaced `03 strategy`; research left tool folders; requirements live in Linear) plus the line's unnumbered `standards/` · `research/` · `design/`. Paths only — no behaviour changed.
 - **0.2.0 (2026-08-28, CQ + LIAB-1008)** — the three layers made explicit (shared typed code is the truth, Linear is the directory, the vault is the reasoning) with the only-code-carries-a-field-list rule that keeps them from becoming three truths. Adds the forward step: an entity crossing a tool seam gets its contract in shared code as part of the story that introduces it, with the seam question asked at design time so a builder never decides it. Answers the half of [LIAB-322](https://linear.app/lia-creative/issue/LIAB-322) that a map alone could not.
 - **0.1.0 (2026-08-26, CQ voice memos + Fable 5)** — first version. The central map, its Linear home, the code-wins seam, and the scenario-walking method.
