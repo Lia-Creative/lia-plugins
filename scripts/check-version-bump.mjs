@@ -171,9 +171,27 @@ function checkSkills(root, mergeBase, changed) {
       offences.push({ kind: "skill-no-bump", file: rel, detail: `content changed but version: is "${headVersion}" on both sides — this ships with a version number that did not move.` });
       continue;
     }
-    if (!isNew && baseVersion != null && compareVersions(headVersion, baseVersion) === -1) {
-      offences.push({ kind: "skill-regressed", file: rel, detail: `version: moved backwards, ${baseVersion} -> ${headVersion}.` });
-      continue;
+    if (!isNew && baseVersion != null) {
+      const direction = compareVersions(headVersion, baseVersion);
+      if (direction === -1) {
+        offences.push({ kind: "skill-regressed", file: rel, detail: `version: moved backwards, ${baseVersion} -> ${headVersion}.` });
+        continue;
+      }
+      // Same bar as the manifest, and for the same reason (LIAB-1029). The
+      // asymmetry this replaces was argued at the time — the manifest is the
+      // delivery mechanism, so that is where a bad version does its harm — but
+      // the argument got weaker once the code to close it sat three lines
+      // away, and an unparseable skill version is a version nobody can order.
+      //
+      // Known edge: this also fires when the BASE is unparseable and the head
+      // is a genuine repair (v0.1.0 -> 0.2.0), because the pair still cannot
+      // be ordered. No such base exists on the tree today, and it fails loudly
+      // rather than passing silently, which is the right direction to be wrong
+      // in. If one ever does, fix the base in its own commit first.
+      if (direction !== 1) {
+        offences.push({ kind: "skill-unconfirmed", file: rel, detail: `version: cannot be confirmed to move forward, ${baseVersion} -> ${headVersion} — either it does not parse as numeric components, or its numeric core is unchanged while the string differs.` });
+        continue;
+      }
     }
 
     const body = changelogBody(head);
@@ -271,7 +289,7 @@ function report(outcome) {
 
   if (skills.length) {
     const of = (kind) => skills.filter((s) => s.kind === kind);
-    const nobump = [...of("skill-no-bump"), ...of("skill-no-version"), ...of("skill-regressed")];
+    const nobump = [...of("skill-no-bump"), ...of("skill-no-version"), ...of("skill-regressed"), ...of("skill-unconfirmed")];
     const nolog = [...of("skill-no-changelog"), ...of("skill-no-changelog-line")];
     if (nobump.length) {
       console.error(`Skills changed without their own version moving (${nobump.length}) — CLAUDE.md rule 3, first half:\n`);
@@ -378,6 +396,17 @@ function selfTest() {
         expect: { ok: false, kind: "bumped", skills: ["skill-regressed"] },
       },
       {
+        // LIAB-1029 gap 1: the manifest already refused these; a skill did not.
+        name: "a skill's own version does not parse",
+        mutate: () => { write("lia-tools/skills/demo/SKILL.md", skill("v0.2.0")); bump("1.0.1"); },
+        expect: { ok: false, kind: "bumped", skills: ["skill-unconfirmed"] },
+      },
+      {
+        name: "a skill's own version changes string but not numeric core",
+        mutate: () => { write("lia-tools/skills/demo/SKILL.md", skill("0.1.0-beta")); bump("1.0.1"); },
+        expect: { ok: false, kind: "bumped", skills: ["skill-unconfirmed"] },
+      },
+      {
         // A file beside SKILL.md is a content change to the skill, so rule 3
         // applies to it — this is the shape that would otherwise slip through,
         // since the skill's own file never appears in the diff.
@@ -464,7 +493,7 @@ function selfTest() {
       for (const line of failures) console.error(line);
       return 1;
     }
-    console.log(`self-test ok — ${scenarios.length} scenarios: no-bump caught, backwards-bump CAUGHT (manifest and skill), not-provably-forward caught (unparseable, and a changed string with an unchanged core), skill-version-left-behind and a removed version: caught, a changelog line that only heads an entry accepted (prose mentions rejected), 1.9.0 -> 1.10.0 confirmed forward, bump-and-changelog and root-only and new-skill left green, unreadable manifest reported as unchecked`);
+    console.log(`self-test ok — ${scenarios.length} scenarios: no-bump caught, backwards-bump CAUGHT (manifest and skill), not-provably-forward caught on BOTH (unparseable, and a changed string with an unchanged core), skill-version-left-behind and a removed version: caught, a changelog line that only heads an entry accepted (prose mentions rejected), 1.9.0 -> 1.10.0 confirmed forward, bump-and-changelog and root-only and new-skill left green, unreadable manifest reported as unchecked`);
     return 0;
   } finally {
     rmSync(dir, { recursive: true, force: true });

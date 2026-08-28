@@ -113,11 +113,16 @@ const rosterRows = (readme) => [...readme.matchAll(ROSTER_ROW)].map((m) => m[1])
 
 // Small parser rather than a YAML dependency: `name:` is a flat scalar, and
 // whether the block is well-formed at all is the frontmatter guard's question.
+// Returns a discriminated result on purpose (LIAB-1029). A bare null conflated
+// two different worlds: "there is no frontmatter block" — which is the
+// frontmatter guard's to report, and reporting it twice in worse words helps
+// nobody — and "there is a block and it has no name:", which nothing anywhere
+// could see. The second is a defect this guard owns; the first is not.
 function frontmatterName(source) {
   const m = /^---\r?\n([\s\S]*?)\r?\n---/.exec(source.replace(/^\uFEFF/, ""));
-  if (!m) return null;
+  if (!m) return { block: false, name: null };
   const n = /^name:[ \t]*(\S+)[ \t]*$/m.exec(m[1]);
-  return n ? n[1].replace(/^["']|["']$/g, "") : null;
+  return { block: true, name: n ? n[1].replace(/^["']|["']$/g, "") : null };
 }
 
 function scan(root) {
@@ -139,17 +144,23 @@ function scan(root) {
       checked.skills += 1;
       if (existsSync(join(dir, "SKILL.md"))) {
         loadable.push(name);
-        let declared = null;
+        let declared = { block: false, name: null };
         try {
           declared = frontmatterName(readFileSync(join(dir, "SKILL.md"), "utf8"));
         } catch {
           // Unreadable is the frontmatter guard's to report, not this one's.
         }
-        if (declared !== null && declared !== name) {
+        if (declared.block && declared.name === null) {
+          offences.push({
+            kind: "unnamed",
+            file: `${relative(root, join(dir, "SKILL.md"))}`,
+            detail: `has frontmatter but no \`name:\` field — nothing required it, so deleting the line escaped every guard.`,
+          });
+        } else if (declared.name !== null && declared.name !== name) {
           offences.push({
             kind: "misnamed",
             file: `${relative(root, join(dir, "SKILL.md"))}`,
-            detail: `frontmatter says \`name: ${declared}\` but the directory is \`${name}/\` — the loader keys on the directory, so the roster and the file disagree about what this skill is called.`,
+            detail: `frontmatter says \`name: ${declared.name}\` but the directory is \`${name}/\` — the loader keys on the directory, so the roster and the file disagree about what this skill is called.`,
           });
         }
         continue;
@@ -217,6 +228,7 @@ function report({ offences, checked }) {
   const undocumented = offences.filter((o) => o.kind === "undocumented");
   const phantom = offences.filter((o) => o.kind === "phantom");
   const misnamed = offences.filter((o) => o.kind === "misnamed");
+  const unnamed = offences.filter((o) => o.kind === "unnamed");
   const unchecked = offences.filter((o) => o.kind === "unchecked");
 
   if (unloadable.length) {
@@ -238,6 +250,11 @@ function report({ offences, checked }) {
     console.error(`Skills whose name: does not match their directory (${misnamed.length}):\n`);
     console.error(list(misnamed));
     console.error(`  → Make the two agree. The directory is what the loader keys on, so it is usually the frontmatter that is wrong.\n`);
+  }
+  if (unnamed.length) {
+    console.error(`Skills with no name: in their frontmatter (${unnamed.length}):\n`);
+    console.error(list(unnamed));
+    console.error(`  → Add \`name:\`, matching the directory.\n`);
   }
   if (unchecked.length) {
     console.error(`NOT CHECKED (${unchecked.length}) — the guard could not read the roster, so these are unverified, not clean:\n`);
@@ -277,11 +294,15 @@ function selfTest() {
     // one thing, the directory says another, and before this rule both guards
     // were green on it.
     write("plugin-a/skills/polish/SKILL.md", skillMd("polished"));
+    // LIAB-1029 gap 2: a frontmatter block with no name: at all. Before this
+    // rule the guard walked *for* the value, so an absent one was not a
+    // failure it could report — it was a thing it never saw.
+    write("plugin-a/skills/nameless/SKILL.md", ["---", "description: fixture", "---", "", "# fixture", ""].join("\n"));
     // A row pointing at nothing.
     write("plugin-a/skills/kept/SKILL.md", skillMd("kept"));
     write(
       "plugin-a/README.md",
-      ["# plugin-a", "", "| Skill | The seat |", "|---|---|", "| `kept` | Still here. |", "| `polish` | Misnamed inside. |", "| `vanished` | Deleted last week. |", ""].join("\n"),
+      ["# plugin-a", "", "| Skill | The seat |", "|---|---|", "| `kept` | Still here. |", "| `polish` | Misnamed inside. |", "| `nameless` | No name field. |", "| `vanished` | Deleted last week. |", ""].join("\n"),
     );
 
     // --- plugin-b: correct input, must stay green -------------------------
@@ -308,6 +329,7 @@ function selfTest() {
       { file: "plugin-a/skills/mis-nested/", kind: "unloadable" },
       { file: "plugin-a/skills/ghost/", kind: "undocumented" },
       { file: "plugin-a/skills/polish/SKILL.md", kind: "misnamed" },
+      { file: "plugin-a/skills/nameless/SKILL.md", kind: "unnamed" },
       { file: "plugin-a/README.md", kind: "phantom" },
       { file: "plugin-c/README.md", kind: "unchecked" },
     ];
@@ -339,7 +361,7 @@ function selfTest() {
       return 1;
     }
     console.log(
-      `self-test ok — ${expected.length} planted defects caught (the ux-writing case, a mis-nested SKILL.md, an undocumented skill, a misnamed skill, a phantom roster row, a plugin with no README); a skill's own references/, a prose-documented skill and a non-skills folder left alone`,
+      `self-test ok — ${expected.length} planted defects caught (the ux-writing case, a mis-nested SKILL.md, an undocumented skill, a misnamed skill, a skill with no name: at all, a phantom roster row, a plugin with no README); a skill's own references/, a prose-documented skill and a non-skills folder left alone`,
     );
     return 0;
   } finally {
