@@ -97,6 +97,19 @@ function changelogBody(source) {
   return m ? source.slice(m.index + m[0].length) : null;
 }
 
+// The version must head a changelog *entry*, not merely appear somewhere in
+// the section. Substring-anywhere was the first implementation and it was
+// trivially satisfiable: entries here routinely name other versions in prose
+// ("reverted from 0.4.0"), so bumping to a version an older entry happens to
+// mention passed with nothing added. Checked against all 52 skills before
+// tightening — 51 pass, none newly fail. Two skills carry pre-semver history
+// in a different shape (`lia-voice-check`, `synthetic-users`); both head their
+// *current* entry in the house shape, which is all this looks at.
+function changelogNamesVersion(body, version) {
+  const escaped = version.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  return new RegExp(`^[ \t]*[-*][ \t]+\\*{0,2}v?${escaped}\\b`, "m").test(body);
+}
+
 // Numeric where it can be, string-inequality where it cannot. A version this
 // cannot parse is not silently treated as forward: it falls back to "changed",
 // which keeps rule 1 enforced and declines to guess about rule 2.
@@ -168,8 +181,8 @@ function checkSkills(root, mergeBase, changed) {
       offences.push({ kind: "skill-no-changelog", file: rel, detail: `version: is "${headVersion}" but the file has no "## Changelog" section — the line is what makes the number mean something.` });
       continue;
     }
-    if (!body.includes(headVersion)) {
-      offences.push({ kind: "skill-no-changelog-line", file: rel, detail: `version: moved to "${headVersion}" but no line in ## Changelog names it.` });
+    if (!changelogNamesVersion(body, headVersion)) {
+      offences.push({ kind: "skill-no-changelog-line", file: rel, detail: `version: moved to "${headVersion}" but no ## Changelog entry begins with it — a mention buried in another entry's prose does not count.` });
     }
   }
   return offences;
@@ -213,8 +226,17 @@ function check(root, base) {
   if (baseVersion === headVersion) {
     return { ok: false, kind: "no-bump", detail: `${touched.length} lia-tools file(s) changed but version is "${headVersion}" on both sides`, touched, skills };
   }
-  if (compareVersions(headVersion, baseVersion) === -1) {
+  const direction = compareVersions(headVersion, baseVersion);
+  if (direction === -1) {
     return { ok: false, kind: "regressed", detail: `version moves backwards, ${baseVersion} -> ${headVersion}`, touched, skills, baseVersion, headVersion };
+  }
+  // Not provably forward is not good enough for a delivery mechanism. Two
+  // shapes land here: a version this cannot parse (`v1.1.0`, `abc`), and one
+  // whose numeric core is unchanged while the string differs (1.0.0 ->
+  // 1.0.0-beta), which delivers while arguably going backwards. Both used to
+  // pass, because the check asked "is it not less?" rather than "is it more?"
+  if (direction !== 1) {
+    return { ok: false, kind: "unconfirmed", detail: `cannot confirm the version moved forward, ${baseVersion} -> ${headVersion}`, touched, skills, baseVersion, headVersion };
   }
   return { ok: skills.length === 0, kind: "bumped", detail: `version ${baseVersion} -> ${headVersion} for ${touched.length} lia-tools file(s)`, touched, skills };
 }
@@ -225,8 +247,7 @@ function report(outcome) {
   const skills = outcome.skills ?? [];
 
   if (outcome.ok) {
-    const suffix = skills.length === 0 ? "" : "";
-    console.log(`ok — ${outcome.detail}${suffix}`);
+    console.log(`ok — ${outcome.detail}`);
     return 0;
   }
 
@@ -239,6 +260,10 @@ function report(outcome) {
     console.error(`  A decrease delivers exactly the way an increase does — the served version changed — so every\n  install would silently roll back to an older build with nothing anywhere saying so. This is what a\n  bad conflict resolution looks like, and the guard cannot tell it from a deliberate one.\n`);
     console.error(`  → Set "version" in ${MANIFEST} above ${outcome.baseVersion}.\n`);
     console.error(`  → A genuine rollback is the release force-push in lia-tools/README.md §Roll back, not a lower number on main.\n`);
+  } else if (outcome.kind === "unconfirmed") {
+    console.error(`lia-tools version cannot be confirmed to move FORWARD: ${outcome.baseVersion} -> ${outcome.headVersion}\n`);
+    console.error(`  Either it does not parse as numeric components, or its numeric core did not change while the\n  string did. A machine sees only that the served version changed, so it fetches either way — which is\n  the same harm as a decrease, arrived at differently.\n`);
+    console.error(`  → Use a numeric version strictly above ${outcome.baseVersion} in ${MANIFEST}.\n`);
   } else if (outcome.kind !== "bumped" && outcome.kind !== "new") {
     console.error(`NOT CHECKED — ${outcome.detail}\n`);
     console.error(`  → The guard could not compare versions, so this change is unverified, not clean.\n`);
@@ -293,6 +318,8 @@ function selfTest() {
     write("README.md", "# fixture\n");
     git(dir, "add", "-A");
     git(dir, "-c", "user.email=guard@self.test", "-c", "user.name=guard", "commit", "-qm", "base");
+    const baseCommit = git(dir, "rev-parse", "HEAD");
+    const rewindTo = (sha) => { git(dir, "reset", "-q", "--hard", sha); git(dir, "clean", "-qfd"); };
 
     const bump = (v) => write("lia-tools/.claude-plugin/plugin.json", manifest(v));
 
@@ -359,12 +386,57 @@ function selfTest() {
         expect: { ok: false, kind: "bumped", skills: ["skill-no-bump"] },
       },
       {
+        // The check added alongside the others and, until review caught it,
+        // the one with no fixture — a check nobody had watched fail.
+        name: "skill changed and its version: field removed entirely",
+        mutate: () => { write("lia-tools/skills/demo/SKILL.md", skill("0.2.0").replace(/^version: .*$/m, "")); bump("1.0.1"); },
+        expect: { ok: false, kind: "bumped", skills: ["skill-no-version"] },
+      },
+      {
+        // Double-digit minor: the case that made this a real bug on PR #19,
+        // and the one a string comparison gets wrong. 1.10.0 is ABOVE 1.9.0.
+        name: "1.9.0 -> 1.10.0 is forward, not backward",
+        mutate: () => {
+          write("lia-tools/.claude-plugin/plugin.json", manifest("1.9.0"));
+          git(dir, "add", "-A");
+          git(dir, "-c", "user.email=guard@self.test", "-c", "user.name=guard", "commit", "-qm", "at 1.9.0");
+          write("lia-tools/skills/demo/SKILL.md", skill("0.2.0"));
+          bump("1.10.0");
+        },
+        expect: { ok: true, kind: "bumped", skills: [] },
+        rewind: true,
+      },
+      {
+        name: "version string changes but its numeric core does not",
+        mutate: () => { write("lia-tools/skills/demo/SKILL.md", skill("0.2.0")); bump("1.0.0-beta"); },
+        expect: { ok: false, kind: "unconfirmed", skills: [] },
+      },
+      {
+        name: "version that does not parse as numeric",
+        mutate: () => { write("lia-tools/skills/demo/SKILL.md", skill("0.2.0")); bump("v1.1.0"); },
+        expect: { ok: false, kind: "unconfirmed", skills: [] },
+      },
+      {
+        // The changelog line must HEAD an entry. Naming the new version only
+        // inside an older entry's prose is the trivially-satisfiable shape
+        // the first implementation allowed.
+        name: "new version mentioned only in an older entry's prose",
+        mutate: () => {
+          write("lia-tools/skills/demo/SKILL.md",
+            ["---", "name: demo", "description: fixture", "version: 0.2.0", "---", "", "# fixture", "",
+             "## Changelog", "", "- **0.1.0 (2026-08-28, LIAB-1016)** — reverted from 0.2.0 after a bad run.", ""].join("\n"));
+          bump("1.0.1");
+        },
+        expect: { ok: false, kind: "bumped", skills: ["skill-no-changelog-line"] },
+      },
+      {
         name: "a brand-new skill needs no bump, only a changelog",
         mutate: () => { write("lia-tools/skills/fresh/SKILL.md", skill("0.1.0")); bump("1.1.0"); },
         expect: { ok: true, kind: "bumped", skills: [] },
       },
     ];
 
+    const scenariosNeedingRewind = new Set(scenarios.filter((s) => s.rewind).map((s) => s.name));
     const failures = [];
     for (const { name, mutate, expect } of scenarios) {
       mutate();
@@ -376,6 +448,7 @@ function selfTest() {
       // purpose"). It was the self-test that caught it, on its first run.
       git(dir, "add", "-A", "-N");
       const outcome = check(dir, "main");
+      if (expect && scenariosNeedingRewind.has(name)) rewindTo(baseCommit);
       const kinds = (outcome.skills ?? []).map((s) => s.kind).sort();
       // Kind is asserted, not just ok/red: a no-bump reported as unreadable
       // (or the reverse) is the guard being red for the wrong reason, which
@@ -391,7 +464,7 @@ function selfTest() {
       for (const line of failures) console.error(line);
       return 1;
     }
-    console.log(`self-test ok — ${scenarios.length} scenarios: no-bump caught, backwards-bump CAUGHT (manifest and skill), skill-version-left-behind caught (SKILL.md and a sibling file), missing changelog line and missing section caught, bump-and-changelog and root-only and new-skill left green, unreadable manifest reported as unchecked`);
+    console.log(`self-test ok — ${scenarios.length} scenarios: no-bump caught, backwards-bump CAUGHT (manifest and skill), not-provably-forward caught (unparseable, and a changed string with an unchanged core), skill-version-left-behind and a removed version: caught, a changelog line that only heads an entry accepted (prose mentions rejected), 1.9.0 -> 1.10.0 confirmed forward, bump-and-changelog and root-only and new-skill left green, unreadable manifest reported as unchecked`);
     return 0;
   } finally {
     rmSync(dir, { recursive: true, force: true });
