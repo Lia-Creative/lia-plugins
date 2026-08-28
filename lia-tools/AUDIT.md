@@ -201,6 +201,19 @@ recording about guards, arriving in a hand-grep. The six are answered below.
 that first added each `SKILL.md` (`git log --diff-filter=A`) and that skill's
 own earliest changelog entry.
 
+**The PR numbers were confirmed against `gh pr view`, not inferred.** They are
+the one column here that cannot be established from the repo alone — three of
+these merge commits carry no `(#NN)` in their subject. Confirmed: #19 → `8826a17`,
+#20 → `c9603e4`, #22 → `7819b12`, #25 → `6f49080`.
+
+One of them reads like a contradiction and is not, so it is written down once:
+`CLAUDE.md` rule 8 says the unloadable `ux-writing/references/*.md` diff *"passed
+green on PR #20 (LIAB-1005)"*, while the table below attributes #20 to
+`design-reference`. Both are true — those files sat on **PR #20's branch** and
+were removed before it merged, which is what rule 8 means by *"it never reached
+`main`: a human reading the diff stopped it."* PR #20's merged file list contains
+no `ux-writing` path; the guard that came out of it is PR #21.
+
 **The dates are commit dates, not authoring dates**, and the two differ. A first
 draft of this table said `ux-writing` landed 27 Aug because its changelog entry
 is dated 27 Aug; `7819b12` is dated the 28th. Caught in review, and every other
