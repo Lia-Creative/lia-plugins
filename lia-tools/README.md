@@ -102,13 +102,17 @@ The process the skills implement is written down in [Tool shop — how a lia.too
 | `ui-teardown` | The UX + feature teardown, every claim cited to a shot. |
 | `prototype-feedback-loop` | A founder's walkthrough distilled — the stage gate first, then the record and the frame-attached tickets. |
 | `lia-voice-check` | The copy half of the gate: AI tells and voice drift, audited before shipping words. |
+| `doc-iteration-loop` | The write side of the doc loop — a backlog becomes the next iteration, wave by wave, each section through a fresh-eyes gate. |
+| `decision-check` | The slow-brain pass on one call — the incentive named, the hidden trade surfaced, reversibility tested. |
 | `execution-discipline` | Load first, every run — ground truth, stop conditions, done-means-evidence. |
 
 *(`orchestrate` remains as a pointer — the seat split into `project-manager` + `lead-engineer` on 26 Aug 2026.)*
 
 ## What doesn't belong here
 
-The vault pipeline (`wiki-ingest`, `lint`, `enrich`, `discover`, `slack-ingest`, `weekly-context-enrich`), the research engine (`research-plan`, `research-run`, `research-verify`, `research-library`, `acquired-ingest`), the publishing skills (`lia-html-render`, `add-website-experiment`), the brand-asset and Figma-authoring tooling (`lia-blockprint-treatment`, `figma-dls-build`), and the founder-personal bundles (`cq`, `chris-music`, `chris-quinton-diagrams` — including the whole `cq:writing-style-*` set, which is Chris's own voice and not shared). The test: *does an agent building a lia.tools product need it?* If not, it stays where it is.
+The vault pipeline (`wiki-ingest`, `lint`, `enrich`, `discover`, `slack-ingest`, `weekly-context-enrich`), the research engine (`research-plan`, `research-run`, `research-verify`, `research-library`, `acquired-ingest`), the publishing skills (`lia-html-render`, `add-website-experiment`), the brand-asset and Figma-authoring tooling (`lia-blockprint-treatment`, `figma-dls-build` — **re-confirmed out on 28 Aug 2026**, CQ, so the question stops being re-raised), and the founder-personal bundles (`cq`, `chris-music`, `chris-quinton-diagrams` — including the whole `cq:writing-style-*` set, which is Chris's own voice and not shared).
+
+**The `cq` bundle stays out; three skills have been taken out of it** — `feature-definition` and `insight-extraction` (LIAB-996), and `decision-check` (LIAB-1028, de-personalised on the way in). Extracting a skill is not the same as adopting the bundle: each one is argued on the membership test below, and the rest of `cq` remains Chris's. The test: *does an agent building a lia.tools product need it?* If not, it stays where it is.
 
 Two of those lines have a nearby cousin **in** the roster, and the difference is the corpus, not the craft. `insight-extraction` mines the discovery backbone — chats with real people about the work — and its output is a ledger entry a story can cite; the research engine answers commissioned questions and keeps its own library. `synthetic-users` generates hypotheses to aim discovery with, and is barred from the ledger for exactly that reason.
 

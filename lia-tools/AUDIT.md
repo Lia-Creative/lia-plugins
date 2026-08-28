@@ -239,6 +239,7 @@ writing"*. Saying so explicitly is the row.
 | `7a73874` — the other benches, PR #18 (27 Aug, LIAB-995) | `design-exploration` · `design-flows` · `design-lead` · `discovery-lead` · `error-states` · `hifi-design` · `plugin-manager` |
 | `c9603e4` — PR #20 (27 Aug, LIAB-1000) | `design-reference` |
 | `7819b12` — PR #22 (**28 Aug**, LIAB-1004) | `ux-writing` |
+| PR #34 (28 Aug, LIAB-1028) | `doc-iteration-loop` — see the ports below; it superseded a vault copy, not nothing |
 | `6f49080` — PR #25 (28 Aug, LIAB-1008) | `file-management` |
 
 ## Ports out of the vault — PR #19, LIAB-997
@@ -264,6 +265,21 @@ personal one below. They are current as at that date; the plugin versions move,
 so treat the right-hand column as the moment of this row, not a live figure. A
 reviewer without the Lia Vault mounted cannot re-check this column, which is why
 it says who read it and when.)*
+
+## The later ports — PR #34, LIAB-1028
+
+CQ's call, 28 Aug 2026, closing the roster question carried in every handover
+since PR #19. `figma-dls-build` was considered and **stays out**.
+
+| Skill | Came from | Version at the port | What happened to it |
+|---|---|---|---|
+| `doc-iteration-loop` | `Lia Vault/_meta/skills/doc-iteration-loop/` | `0.1.0` | Copied **byte-identical** (`cmp` clean on `SKILL.md` and all three templates), then repaired in place: it carried **no `description:`** — the field a session's skill listing shows and auto-triggering runs on, so CI would have refused it — and its templates pointed at retired `_meta/skills/` paths a plugin install cannot reach. Method unchanged. Vault copy frozen per rule 1. |
+| `decision-check` | `cq` 0.5.0 (`chris vault/00 inbox/_agent/cq-install/cq.plugin`, 28 Jul 2026) | `0.1.0` in `cq`, unversioned frontmatter | **Rewritten, not moved.** The original ran on *"Chris's slow-brain check"*, triggered on *"when Chris says"*, and closed with *"don't make the decision for Chris"*. A straight port would have put one founder's habit in a shared roster. The five checks are unchanged; the framing is now the seat, and the 13 May reset is kept as attributed provenance. |
+
+**On `decision-check` specifically:** this is the "which copy won" question with a
+real answer for once. The `cq` copy is **superseded, not synced from** — it stays
+in Chris's bundle and will drift; this one is canonical for Lia work. The two are
+no longer the same skill, and that is deliberate.
 
 ## Ports out of Chris's personal `cq` bundle — PR #19, LIAB-996
 
