@@ -10,9 +10,9 @@ description: >-
   page, a whole product, a competitor, or an existing capture run. Use when someone says "teardown of
   X", "tear down this page", "tear down this product", "UX teardown", "feature teardown", "analyse
   this product's UX", "analyse these screenshots", or "what can we learn from X".
-version: 0.2.1
+version: 0.2.2
 created: 2026-06-26
-updated: 2026-08-19
+updated: 2026-08-28
 status: active
 type: skill
 maintainer: shared
@@ -148,3 +148,8 @@ Canonical here; Dan, CQ, and Luke all run it with the same one-word entry. Becau
 shared manifest contract, a teardown can be run by a different founder than the one who captured. Drop
 it into the product-dev lifecycle at competitive discovery, before a design sprint, or when sizing a
 feature against the field.
+
+## Changelog
+
+- **0.2.2 (2026-08-28, LIAB-1027)** — adds this section, and nothing else. The skill had no `## Changelog` at all: the last of the six PR #24 found, and a latent trap for the guard LIAB-1016 adds — the next change to this file would have failed CI on its history rather than on its own content, and the cheap escape would have been a hollow line. No behaviour change.
+- **0.2.1 and earlier — not reconstructed.** This skill arrived in the plugin whole, in the 1.2.0 landing (`555986a`, LIAB-921), so its 0.1.0 → 0.2.1 history happened in the vault before LIAB-919 made this repo canonical and cannot be recovered from here. Recorded as a gap on purpose: `AUDIT.md` exists because version numbers have lied in this repo before, and an invented changelog is worse than a missing one.
