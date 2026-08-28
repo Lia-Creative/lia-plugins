@@ -226,7 +226,9 @@ step below, and the way back out is the rollback next to it.
    git fetch origin && git push origin origin/main:release
    ```
 
-   A fast-forward of `release` to `main`. Team machines follow on `/plugin marketplace update lia-plugins`, then `claude plugin update lia-tools@lia-plugins` — or automatically, if auto-update is switched on for the marketplace (`/plugin` → **Marketplaces** → `lia-plugins` → **Enable auto-update**; it is off by default for third-party marketplaces).
+   A fast-forward of `release` to `main`. Team machines follow on `/plugin marketplace update lia-plugins`, then `claude plugin update lia-tools@lia-plugins`.
+
+   **Do those two by hand, and do not wait for auto-update.** Measured 28 Aug 2026: a session was running 1.6.1 against a released 1.8.0 with *both* settings correct — `autoUpdates: true` in `~/.claude.json` and `autoUpdate: true` on the marketplace. **`DISABLE_AUTOUPDATER=1` is set in the Claude Desktop session environment** (the desktop app manages its own binary), and the plugin pass short-circuits on it — `Plugin autoupdate: skipped (auto-updater disabled)` — **before the per-marketplace flag is ever read**. So the marketplace setting is correct *and irrelevant* there. Even where it does run, the pass sleeps a random 0–10 minutes first, and headless `claude -p` never runs it at all. Nothing here is fixable from settings; the manual pull is the mechanism, not a fallback.
 4. **Roll back.** Also one command — move the ref back to the last good commit (find it in `git log origin/release`):
 
    ```
