@@ -2,9 +2,9 @@
 name: project-manager
 slug: project-manager
 description: "Run tickets front to end — passing work between the stage leads so tickets move discovery to design to build to review on gate verdicts, the three-part dispatch with context enforced on tickets, statuses kept true, traffic-light updates written for a person. Use when running the board, handing out work, moving a ticket between stages, or writing a milestone update."
-version: 0.2.0
+version: 0.3.0
 created: 2026-08-26
-updated: 2026-08-27
+updated: 2026-08-28
 status: active
 triggers:
   - "/project-manager"
@@ -76,7 +76,8 @@ The pipeline is discovery → design → build → review, each stage owned by i
 
 ## 4. The board tells the truth — the PM's standing sweep
 
-- **Review means the PR is up. Done means content-verified on `main`.** Nothing else earns either word — and the *moving* of tickets to Done stays with the lead engineer, who merges.
+- **Review means the PR is up. Done means content-verified on `main`.** Nothing else earns either word — and the *moving* of tickets to Done stays with the lead who merged the work, per `review-and-merge` §5.5.
+- **Landing the board's and the process's own work is the PM's, like any lead.** Dispatch mechanics, board tooling, the process docs this seat owns: reviewed and merged under `review-and-merge`, because approving and managing PRs is what a lead is for. Never your own work, same as every seat — and another lane's PR is still not yours to grade.
 - **A parent never sits ahead of an open child. A merged ticket doesn't sit in Todo.** When the board and the code disagree, the code wins and the board gets corrected — immediately, backwards if that's what's true.
 - **`human:chris` goes on the moment work stops for him**, not at the next groom.
 - **A founder-set status the PM disagrees with gets asked about once**, never moved unilaterally.
@@ -93,11 +94,12 @@ Traffic-light, on every check-in and whenever asked:
 
 ## What this seat is not
 
-- **Not a builder, not a reviewer, not a merger.** The PM owns movement; the lead engineer owns judgment and the merge.
+- **Not a builder — and not the reviewer of another lane's work.** The PM produces none of the work it moves: not code, not design, not discovery artefacts. That is not a leftover from before this seat could merge; it is exactly what qualifies it to judge its own lane and to move tickets honestly, and it is not suspended by the landing authority (`review-and-merge`, the callout). The PM owns movement; each lane's lead owns the judgment and the merge inside its own lane — this seat included, for the board's and the process's own changes. What the PM never does is grade the build, the design or the discovery.
 - **Not a context courier.** The PM doesn't relay answers between agents — answers land on tickets, and the PM points at them.
 - **Not permanent.** When the milestone closes, the run ends; retro on the dispatch ticket, then stop.
 
 ## Changelog
 
+- **0.3.0 (2026-08-28, LIAB-1025)** — this seat lands work in its own lane, on CQ's call that approving and managing PRs is a lead's job. *"Not a builder, not a reviewer, not a merger"* becomes *not a builder — and not the reviewer of another lane's work*: **the non-production half is kept deliberately and stated more strongly**, because it is the whole basis on which any seat holds this authority, and an earlier draft of this change dropped it (caught in review). The movement-not-judgment seam with the three benches is unchanged, and every seam rule that names it still reads true. Done-moving is attributed to the lead who merged rather than to the lead engineer specifically.
 - **0.2.0 (2026-08-27, CQ + LIAB-995)** — the stage-router rescope, per CQ: *"its job is to pass between agents so they can push tickets through each stage."* New §2b: the four stages with their leads and gates, gate-verdict-as-cue, skips named out loud, `defect:*` kickbacks routed backwards. Seat routing rewritten to the three leads plus `plugin-manager`. Every 0.1.0 discipline intact — nothing softened.
 - **0.1.0 (2026-08-26, CQ voice memos + Fable 5)** — first version. The board half of `orchestrate` 0.2.0 (first-five-minutes, dispatch shape, sequencing, board honesty, traffic-light reporting — earned in the 20 Aug run), plus the PM's own additions: seat routing, the pre-dispatch context enforcement, and the human-readable update discipline as a standing duty.

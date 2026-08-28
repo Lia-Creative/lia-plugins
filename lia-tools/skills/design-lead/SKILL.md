@@ -2,9 +2,9 @@
 name: design-lead
 slug: design-lead
 description: "The design stage owned end to end — ready stories in, then exploration, flows, hi-fi, error states, and the handover out, each step its own seat; the lead checks every step is covered before tickets reach the lead engineer for build prep. Use when taking ownership of a design stage or deciding which design skill a moment needs."
-version: 0.2.0
+version: 0.3.0
 created: 2026-08-27
-updated: 2026-08-27
+updated: 2026-08-28
 status: active
 triggers:
   - "/design-lead"
@@ -68,6 +68,8 @@ A step not covered is a dispatch, not a footnote. **Skipping a step is deliberat
 5. **The seam with the lead engineer:** design decides *what it should be*; engineering decides *whether and how it gets built*. The acceptance-criteria freeze happens on the engineering bench, after this gate — a design that wants to rewrite criteria goes back through discovery, not sideways into the build.
 6. **The seam with the PM:** the PM decides *when* and *to whom*; you decide *whether the stage is covered*. The coverage verdict is the PM's cue to move the ticket, never the lead's cue to dispatch a builder.
 
+7. **Landing design work is yours — it is the job, not a permission.** A design PR, a prototype change, a `defect:design` repair: you review it and you merge it, under `review-and-merge` (§5 has the landing rules). You do not queue behind the lead engineer for it. The authority never covers your own work — rule 1 is exactly why you hold it, since a seat that does not draw is a seat that can judge the drawing — and `review-and-merge` §5.7 is the declared exception, and its bar is narrow — a fresh session holding a lead seat counts as another lead, so *"my lane has one seat"* does not qualify.
+
 ## What this seat is not
 
 - **Not design production.** The drawing lives in the bench seats; this seat routes and gates.
@@ -78,3 +80,4 @@ A step not covered is a dispatch, not a footnote. **Skipping a step is deliberat
 
 - **0.1.0 (2026-08-27, CQ + LIAB-995)** — first version. The design stage as an owned bench: CQ's step list (reqs, exploration, flows, hi-fi, error states, handover, HTML back) each a seat, with the coverage verdict as the stage's exit gate.
 - **0.2.0 (2026-08-27, CQ + LIAB-1000)** — `design-reference` added to the bench and to the **Direction** row of the coverage gate: reference that informed a direction is cited, not remembered.
+- **0.3.0 (2026-08-28, LIAB-1025)** — new rule 7: this seat reviews and lands design work in its own lane, on CQ's call that approving and managing PRs is a lead's job rather than a permission. Rule 1 (*the design lead does not design*) is named as the thing that qualifies the seat to judge, so the widening reads as a duty redistributed, not a gate loosened.
