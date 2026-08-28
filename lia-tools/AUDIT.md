@@ -64,7 +64,7 @@ listed), then updated to `83d8f0d` (renames live):
   with that note. `claude plugin uninstall ticket-builder@lia-plugins` is
   optional tidy-up, not a required manual step — nothing dangles, nothing
   breaks, and auto-update's marketplace refresh triggers the same migration
-  with no command typed.
+  with no command typed *(conditional, and the condition does not hold on CLI or desktop — see README §How a change publishes, step 3. This migration was watched working on a manual update; the sentence is left as written because it is a dated record of what was tested)*.
 
 Caveats, recorded rather than rounded off: observed at **user scope**, which
 is how team machines install. A managed-settings install cannot be rewritten
