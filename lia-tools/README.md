@@ -48,7 +48,7 @@ The process the skills implement is written down in [Tool shop — how a lia.too
 | `acceptance-criteria` | The freeze pass: scenarios → the final numbered Given/When/Then + Delivery checks. |
 | `build-prep` | How to build it — real paths, patterns, traps, resolvable paths — under the criteria. |
 | `ticket-review` | The pre-dispatch check: could an agent start without asking anything? *(Reassigned 26 Aug — built-work review lives in `review-and-merge`.)* |
-| `review-and-merge` | The review loop with the builder — verdict, evidence tier and falsifiability per AC index, the anti-patterns, the boundaries — then the content-verified merge. **Any lead runs this in its own lane** — it is listed here because the engineering lane is its commonest use, not because the seat is exclusive. |
+| `review-and-merge` | The review loop with the builder — verdict, evidence tier and falsifiability per AC index, `cannot check` taking one of three named exits rather than resting, the anti-patterns, the boundaries — then the merge, which needs every criterion disposed of, content-verified. **Any lead runs this in its own lane** — it is listed here because the engineering lane is its commonest use, not because the seat is exclusive. |
 | `security` | The compliance shell — six earned rules, grows one real case at a time. |
 
 **The category benches** — what a whole category of tool is held to, whatever the story is:
