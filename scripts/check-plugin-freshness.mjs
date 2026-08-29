@@ -41,8 +41,9 @@
 // never been red has proved nothing."
 
 import { readFileSync, readdirSync, existsSync, mkdtempSync, mkdirSync, writeFileSync, rmSync } from 'node:fs';
-import { join, dirname } from 'node:path';
+import { join, dirname, sep } from 'node:path';
 import { tmpdir, homedir } from 'node:os';
+import { pathToFileURL } from 'node:url';
 import { execFileSync } from 'node:child_process';
 
 const PLUGIN = 'lia-tools';
@@ -109,6 +110,17 @@ export function readManifestVersion(path) {
 
 const MAX_SEARCH_DEPTH = 8;
 
+// A substring match reads a SIBLING as us. `lia-tools-extras`, another
+// marketplace's copy, a registry node named "lia-tools marketplace", or a home
+// directory that happens to contain the string — each matched, and because the
+// verdict is oldest-wins one spurious low version is enough to report a
+// correct machine STALE. A false STALE is damaging in the direction that
+// matters: it tells a correct agent its rules may be missing, which is
+// LIAB-1052's confusion pointed backwards. So: exact identity only.
+export function namesThisPlugin(name) {
+  return name === PLUGIN || name.startsWith(`${PLUGIN}@`);
+}
+
 // Every plugin.json under `dir` whose path names this plugin. Depth-bounded so
 // a stray symlink cannot walk the disk.
 export function searchForManifests(dir, depth = 0, found = []) {
@@ -123,7 +135,7 @@ export function searchForManifests(dir, depth = 0, found = []) {
     const full = join(dir, e.name);
     if (e.isDirectory()) {
       searchForManifests(full, depth + 1, found);
-    } else if (e.name === 'plugin.json' && full.includes(PLUGIN)) {
+    } else if (e.name === 'plugin.json' && full.split(sep).includes(PLUGIN)) {
       const version = readManifestVersion(full);
       if (version) found.push({ path: full, version });
     }
@@ -145,13 +157,13 @@ export function readRegistry(home = homedir()) {
   const visit = (node) => {
     if (!node || typeof node !== 'object') return;
     if (Array.isArray(node)) return node.forEach(visit);
-    const name = node.name ?? node.plugin ?? '';
-    if (typeof node.version === 'string' && String(name).includes(PLUGIN)) {
+    const name = String(node.name ?? node.plugin ?? '');
+    if (typeof node.version === 'string' && namesThisPlugin(name)) {
       records.push({ version: node.version, scope: node.scope ?? node.projectPath ?? null });
     }
     for (const [key, value] of Object.entries(node)) {
       if (value && typeof value === 'object') {
-        if (typeof value.version === 'string' && key.includes(PLUGIN)) {
+        if (typeof value.version === 'string' && namesThisPlugin(key)) {
           records.push({ version: value.version, scope: value.scope ?? value.projectPath ?? null });
         }
         visit(value);
@@ -171,27 +183,30 @@ export function findHeld(explicit, home = homedir()) {
     return { versions: version ? [version] : [], source: 'explicit', path: explicit };
   }
 
+  // UNION, never short-circuit. An earlier version returned on the registry
+  // and never looked at disk — so a registry recording 1.19.0 over a cache
+  // still holding 1.13.0 reported *green*: the exact LIAB-1052 defect, passed
+  // by the guard built to catch it. The registry's shape is not guaranteed
+  // across versions, which is precisely why it must not be allowed to suppress
+  // the on-disk evidence. Collect both and let oldest-wins do its job.
   const registry = readRegistry(home);
-  if (registry.records.length) {
-    return {
-      versions: [...new Set(registry.records.map((r) => r.version))],
-      source: 'installed_plugins.json',
-      path: registry.path,
-      records: registry.records,
-    };
-  }
+  const hits = searchForManifests(join(home, '.claude', 'plugins'));
 
-  const root = join(home, '.claude', 'plugins');
-  const hits = searchForManifests(root);
-  if (hits.length) {
-    return {
-      versions: [...new Set(hits.map((h) => h.version))],
-      source: 'cache search',
-      path: hits.map((h) => h.path).join(', '),
-    };
-  }
+  const versions = [...new Set([
+    ...registry.records.map((r) => r.version),
+    ...hits.map((h) => h.version),
+  ])];
+  if (!versions.length) return { versions: [], source: 'none', path: null };
 
-  return { versions: [], source: 'none', path: null };
+  const sources = [];
+  if (registry.records.length) sources.push('installed_plugins.json');
+  if (hits.length) sources.push('cache search');
+  return {
+    versions,
+    source: sources.join(' + '),
+    path: [registry.records.length ? registry.path : null, ...hits.map((h) => h.path)].filter(Boolean).join(', '),
+    records: registry.records,
+  };
 }
 
 // What the marketplace serves: the manifest on the `release` ref. Read from
@@ -382,6 +397,37 @@ function selfTest() {
     plantManifest(join(g, '.claude', 'plugins', 'cache', MARKETPLACE, 'some-other-plugin', '.claude-plugin', 'plugin.json'), '9.9.9');
     if (findHeld(null, g).versions.length) failures.push("another plugin's manifest was read as ours");
 
+    // (g) THE REGISTRY MUST NOT SUPPRESS DISK. A registry claiming current
+    //     over a cache still holding an old copy is the exact LIAB-1052 defect;
+    //     an earlier version of this finder returned green on it.
+    const h = join(tmp, 'h');
+    const hReg = join(h, '.claude', 'plugins', 'installed_plugins.json');
+    mkdirSync(dirname(hReg), { recursive: true });
+    writeFileSync(hReg, JSON.stringify({ version: 2, plugins: { [`${PLUGIN}@${MARKETPLACE}`]: { version: '1.19.0' } } }));
+    plantManifest(join(h, '.claude', 'plugins', 'cache', MARKETPLACE, PLUGIN, '1.13.0', '.claude-plugin', 'plugin.json'), '1.13.0');
+    const foundH = findHeld(null, h);
+    if (!foundH.versions.includes('1.13.0')) failures.push('registry-vs-disk: the stale on-disk copy was SUPPRESSED by the registry');
+    if (verdict(foundH.versions, '1.19.0').code !== 1) failures.push('registry-vs-disk: a stale machine was reported as a pass');
+
+    // (h) A SIBLING PLUGIN IS NOT US. Substring matching read `lia-tools-extras`
+    //     as ours, and oldest-wins turns one bad hit into a false STALE.
+    const i = join(tmp, 'i');
+    plantManifest(join(i, '.claude', 'plugins', 'cache', MARKETPLACE, `${PLUGIN}-extras`, '.claude-plugin', 'plugin.json'), '0.0.1');
+    if (findHeld(null, i).versions.length) failures.push(`a sibling plugin (${PLUGIN}-extras) was read as ours`);
+    const j = join(tmp, 'j');
+    const jReg = join(j, '.claude', 'plugins', 'installed_plugins.json');
+    mkdirSync(dirname(jReg), { recursive: true });
+    writeFileSync(jReg, JSON.stringify({ version: 2, plugins: { [`${PLUGIN}@${MARKETPLACE}`]: { version: '1.19.0' }, [`${PLUGIN} marketplace`]: { version: '0.0.3' } } }));
+    if (findHeld(null, j).versions.includes('0.0.3')) failures.push('a registry metadata node was read as a plugin version (false STALE)');
+
+    // (i) --held IS THE ESCAPE HATCH THE UNCHECKED MESSAGE POINTS AT, so it is
+    //     tested. It was not, and ignoring it entirely left this suite green.
+    const k = join(tmp, 'k', 'somewhere', 'plugin.json');
+    plantManifest(k, '1.13.0');
+    const foundK = findHeld(k);
+    if (!foundK.versions.includes('1.13.0')) failures.push('--held: an explicitly named manifest was ignored');
+    if (verdict(foundK.versions, '1.16.0').code !== 1) failures.push('--held: explicit path did not reach the verdict');
+
     if (readManifestVersion(join(tmp, 'nope.json')) !== null) failures.push('missing manifest: expected null');
     const broken = join(tmp, 'broken.json');
     writeFileSync(broken, 'not json');
@@ -396,7 +442,7 @@ function selfTest() {
     process.exit(1);
   }
   console.log(
-    `self-test ok — ${scenarios.length} comparator scenarios plus 7 on-disk detector cases. The detector is proved against layouts this script has NO path list for: version-partitioned cache, a marketplaces/ checkout, and the installed_plugins.json registry (which wins). A machine holding two versions is judged on the oldest. Not-always-red: an empty tree is UNCHECKED (exit 2) not a pass, a matching install is green, and another plugin's manifest is not mistaken for ours.`,
+    `self-test ok — ${scenarios.length} comparator scenarios plus 11 on-disk detector cases. The detector is proved against layouts this script has NO path list for: version-partitioned cache, a marketplaces/ checkout, and the installed_plugins.json registry (which wins). A machine holding two versions is judged on the oldest. Not-always-red: an empty tree is UNCHECKED (exit 2) not a pass, a matching install is green, another plugin's manifest is not mistaken for ours, a registry claiming current cannot suppress a stale copy on disk, a sibling named lia-tools-extras and a registry metadata node are not read as us, and --held is honoured.`,
   );
 }
 
@@ -421,4 +467,4 @@ function main() {
   process.exit(result.code);
 }
 
-main();
+if (import.meta.url === pathToFileURL(process.argv[1]).href) main();
