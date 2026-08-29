@@ -2,7 +2,7 @@
 name: project-manager
 slug: project-manager
 description: "Run tickets front to end — passing work between the stage leads so tickets move discovery to design to build to review to QA on gate verdicts, spawning each seat itself rather than handing a person a command, checking nobody already holds a ticket, statuses kept true, traffic-light updates written for a person. Use when running the board, handing out work, moving a ticket between stages, or writing a milestone update."
-version: 0.5.0
+version: 0.6.0
 created: 2026-08-26
 updated: 2026-08-29
 status: active
@@ -72,17 +72,28 @@ A command handed to a person is the **fallback**, not the shape of a dispatch. I
 
 Then the PM **stops and says exactly what it needs and why**: the thing, who has it, what is blocked until it arrives, and what is still moving meanwhile. Anywhere else, a code block is the PM making a person do a scheduler's job — four of them went to a founder in one session on 29 Aug, every one of them a seat that could have called another seat (LIAB-1044).
 
-### 2b. Before dispatching, check nobody already holds it
+### 2b. Before dispatching **or re-dispatching**, check nobody already holds it
 
 **"One PM at a time" does not cover this.** That rule is about two PMs; the collision that actually happened was between sessions. On 29 Aug two live sessions held [LIAB-911](https://linear.app/lia-creative/issue/LIAB-911) and [LIAB-899](https://linear.app/lia-creative/issue/LIAB-899), and the only thing that prevented a clash was that the PM happened to know.
 
 So before every dispatch, on the ticket **and its subtree**:
 
 - **The board** — assignee, status, and any comment in the last day or so saying a session picked it up.
-- **The tree** — `git fetch origin`, then remote branches and `git worktree list`, for anything named after the ticket.
+- **The worktree** — `git fetch origin`, then remote branches and `git worktree list`, for anything named after the ticket. **Name the tree, not just the branch**: the collision below happened inside one working tree while the board and the PR list both looked clean.
 - **The PRs** — an open PR whose branch names it.
 
 **Any hit and the ticket is not dispatchable**: say who holds it, and dispatch the next one. If the claim is genuinely stale, the dispatch says so and names the evidence it is stale on. The other half is this seat's own duty: **a session that takes a ticket says so on the ticket**, because that is what makes the next PM's check able to find anything.
+
+#### Re-dispatch is the dangerous case, and this check was not covering it
+
+**Written the same hour as the rule above, and it did not fire** ([LIAB-1053](https://linear.app/lia-creative/issue/LIAB-1053), 29 Aug 2026). A lead decided its build beat had produced nothing — `git status` clean, the file byte-identical to `main` — and re-dispatched. **The first agent was still alive**; its completion arrived much later. Two sessions then held the same worktree and the same branch, and the second found the first's uncommitted edit sitting there, with two consecutive `git status` calls disagreeing with each other. Nothing was lost, and that was verification plus luck.
+
+The rule above reads as a duty on **first** dispatch. Re-dispatch is where collision is *most* likely, precisely because you have already concluded there is nobody there.
+
+- **Prove finished or dead — silence is neither.** Before spawning a replacement, establish that the first agent actually ended: its completion notification, its final report, its process gone. *"It has not said anything for a while"* is not evidence, and it is the state a working agent spends most of its time in.
+- **An empty diff proves nothing.** A build that has read for ten minutes and written nothing is byte-identical to a build that died on arrival. The snapshot cannot tell them apart — and you are taking it at the exact moment you have already decided which one it is.
+- **Two sessions never share a tree.** If you cannot establish the first is gone, dispatch the replacement into a **fresh worktree**, or do not dispatch it. A tree is cheap; a lost hour of someone else's uncommitted work is not.
+- **When in doubt, wait.** The quiet you are worried about is usually `lead-engineer` §The chain working correctly — a beat spawned in the foreground and blocked on looks exactly like nothing happening.
 
 ## 2c. The stages — a ticket moves on gate verdicts, nothing else
 
@@ -131,6 +142,8 @@ Traffic-light, on every check-in and whenever asked:
 - **Not permanent.** When the milestone closes, the run ends; retro on the dispatch ticket, then stop.
 
 ## Changelog
+
+- **0.6.0 (2026-08-29, LIAB-1053)** — **§2b covers re-dispatch, which is the case it was written for and did not reach.** It shipped as a duty on *first* dispatch and, within the hour, missed the exact collision it exists to prevent: a lead read an empty diff as "produced nothing", re-dispatched, and put two sessions in one worktree on one branch while the first agent was still alive. New subsection: prove **finished or dead, never merely silent**, before spawning a replacement; **an empty diff proves nothing** — a build that has read for ten minutes and written nothing is byte-identical to one that died on arrival, and the snapshot is taken at the moment you have already decided which; **two sessions never share a tree**, so an unprovable case gets a fresh worktree or no dispatch; and when in doubt, wait, because the quiet is usually `lead-engineer` §The chain working correctly. The check list also now names **the worktree** rather than "the tree" — the collision happened inside one while the board and the PR list both looked clean.
 
 - **0.5.0 (2026-08-29, LIAB-1023 + LIAB-1024)** — the pipeline gains its fifth stage in the stages section: **QA**, owned by `testing-lead`'s bench and exited on the quality report, which is also what the founder's uat gate reads. It was always in the process and never in this skill, so a merged epic had nowhere to go but Done. Research is added to §2's routing as a **service, not a stage** — commissioned mid-stage through `research-lead`, tracked as a ticket, never something the pipeline waits at. §4's board-honesty bullet moves with it: the lead who merged still makes the move *out of Review*, but where §2c puts QA after that merge the move is to QA and this seat carries it on `testing-lead`'s verdict — `review-and-merge` §5.5 was rewritten in the same pass, because as written it claimed both that a merge sends a ticket to Done and that no other seat may move it, and this change makes both false. Caught in review. *(Written against the stages section when it was §2b and rebased onto 0.4.0, which moved it to §2c; the QA row and the research bullet went to §2c, and 0.4.0's own §2b — the collision check — is untouched. 0.4.0 also replaced the one-line "gates stay fresh" clause in §2's routing paragraph with the fuller context-boundary rule below it, so this version did not restore the shorter sentence: the rule is kept once, in its stronger form.)*
 - **0.4.0 (2026-08-29, LIAB-1044)** — **§2 stops being a hand-off format.** It said *"the tickets · the worktree command · the prompt in a code block"*, a shape that only makes sense if a person pastes it — so the skill made handing a founder a command the correct behaviour, and on 29 Aug it happened four times in one session for work no human needed to touch. The PM now **spawns the seat itself**; the three things move into the child's prompt. New **§2a** keeps the code block as the fallback and fences it to the three cases where a person is genuinely required — a credential, a founder gate, a machine that is not ours — with the stop stating what is needed and why. New **§2b**: check the board, the tree and the open PRs for a live session already holding the ticket before dispatching, because *"one PM at a time"* is about two PMs and the 29 Aug near-miss on LIAB-911/899 was between sessions; the mirror duty is that a session taking a ticket says so on it. The freshness line is restated as a **context** boundary — *did not produce the work being graded* — with a spawned subagent satisfying it and the parent handing down ids and the rubric only. The stages section moves from §2b to **§2c** to make room; nothing outside this file cited it by number (grepped).
