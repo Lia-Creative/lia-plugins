@@ -2,9 +2,9 @@
 name: story-writer
 slug: story-writer
 description: "Write user stories per Dan North — name titles, As-a/I-want/so-that narrative with a named face, numbered Given/When/Then acceptance criteria in the user's terms, Delivery checks split out. Use when breaking an epic into stories or writing any capability a person gets."
-version: 0.2.1
+version: 0.2.2
 created: 2026-08-26
-updated: 2026-08-26
+updated: 2026-08-29
 status: active
 triggers:
   - "/story-writer"
@@ -75,7 +75,7 @@ The rules that hold it together:
 
 ## 3. Hand off
 
-- **`ready-review`** gates the stories (fresh session). Expect it to fail anything a build agent would need the vault to understand — fix the story, not the prompt.
+- **`ready-review`** gates the stories — run in **a context that did not produce them**, which a subagent you **spawn** satisfies; hand it ticket ids and the rubric **only**, never your own reading of them (LIAB-1044). It is a context boundary, not a bench boundary. Expect it to fail anything a build agent would need the vault to understand — fix the story, not the prompt.
 - **Design picks stories up next** — each story gets its design, then the epic gets its cross-story pass, before build. Don't write design into the story; leave the seam clean.
 - **`task-writer`** for the real work your stories surfaced that isn't a story.
 
@@ -91,6 +91,7 @@ Mechanics — `save_issue`, relations, sequencing, priority-in-two-scales, the w
 
 ## Changelog
 
+- **0.2.2 (2026-08-29, LIAB-1044)** — §3's hand-off said `ready-review` gates the stories *"(fresh session)"*, and *session* was the word being read as *a terminal a human opens*. Same wording as the other four gate-carrying skills now: a context that did not produce the work, satisfied by **spawning** a subagent, handed ticket ids and the rubric only. Found by a fresh grep of all 54 skills after the first sweep stopped short.
 - **0.2.1 (2026-08-26, LIAB-959)** — `<epic>` and `<capability>` in `triggers:` become `[epic]` and `[capability]`, per the frontmatter rule that came out of the Cowork install failure. Shape unchanged.
 - **0.2.0 (2026-08-26, LIAB-949 + Fable 5)** — the Dan North install (P1–P5): behavioural ACs are **numbered Given/When/Then scenarios** with "[Graded at Review]" for the honest judgement calls; the **Delivery-checks split**; the **narrative-required rule**; `scenario-builder` and `acceptance-criteria` named as the seats either side. This carries the brief's item 2, which targeted the vault ticket-builder's Shape A — the shape had moved here the same morning (LIAB-919/920), so the change follows the canon.
 - **0.1.0 (2026-08-26, CQ voice memos + Fable 5)** — first version. The Dan North narrative + user-terms acceptance criteria, name-titles per the 26 Aug title call, scenario cap, and the two clean seams (design, tech notes) that keep a story from becoming a spec.

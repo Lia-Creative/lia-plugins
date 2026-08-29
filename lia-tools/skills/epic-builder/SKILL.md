@@ -2,9 +2,9 @@
 name: epic-builder
 slug: epic-builder
 description: "Shape a versioned chunk of value into an epic — charts 1.0, scope read from its stories, value/why-now/what-it-is-not/how-you'd-know body, no ACs on the parent. Use when opening a piece of work, shaping the next version of a tool, or asked 'epic: [name]'."
-version: 0.3.0
+version: 0.3.1
 created: 2026-08-26
-updated: 2026-08-28
+updated: 2026-08-29
 status: active
 triggers:
   - "/epic-builder"
@@ -76,7 +76,7 @@ The epic alone is half the job. In the same session or the next:
 
 1. **`story-writer`** turns the value into stories — the capabilities that define the version's scope.
 2. **`task-writer`** catches the real work that isn't a story.
-3. **`ready-review`** gates the lot before design or build spend anything on it — a fresh session, not yours.
+3. **`ready-review`** gates the lot before design or build spend anything on it — run in **a context that did not produce the tickets**. That is a *context* boundary, not a bench boundary and not a seat's property: **you satisfy it by spawning a subagent**, handing it the ticket ids and the rubric **only**, never your own reading of them (LIAB-1044). What the gate may never be is the context that wrote the epic.
 
 Mechanics — team routing, `save_issue`, relations, sequencing, the wrap-up — live in `ticket-builder` and are not restated here.
 
@@ -90,6 +90,7 @@ Mechanics — team routing, `save_issue`, relations, sequencing, the wrap-up —
 
 ## Changelog
 
+- **0.3.1 (2026-08-29, LIAB-1044)** — §4's hand-off said `ready-review` is *"a fresh session, **not yours**"*, which is the exact bench-boundary error LIAB-1044 exists to kill: freshness is about **context**, not about whose seat the gate sits in. Now the same wording as everywhere else — a context that did not produce the tickets, satisfied by **spawning** a subagent and handing it ticket ids and the rubric only. Near-verbatim the phrasing removed from `discovery-lead` rule 4 in the same ticket; this file was missed in that sweep and found by a fresh grep of all 54 skills.
 - **0.3.0 (2026-08-28, LIAB-1020)** — the line is **Lia Tools**: `Products/Lia Toys/` → `Products/Lia Tools/`, `toy box/` → `toolbox/`, `toys/` → `tools/`, and the shape is six numbered stages (`02 analysis` replaced `03 strategy`; research left tool folders; requirements live in Linear) plus the line's unnumbered `standards/` · `research/` · `design/`. Paths only — no behaviour changed.
 - **0.2.1 (2026-08-26, LIAB-959)** — the `<name>` placeholder in `description:` and in two `triggers:` becomes `[name]`. Cowork's validator parsed the angle brackets as an XML tag and refused the whole plugin; the git channel had accepted it. Wording and behaviour unchanged.
 - **0.2.0 (2026-08-26 pm, Fable 5)** — the discovery seats land upstream: the epic cites `jtbd`'s job statement and `problem-definition`'s brief instead of carrying the JTBD lens itself. Shape unchanged.
