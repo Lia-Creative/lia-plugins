@@ -2,9 +2,9 @@
 name: ticket-review
 slug: ticket-review
 description: "The pre-dispatch pickability check — one question, quickly: could an agent start from this ticket alone, without asking anything? Context, resolvable paths, vault-dependence. Use just before dispatching a ticket to a builder. (Reassigned 26 Aug 2026 — built-work review is review-and-merge.)"
-version: 0.3.0
+version: 0.3.1
 created: 2026-08-13
-updated: 2026-08-26
+updated: 2026-08-29
 status: active
 triggers:
   - "/ticket-review"
@@ -37,6 +37,8 @@ Read the ticket cold, pretending you hold only Linear and this plugin. Then:
 4. **No vault required.** Anything the builder would need the vault for travels onto the ticket now — this is the failure most tickets have, and it fails the check on its own.
 5. **Relations are true** — blockers genuinely finished, the parent's state honest, nothing pointing at a ticket that doesn't exist.
 
+**Freshness, since it is a check on someone's work.** This is a fast pickability check, not a gate on produced artefacts, so it does not demand a separate context by default. But the same rule applies where it bites: **the context that runs it did not produce the work being graded.** If this session wrote the `build-prep` notes or the acceptance criteria it is now checking, it **spawns a subagent** to run the check and hands it the ticket ids and the five questions above — **never its own reading of them**. A spawned subagent has its own context window, so that is the whole cost; it is never a reason to hand a person a command (`review-and-merge` §1, LIAB-1044).
+
 **Pass:** say so in one line on the ticket — dispatch proceeds. **Fail:** one comment naming each gap and **which seat fixes it**, and the dispatch waits. Never fix-by-dispatch-note — a gap patched in a prompt is invisible to the next reader.
 
 ## What this seat is not
@@ -47,6 +49,7 @@ Read the ticket cold, pretending you hold only Linear and this plugin. Then:
 
 ## Changelog
 
+- **0.3.1 (2026-08-29, LIAB-1044)** — LIAB-1044's delivery check 3 expects the freshness wording fixed in every skill carrying it and names this one; **it carried none** — the reassignment took the built-work discipline to `review-and-merge` and the freshness rule went with it. Rather than record that as a no-op, the rule is stated for the case where it does bite here: a session running this check on prep notes or criteria **it wrote itself** spawns a subagent to run it, handing down ticket ids and the questions only. Same wording as `review-and-merge` §1 and `ready-review` §0.1.
 - **0.3.0 (2026-08-26, CQ voice memos + Fable 5)** — **the reassignment.** This name now means the lead engineer's pre-dispatch pickability check; the built-work verification discipline (0.1.0–0.2.1's content) moved verbatim into `review-and-merge`, where its changelog continues. Recorded in the decisions register with reasons.
 - **0.2.1 (2026-08-21, CQ + Cowork)** — *(as built-work review)* §5 no longer says the founder merges; the orchestrator merges per CQ's 21 Aug call.
 - **0.1.0 (2026-08-13, CQ + Cowork)** — first version, as the built-work review: *"getting agents to review what has been submitted rather than always relying on my eyes."*

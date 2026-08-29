@@ -1,10 +1,10 @@
 ---
 name: project-manager
 slug: project-manager
-description: "Run tickets front to end — passing work between the stage leads so tickets move discovery to design to build to review on gate verdicts, the three-part dispatch with context enforced on tickets, statuses kept true, traffic-light updates written for a person. Use when running the board, handing out work, moving a ticket between stages, or writing a milestone update."
-version: 0.3.0
+description: "Run tickets front to end — passing work between the stage leads so tickets move discovery to design to build to review on gate verdicts, spawning each seat itself rather than handing a person a command, checking nobody already holds a ticket, statuses kept true, traffic-light updates written for a person. Use when running the board, handing out work, moving a ticket between stages, or writing a milestone update."
+version: 0.4.0
 created: 2026-08-26
-updated: 2026-08-28
+updated: 2026-08-29
 status: active
 triggers:
   - "/project-manager"
@@ -44,23 +44,51 @@ maintainer: cq
 4. **Check for worktrees and branches someone else may own** before dispatching anyone near them.
 5. **Hand out the first dispatches in one message**, not a plan describing them.
 
-## 2. Dispatch — three things, nothing else
+## 2. Dispatch — the PM spawns the seat itself
 
-1. **The tickets** — by title.
-2. **The worktree command** — every agent gets its own. Two sessions in one checkout has burned us.
-3. **The prompt** — in a code block, short, naming the seat skill to load.
+**A dispatch is something this session does, not text a person pastes.** The PM spawns the seat as a subagent and carries on; it does not stop and hand a founder a command for work no human needed to touch. CQ, 29 Aug 2026: *"i dont want the commands. i want you to run autonomously against a goal."*
+
+Three things go into the child, and nothing else:
+
+1. **The tickets** — by id and title.
+2. **Its own worktree** — every agent gets one; two sessions in one checkout has burned us.
+3. **The seat skill to load.** Short. No reading of the tickets, no summary of what you think is going on.
 
 **Context lives on the ticket, never in the prompt — and the PM enforces it at every handoff.** If a seat needs something the prompt doesn't carry, **fix the ticket**, then dispatch. A prompt is read once; a ticket is read by every seat after it. Before a build dispatch specifically: the lead engineer's `ticket-review` has answered its one question, or the dispatch waits.
 
-**Which seat gets what:** discovery work → `discovery-lead`'s bench · the design stage → `design-lead`'s bench · prep and review → `lead-engineer`'s bench · epics → one `build` session · standalone tickets → `pickup` · marketplace and skill changes → `plugin-manager`. Gates stay fresh: `ready-review` never goes to a session that wrote the tickets. **Never change a dispatch after its first action**; if you must, the first words are *"stop — new order"*.
+**Which seat gets what:** discovery work → `discovery-lead`'s bench · the design stage → `design-lead`'s bench · prep and review → `lead-engineer`'s bench · epics → one `build` session · standalone tickets → `pickup` · marketplace and skill changes → `plugin-manager`. **Never change a dispatch after its first action**; if you must, the first words are *"stop — new order"*.
 
-## 2b. The stages — a ticket moves on gate verdicts, nothing else
+**Gates stay fresh, and the PM spawns them like anything else.** The rule is **did not produce the work being graded** — a *context* boundary, not a bench boundary and not a seat's private property. A spawned subagent has its own context window, so it satisfies freshness on its own; the PM (or any lead) runs `ready-review` by spawning it, and hands the child **ticket ids and the rubric only, never its own reading of them**. What a gate may never be is the session that wrote the tickets, grading itself.
+
+### 2a. When a code block *is* correct — the three cases
+
+A command handed to a person is the **fallback**, not the shape of a dispatch. It is right in exactly three cases:
+
+- **A credential** this session cannot hold.
+- **A founder gate** — a decision, a promotion, a release, anything `human:chris` is for.
+- **A machine that is not ours** — a device, an account, a surface only a person can reach.
+
+Then the PM **stops and says exactly what it needs and why**: the thing, who has it, what is blocked until it arrives, and what is still moving meanwhile. Anywhere else, a code block is the PM making a person do a scheduler's job — four of them went to a founder in one session on 29 Aug, every one of them a seat that could have called another seat (LIAB-1044).
+
+### 2b. Before dispatching, check nobody already holds it
+
+**"One PM at a time" does not cover this.** That rule is about two PMs; the collision that actually happened was between sessions. On 29 Aug two live sessions held [LIAB-911](https://linear.app/lia-creative/issue/LIAB-911) and [LIAB-899](https://linear.app/lia-creative/issue/LIAB-899), and the only thing that prevented a clash was that the PM happened to know.
+
+So before every dispatch, on the ticket **and its subtree**:
+
+- **The board** — assignee, status, and any comment in the last day or so saying a session picked it up.
+- **The tree** — `git fetch origin`, then remote branches and `git worktree list`, for anything named after the ticket.
+- **The PRs** — an open PR whose branch names it.
+
+**Any hit and the ticket is not dispatchable**: say who holds it, and dispatch the next one. If the claim is genuinely stale, the dispatch says so and names the evidence it is stale on. The other half is this seat's own duty: **a session that takes a ticket says so on the ticket**, because that is what makes the next PM's check able to find anything.
+
+## 2c. The stages — a ticket moves on gate verdicts, nothing else
 
 The pipeline is discovery → design → build → review, each stage owned by its lead, each exited through its gate:
 
 | Stage | Owned by | Exit gate |
 |---|---|---|
-| Discovery | `discovery-lead`'s bench | `ready-review` — fresh session, five checks |
+| Discovery | `discovery-lead`'s bench | `ready-review` — fresh context, five checks (§2) |
 | Design | `design-lead`'s bench | the design lead's coverage verdict |
 | Build prep + build | `lead-engineer`'s bench, then `build` / `pickup` | `ticket-review` before dispatch; the build's PR |
 | Review + merge | `review-and-merge` | content-verified on `main` |
@@ -100,6 +128,7 @@ Traffic-light, on every check-in and whenever asked:
 
 ## Changelog
 
+- **0.4.0 (2026-08-29, LIAB-1044)** — **§2 stops being a hand-off format.** It said *"the tickets · the worktree command · the prompt in a code block"*, a shape that only makes sense if a person pastes it — so the skill made handing a founder a command the correct behaviour, and on 29 Aug it happened four times in one session for work no human needed to touch. The PM now **spawns the seat itself**; the three things move into the child's prompt. New **§2a** keeps the code block as the fallback and fences it to the three cases where a person is genuinely required — a credential, a founder gate, a machine that is not ours — with the stop stating what is needed and why. New **§2b**: check the board, the tree and the open PRs for a live session already holding the ticket before dispatching, because *"one PM at a time"* is about two PMs and the 29 Aug near-miss on LIAB-911/899 was between sessions; the mirror duty is that a session taking a ticket says so on it. The freshness line is restated as a **context** boundary — *did not produce the work being graded* — with a spawned subagent satisfying it and the parent handing down ids and the rubric only. The stages section moves from §2b to **§2c** to make room; nothing outside this file cited it by number (grepped).
 - **0.3.0 (2026-08-28, LIAB-1025)** — this seat lands work in its own lane, on CQ's call that approving and managing PRs is a lead's job. *"Not a builder, not a reviewer, not a merger"* becomes *not a builder — and not the reviewer of another lane's work*: **the non-production half is kept deliberately and stated more strongly**, because it is the whole basis on which any seat holds this authority, and an earlier draft of this change dropped it (caught in review). The movement-not-judgment seam with the three benches is unchanged, and every seam rule that names it still reads true. Done-moving is attributed to the lead who merged rather than to the lead engineer specifically.
-- **0.2.0 (2026-08-27, CQ + LIAB-995)** — the stage-router rescope, per CQ: *"its job is to pass between agents so they can push tickets through each stage."* New §2b: the four stages with their leads and gates, gate-verdict-as-cue, skips named out loud, `defect:*` kickbacks routed backwards. Seat routing rewritten to the three leads plus `plugin-manager`. Every 0.1.0 discipline intact — nothing softened.
+- **0.2.0 (2026-08-27, CQ + LIAB-995)** — the stage-router rescope, per CQ: *"its job is to pass between agents so they can push tickets through each stage."* New §2b (§2c since 0.4.0): the four stages with their leads and gates, gate-verdict-as-cue, skips named out loud, `defect:*` kickbacks routed backwards. Seat routing rewritten to the three leads plus `plugin-manager`. Every 0.1.0 discipline intact — nothing softened.
 - **0.1.0 (2026-08-26, CQ voice memos + Fable 5)** — first version. The board half of `orchestrate` 0.2.0 (first-five-minutes, dispatch shape, sequencing, board honesty, traffic-light reporting — earned in the 20 Aug run), plus the PM's own additions: seat routing, the pre-dispatch context enforcement, and the human-readable update discipline as a standing duty.

@@ -22,7 +22,7 @@ The process the skills implement is written down in [Tool shop — how a lia.too
 | `scenario-builder` | A user walked through each flow with concrete inputs — the ACs' raw material. |
 | `task-writer` | The named work that isn't a story. Sparse by design. |
 | `schema-manager` | Entities mapped across three layers — shared typed code is the truth, the Linear map the directory, the vault the reasoning. |
-| `ready-review` | Fresh eyes grading epics and stories on the five checks before anything downstream spends work. |
+| `ready-review` | A context that did not write them grading epics and stories on the five checks before anything downstream spends work — spawned, never handed to a person. |
 | `synthetic-users` | The panel you interview to find the objections before build spends on them. Hypotheses, never evidence. |
 | `ticket-builder` | The shared mechanics under the writers, Shape B for Lia Creative workstreams, and the old front door — it routes. |
 | `backlog-grooming` | The maintenance pass for an existing backlog. |
@@ -31,7 +31,7 @@ The process the skills implement is written down in [Tool shop — how a lia.too
 
 | Skill | The seat |
 |---|---|
-| `project-manager` | Tickets run front to end: passed between the stage leads on gate verdicts, dispatch, statuses kept true, context enforced, human-readable updates. |
+| `project-manager` | Tickets run front to end: passed between the stage leads on gate verdicts, each seat spawned rather than handed out as a command, statuses kept true, context enforced, human-readable updates. |
 
 **The marketplace's own seat**
 
@@ -43,12 +43,12 @@ The process the skills implement is written down in [Tool shop — how a lia.too
 
 | Skill | The seat |
 |---|---|
-| `lead-engineer` | The seat itself — the standing rules, and the routing across this bench. |
+| `lead-engineer` | The seat itself — the standing rules, the six-beat chain it fires without returning between beats, and the routing across this bench. |
 | `architecture` | Docs follow code, patterns stay singular, standards hold, and a standard everything inherits is filed as the line's. |
 | `acceptance-criteria` | The freeze pass: scenarios → the final numbered Given/When/Then + Delivery checks. |
 | `build-prep` | How to build it — real paths, patterns, traps, resolvable paths — under the criteria. |
 | `ticket-review` | The pre-dispatch check: could an agent start without asking anything? *(Reassigned 26 Aug — built-work review lives in `review-and-merge`.)* |
-| `review-and-merge` | The review loop with the builder, by AC index, then the content-verified merge. **Any lead runs this in its own lane** — it is listed here because the engineering lane is its commonest use, not because the seat is exclusive. |
+| `review-and-merge` | The review loop with the builder — verdict, evidence tier and falsifiability per AC index, the anti-patterns, the boundaries — then the content-verified merge. **Any lead runs this in its own lane** — it is listed here because the engineering lane is its commonest use, not because the seat is exclusive. |
 | `security` | The compliance shell — six earned rules, grows one real case at a time. |
 
 **The category benches** — what a whole category of tool is held to, whatever the story is:
