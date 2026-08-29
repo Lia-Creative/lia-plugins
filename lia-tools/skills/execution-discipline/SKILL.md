@@ -1,9 +1,9 @@
 ---
 name: execution-discipline
 description: How to execute any Lia skill or non-trivial task the way a stronger model would. Load at the start of every Lia skill run (scheduled or interactive) and any multi-step task, for any founder's agent. Covers ground-truth rules (never invent paths, Linear statuses, labels, or commands), stop conditions (what to do when reality doesn't match the skill), verification (done means evidence, per-stage accounting, verify from a cold start so the check can actually fail), judgment calibration (err toward exclusion, quote before you claim), and output discipline. Written by Fable 5 on 2026-07-03 as a distillation of its own working habits for successor models.
-version: 1.2.0
+version: 1.3.0
 created: 2026-07-03
-updated: 2026-08-28
+updated: 2026-08-29
 status: active
 maintainer: dan
 author: dan
@@ -36,6 +36,23 @@ A skill describes the world as it was when the skill was written. When the world
 - **A step references a retired convention** (dead Linear status, retired folder, superseded spine) → do not use it and do not silently substitute a guess. Find the live equivalent from the source of truth (`list_issue_statuses`, `CLAUDE.md`, the operating model), apply it, and flag the stale skill line in the relevant rolling queue (`Inbox/lia-*.md`) so it gets fixed.
 - **Empty or absurd input → treat as a signal, not a shrug.** Zero candidates from a source that usually yields ten means the probe broke, not that nothing happened. Confirm the pipe before accepting the zero. A genuinely quiet week is fine — "zero is a valid outcome" — but only after the pipe is confirmed.
 - **When you stop, stop loudly.** A skipped stage or aborted run must appear in `_meta/log.md` and the skill's queue file. The silent skip is the failure mode that costs weeks, because everything looks fine.
+- **A rule you cannot find is more likely missing from your copy than absent from the plugin.** You may be holding an old one. The two explanations are indistinguishable from the inside, and the second is far more likely — so suspect it *before* concluding a rule does not exist, and certainly before writing a ticket saying so.
+
+### Which copy am I holding?
+
+**The version you hold is the top entry of the skill's own `## Changelog`** — the version-bump guard requires every change to head an entry there, so the first entry is what you were served. That is the only version visible in-band: **frontmatter is not served to you** (measured 29 Aug 2026), so a skill's `version:` field is not something you can read from what you were given.
+
+Knowing your version is half the answer. The other half is what the marketplace *currently* serves, and for that there is a check:
+
+```
+node scripts/check-plugin-freshness.mjs
+```
+
+It compares your installed copy against the `release` ref and says plainly if you are behind. Unknowns are reported as **unchecked, never as a pass** — a session running from `--plugin-dir` or a fresh clone is served from the tree, not a cache, and the script says so rather than pretending it verified something.
+
+**Why this rule exists** ([LIAB-1052](https://linear.app/lia-creative/issue/LIAB-1052), measured 29 Aug 2026): a lead was dispatched to run the orchestration chain that had merged an hour earlier, and **the loader served it the version from before that merge** — no `§The chain`, no rules 10 or 11. The mandate was invisible to the exact seat built to run it, and two build agents hit the same thing independently. The installed cache was three versions behind `main`. **Nothing merged into this plugin takes effect for a session already running, and until you check, no session can tell.**
+
+Knowing is the deliverable. What to do about it — reload, carry on with the gap named, or stop — is the lead's call, not this skill's.
 
 ## 3. Verification — done means evidence
 
@@ -83,4 +100,5 @@ Related: `Wiki/synthesis/systems-are-learned-alone.md` — this file's "the judg
 
 ## Changelog
 
+- **1.3.0 (2026-08-29, LIAB-1052)** — §2 gains the case it was missing: **a rule you cannot find is more likely missing from your copy than absent from the plugin.** Measured that day — a lead was served the `lead-engineer` from *before* the orchestration chain merged an hour earlier, so the mandate was invisible to the seat built to run it, and two build agents hit it independently with the installed cache three versions behind `main`. §2 already covered a skill that disagrees with the world; it had nothing for a skill that is simply *old*, and the two are indistinguishable from the inside. New §Which copy am I holding? — the held version is the top changelog entry (**frontmatter is not served to an agent**, measured, so `version:` is not readable from what you were given), the current version comes from `scripts/check-plugin-freshness.mjs`, and an unknown is reported as unchecked rather than passed. Knowing is the deliverable; what to do about it stays the lead's call.
 - **1.2.0 (2026-08-28, LIAB-963)** — this skill described itself by a home it no longer has. `_meta/skills/` was retired on 26 Aug (LIAB-919), and the `description:` is the string auto-triggering matches on, so "every `_meta/skills/` run" was both false and the most load-bearing sentence in the file. It now says *every Lia skill run*, which is what it always meant and stays true wherever canonical lives next. The §Grounding line naming Dan's `Drive Vault/_meta/skills/execution-discipline/` is **kept on purpose**: that is a real, separate file in his personal vault, maintained independently, and the note says so.

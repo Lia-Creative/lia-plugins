@@ -68,3 +68,16 @@ jobs:
       # Same rule as the other two: red first, then trusted.
       - run: node scripts/check-skill-roster.mjs --self-test
       - run: node scripts/check-skill-roster.mjs
+
+  freshness:
+    # LIAB-1052: an agent cannot tell which version of a skill it is holding.
+    # The real check runs on a machine with an install; here we prove the
+    # detector itself works, because a check nobody has watched fail is a
+    # check nobody knows works.
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: node scripts/check-plugin-freshness.mjs --self-test
