@@ -74,9 +74,19 @@ export function compareVersions(held, current) {
 }
 
 export function readManifestVersion(path) {
+  return readManifest(path)?.version ?? null;
+}
+
+// A manifest states its own name. Trusting that beats inferring identity from
+// where the file sits: a directory merely *named* `lia-tools` can hold another
+// plugin's manifest, and reading it as ours produced a false CLEAN — the worst
+// direction. Path position is a hint; `name` is the fact.
+export function readManifest(path) {
   try {
     const parsed = JSON.parse(readFileSync(path, 'utf8'));
-    return typeof parsed.version === 'string' ? parsed.version : null;
+    const version = typeof parsed.version === 'string' ? parsed.version : null;
+    const name = typeof parsed.name === 'string' ? parsed.name : null;
+    return version ? { name, version } : null;
   } catch {
     return null;
   }
@@ -123,7 +133,7 @@ export function namesThisPlugin(name) {
 
 // Every plugin.json under `dir` whose path names this plugin. Depth-bounded so
 // a stray symlink cannot walk the disk.
-export function searchForManifests(dir, depth = 0, found = []) {
+export function searchForManifests(root, dir = root, depth = 0, found = []) {
   if (depth > MAX_SEARCH_DEPTH) return found;
   let entries;
   try {
@@ -134,10 +144,22 @@ export function searchForManifests(dir, depth = 0, found = []) {
   for (const e of entries) {
     const full = join(dir, e.name);
     if (e.isDirectory()) {
-      searchForManifests(full, depth + 1, found);
-    } else if (e.name === 'plugin.json' && full.split(sep).includes(PLUGIN)) {
-      const version = readManifestVersion(full);
-      if (version) found.push({ path: full, version });
+      searchForManifests(root, full, depth + 1, found);
+    } else if (e.name === 'plugin.json') {
+      // Segments BELOW the search root only. Splitting the absolute path made
+      // a home directory containing a `lia-tools` segment (a devcontainer at
+      // /workspaces/lia-tools, say) match every manifest on the machine.
+      const rel = full.slice(root.length).split(sep).filter(Boolean);
+      const m = readManifest(full);
+      if (!m) continue;
+      // Identity: the manifest's own name is authoritative. Where a manifest
+      // omits `name`, fall back to the path — but require the MARKETPLACE
+      // segment too, so another marketplace's copy of a same-named plugin is
+      // not read as this install.
+      const isOurs = m.name
+        ? m.name === PLUGIN
+        : rel.includes(PLUGIN) && rel.includes(MARKETPLACE);
+      if (isOurs) found.push({ path: full, version: m.version });
     }
   }
   return found;
@@ -263,17 +285,35 @@ export function verdict(held, current) {
     return { code: EXIT.UNCHECKED, state: 'unchecked', message: `unchecked — holding ${versions.join(', ')}, but the released version could not be read, so nothing was compared. Pass --current [version] or run from a clone with an up-to-date origin/release.` };
   }
 
-  // Several versions held at once: judge on the OLDEST, because that is the
-  // copy most likely to be serving a stale skill to somebody.
-  const parsed = versions.map((v) => ({ v, p: parseVersion(v) }));
-  if (parsed.some((x) => !x.p)) {
-    return { code: EXIT.UNCHECKED, state: 'unchecked', message: `unchecked — could not compare ${versions.map((v) => `"${v}"`).join(', ')} against "${current}"; not every one is a plain x.y.z version.` };
+  // DISAGREEMENT IS UNCHECKED, NOT STALE.
+  //
+  // An earlier version judged several held versions on the oldest. That
+  // produced a false STALE on a perfectly current machine — a live 1.20.0 with
+  // a leftover 1.13.0 directory beside it reported "you are holding 1.13.0",
+  // which is simply false. And a false STALE is the damaging direction: it
+  // tells a correct agent its rules may be missing, which is LIAB-1052's
+  // confusion pointed backwards. This file's own header already said the right
+  // thing — "there is then no single held version, and this script says so
+  // rather than picking one and sounding certain" — and the code did not
+  // honour it.
+  //
+  // So when the copies disagree, the honest answer is that this script cannot
+  // tell which one is being served. That yields no false clean (it never
+  // reaches OK) and no false stale (it never reaches STALE).
+  const distinct = [...new Set(versions)];
+  if (distinct.length > 1) {
+    return {
+      code: EXIT.UNCHECKED,
+      state: 'unchecked',
+      message:
+        `unchecked — this machine holds ${distinct.length} versions of ${PLUGIN} (${distinct.join(', ')}),\n` +
+        `  and which one is being served cannot be determined from here. The marketplace serves ${current}.\n\n` +
+        `  Not a pass and not a failure: if the newest is the live one you are current, and if an\n` +
+        `  older one is being served you are stale. Pass --held [path-to-the-manifest-you-load-from]\n` +
+        `  to get a real answer.`,
+    };
   }
-  const oldest = parsed.reduce((a, b) => (compareVersions(a.v, b.v) <= 0 ? a : b)).v;
-  const multi = versions.length > 1
-    ? `\n\n  NOTE: ${versions.length} versions are installed (${versions.join(', ')}). There is no single\n  held version on this machine; the verdict is on the oldest, since that is the copy\n  most likely to be serving an out-of-date skill.`
-    : '';
-  const held0 = oldest;
+  const held0 = distinct[0];
   const cmp = compareVersions(held0, current);
   if (cmp === null) {
     return { code: EXIT.UNCHECKED, state: 'unchecked', message: `unchecked — could not compare "${held0}" against "${current}".` };
@@ -283,7 +323,7 @@ export function verdict(held, current) {
       code: EXIT.STALE,
       state: 'stale',
       message:
-        `STALE — you are holding ${PLUGIN} ${held0}; the marketplace serves ${current}.${multi}\n\n` +
+        `STALE — you are holding ${PLUGIN} ${held0}; the marketplace serves ${current}.\n\n` +
         `  Every skill you have loaded may be the older copy. A rule you cannot find is\n` +
         `  more likely missing from your copy than absent from the plugin — check before\n` +
         `  concluding it does not exist.\n\n` +
@@ -295,9 +335,9 @@ export function verdict(held, current) {
     };
   }
   if (cmp > 0) {
-    return { code: EXIT.OK, state: 'ahead', message: `ok — holding ${PLUGIN} ${held0}, ahead of the released ${current}.${multi} Expected in a working clone; machines get it at the next promotion.` };
+    return { code: EXIT.OK, state: 'ahead', message: `ok — holding ${PLUGIN} ${held0}, ahead of the released ${current}. Expected in a working clone; machines get it at the next promotion.` };
   }
-  return { code: EXIT.OK, state: 'current', message: `ok — holding ${PLUGIN} ${held0}, which is what the marketplace serves.${multi}` };
+  return { code: EXIT.OK, state: 'current', message: `ok — holding ${PLUGIN} ${held0}, which is what the marketplace serves.` };
 }
 
 // ---------------------------------------------------------------- self-test
@@ -313,8 +353,14 @@ function selfTest() {
     { name: 'no release readable', held: '1.16.0', current: null, expect: 'unchecked', code: 2 },
     { name: 'neither side readable', held: null, current: null, expect: 'unchecked', code: 2 },
     { name: 'unparseable is unknown, not equal', held: 'main', current: '1.16.0', expect: 'unchecked', code: 2 },
-    { name: 'several versions held: judged on the oldest', held: ['1.16.0', '1.13.0'], current: '1.16.0', expect: 'stale', code: 1 },
-    { name: 'several versions held, all current', held: ['1.16.0', '1.16.0'], current: '1.16.0', expect: 'current', code: 0 },
+    // Disagreement is UNCHECKED, never STALE: judging on the oldest reported a
+    // current machine with a leftover directory as stale, which is false in the
+    // damaging direction. Neither a pass nor a failure — the script cannot tell
+    // which copy is served.
+    { name: 'versions disagree: unchecked, not stale', held: ['1.16.0', '1.13.0'], current: '1.16.0', expect: 'unchecked', code: 2 },
+    { name: 'versions disagree even when all are behind', held: ['1.15.0', '1.13.0'], current: '1.16.0', expect: 'unchecked', code: 2 },
+    { name: 'the same version twice is not a disagreement', held: ['1.16.0', '1.16.0'], current: '1.16.0', expect: 'current', code: 0 },
+    { name: 'one version, behind: still a plain STALE', held: ['1.13.0'], current: '1.16.0', expect: 'stale', code: 1 },
   ];
 
   const failures = [];
@@ -343,9 +389,13 @@ function selfTest() {
   // the way this script was NOT written to expect.
   // ------------------------------------------------------------------
   const tmp = mkdtempSync(join(tmpdir(), 'freshness-selftest-'));
-  const plantManifest = (p, version) => {
+  const plantManifest = (p, version, name = PLUGIN) => {
     mkdirSync(dirname(p), { recursive: true });
-    writeFileSync(p, JSON.stringify({ name: PLUGIN, version }, null, 2));
+    // `name: null` plants a manifest with NO name field, which is the only way
+    // to exercise the path fallback — the code path the original substring bug
+    // lived in.
+    const body = name === null ? { version } : { name, version };
+    writeFileSync(p, JSON.stringify(body, null, 2));
   };
   try {
     // (a) VERSION-PARTITIONED cache — a shape the old path list could not see.
@@ -379,7 +429,9 @@ function selfTest() {
     plantManifest(join(d, '.claude', 'plugins', 'cache', MARKETPLACE, PLUGIN, '1.2.0', '.claude-plugin', 'plugin.json'), '1.2.0');
     const foundD = findHeld(null, d);
     if (foundD.versions.length !== 2) failures.push(`two installs: expected 2 versions, got ${foundD.versions.length}`);
-    if (verdict(foundD.versions, '1.16.0').state !== 'stale') failures.push('two installs: the stale one was NOT surfaced');
+    // Both are seen, and disagreement means the script says it cannot tell —
+    // rather than announcing the older one as "what you are holding".
+    if (verdict(foundD.versions, '1.16.0').code !== 2) failures.push('two installs: expected UNCHECKED on disagreement');
 
     // (e) THE NOT-ALWAYS-RED HALF. An empty tree must be UNCHECKED (exit 2),
     //     never a pass — and a matching install must come back green.
@@ -392,10 +444,36 @@ function selfTest() {
     plantManifest(join(f, '.claude', 'plugins', 'cache', MARKETPLACE, PLUGIN, '1.16.0', '.claude-plugin', 'plugin.json'), '1.16.0');
     if (verdict(findHeld(null, f).versions, '1.16.0').code !== 0) failures.push('matching install: a correct machine was reported as a defect');
 
-    // (f) A manifest for a DIFFERENT plugin must not be mistaken for ours.
+    // (f) A manifest for a DIFFERENT plugin must not be mistaken for ours —
+    //     including one sitting in a directory named after us. Identity comes
+    //     from the manifest's own `name`, not from where the file sits; reading
+    //     a foreign manifest as ours produced a false CLEAN, the worst
+    //     direction.
     const g = join(tmp, 'g');
-    plantManifest(join(g, '.claude', 'plugins', 'cache', MARKETPLACE, 'some-other-plugin', '.claude-plugin', 'plugin.json'), '9.9.9');
-    if (findHeld(null, g).versions.length) failures.push("another plugin's manifest was read as ours");
+    const foreign = join(g, '.claude', 'plugins', 'cache', MARKETPLACE, PLUGIN, '.claude-plugin', 'plugin.json');
+    mkdirSync(dirname(foreign), { recursive: true });
+    writeFileSync(foreign, JSON.stringify({ name: 'some-other-plugin', version: '9.9.9' }));
+    if (findHeld(null, g).versions.length) failures.push("a foreign manifest in a directory named after us was read as ours (false CLEAN)");
+
+    // (f2) A HOME PATH containing our name must not match everything on the
+    //      machine. Splitting the ABSOLUTE path did exactly that: a checkout at
+    //      /workspaces/lia-tools/lia-plugins puts both our segments above the
+    //      search root, so every manifest under it read as ours.
+    //
+    //      This fixture's first shape gave the unrelated manifest a `name`, so
+    //      the name-authoritative branch settled it and the path fallback never
+    //      ran — green with the fix and green without it. Proved by mutating
+    //      `rel` back to the absolute split and watching this suite stay green
+    //      (29 Aug 2026). It is CLAUDE.md's third layer exactly: a fixture that
+    //      could not tell the fix from the bug. So the manifest here carries NO
+    //      name, which is the only way to reach the code under test, and the
+    //      home path carries BOTH our segments, since the fallback requires
+    //      both.
+    const homeNamed = join(tmp, PLUGIN, MARKETPLACE, 'home');
+    const other = join(homeNamed, '.claude', 'plugins', 'cache', 'other-market', 'unrelated', 'plugin.json');
+    mkdirSync(dirname(other), { recursive: true });
+    writeFileSync(other, JSON.stringify({ version: '0.0.7' }));
+    if (findHeld(null, homeNamed).versions.includes('0.0.7')) failures.push('a home path containing our name matched an unrelated plugin');
 
     // (g) THE REGISTRY MUST NOT SUPPRESS DISK. A registry claiming current
     //     over a cache still holding an old copy is the exact LIAB-1052 defect;
@@ -407,18 +485,54 @@ function selfTest() {
     plantManifest(join(h, '.claude', 'plugins', 'cache', MARKETPLACE, PLUGIN, '1.13.0', '.claude-plugin', 'plugin.json'), '1.13.0');
     const foundH = findHeld(null, h);
     if (!foundH.versions.includes('1.13.0')) failures.push('registry-vs-disk: the stale on-disk copy was SUPPRESSED by the registry');
-    if (verdict(foundH.versions, '1.19.0').code !== 1) failures.push('registry-vs-disk: a stale machine was reported as a pass');
+    // The original defect returned exit 0 here (a pass). It must not: the two
+    // sources disagree, so the answer is UNCHECKED — never a clean bill.
+    if (verdict(foundH.versions, '1.19.0').code === 0) failures.push('registry-vs-disk: a machine with a stale copy on disk was reported as a PASS');
+    if (verdict(foundH.versions, '1.19.0').code !== 2) failures.push('registry-vs-disk: expected UNCHECKED on disagreement');
 
     // (h) A SIBLING PLUGIN IS NOT US. Substring matching read `lia-tools-extras`
-    //     as ours, and oldest-wins turns one bad hit into a false STALE.
+    //     as ours, and oldest-wins turned one bad hit into a false STALE.
+    //     Two fixtures, because there are two ways to get this wrong:
+    //       - it declares its own name, so identity settles it; and
+    //       - it declares NO name, so the path fallback decides — and that is
+    //         where the substring bug actually lived. A path-segment match
+    //         passes this; `full.includes(PLUGIN)` does not.
     const i = join(tmp, 'i');
-    plantManifest(join(i, '.claude', 'plugins', 'cache', MARKETPLACE, `${PLUGIN}-extras`, '.claude-plugin', 'plugin.json'), '0.0.1');
+    plantManifest(join(i, '.claude', 'plugins', 'cache', MARKETPLACE, `${PLUGIN}-extras`, '.claude-plugin', 'plugin.json'), '0.0.1', `${PLUGIN}-extras`);
     if (findHeld(null, i).versions.length) failures.push(`a sibling plugin (${PLUGIN}-extras) was read as ours`);
+    const iNameless = join(tmp, 'i2');
+    plantManifest(join(iNameless, '.claude', 'plugins', 'cache', MARKETPLACE, `${PLUGIN}-extras`, '.claude-plugin', 'plugin.json'), '0.0.2', null);
+    if (findHeld(null, iNameless).versions.length) failures.push(`an unnamed manifest under ${PLUGIN}-extras was read as ours by path`);
+
+    // (h3) ANOTHER MARKETPLACE'S COPY of a same-named plugin is not this
+    //      install. The path fallback requires the marketplace segment as well
+    //      as the plugin one, and nothing tested that: dropping the marketplace
+    //      half left this suite green (mutation sweep, 29 Aug 2026).
+    const iOther = join(tmp, 'i3');
+    plantManifest(join(iOther, '.claude', 'plugins', 'cache', 'someone-elses-market', PLUGIN, '.claude-plugin', 'plugin.json'), '0.0.3', null);
+    if (findHeld(null, iOther).versions.length) failures.push("another marketplace's copy of a same-named plugin was read as this install");
     const j = join(tmp, 'j');
     const jReg = join(j, '.claude', 'plugins', 'installed_plugins.json');
     mkdirSync(dirname(jReg), { recursive: true });
     writeFileSync(jReg, JSON.stringify({ version: 2, plugins: { [`${PLUGIN}@${MARKETPLACE}`]: { version: '1.19.0' }, [`${PLUGIN} marketplace`]: { version: '0.0.3' } } }));
     if (findHeld(null, j).versions.includes('0.0.3')) failures.push('a registry metadata node was read as a plugin version (false STALE)');
+    // (h5) THE REGISTRY'S OTHER BRANCH. Records can arrive as a list of nodes
+    //      carrying their own `name`, and that branch had no fixture at all:
+    //      loosening it to a substring left this suite green (mutation sweep,
+    //      29 Aug 2026). Both directions, so it cannot pass by always saying no.
+    const l = join(tmp, 'l');
+    const lReg = join(l, '.claude', 'plugins', 'installed_plugins.json');
+    mkdirSync(dirname(lReg), { recursive: true });
+    writeFileSync(lReg, JSON.stringify({
+      version: 2,
+      plugins: [
+        { name: `${PLUGIN}-extras`, version: '0.0.4' },
+        { name: `${PLUGIN}@${MARKETPLACE}`, version: '1.19.0' },
+      ],
+    }));
+    const foundL = findHeld(null, l);
+    if (foundL.versions.includes('0.0.4')) failures.push(`a registry record named ${PLUGIN}-extras was read as ours`);
+    if (!foundL.versions.includes('1.19.0')) failures.push('a registry record listed by name was MISSED');
 
     // (i) --held IS THE ESCAPE HATCH THE UNCHECKED MESSAGE POINTS AT, so it is
     //     tested. It was not, and ignoring it entirely left this suite green.
@@ -442,7 +556,7 @@ function selfTest() {
     process.exit(1);
   }
   console.log(
-    `self-test ok — ${scenarios.length} comparator scenarios plus 11 on-disk detector cases. The detector is proved against layouts this script has NO path list for: version-partitioned cache, a marketplaces/ checkout, and the installed_plugins.json registry (which wins). A machine holding two versions is judged on the oldest. Not-always-red: an empty tree is UNCHECKED (exit 2) not a pass, a matching install is green, another plugin's manifest is not mistaken for ours, a registry claiming current cannot suppress a stale copy on disk, a sibling named lia-tools-extras and a registry metadata node are not read as us, and --held is honoured.`,
+    `self-test ok — ${scenarios.length} comparator scenarios plus 25 on-disk detector assertions. The detector is proved against layouts this script has NO path list for: version-partitioned cache, a marketplaces/ checkout, and the installed_plugins.json registry (which wins). Versions that disagree are UNCHECKED, never a confident STALE — the false-stale a current machine with a leftover directory used to get. Not-always-red: an empty tree is UNCHECKED (exit 2) not a pass, a matching install is green, a foreign manifest in a directory named after us is not mistaken for ours and a home path containing our name matches nothing, a registry claiming current cannot suppress a stale copy on disk, a sibling named lia-tools-extras and a registry metadata node are not read as us, and --held is honoured. Mutation-swept: 13 deliberate reversions of this script's own rules were each confirmed to turn this suite RED (29 Aug 2026). Two of them did not, first time round — the marketplace half of the path fallback and the registry's node-name branch had no fixture at all, and a third fixture was green either way. Break it again after changing it; green here means nothing until you have watched it go red.`,
   );
 }
 
@@ -467,4 +581,4 @@ function main() {
   process.exit(result.code);
 }
 
-if (import.meta.url === pathToFileURL(process.argv[1]).href) main();
+if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) main();
