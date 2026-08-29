@@ -1,7 +1,7 @@
 ---
 name: execution-discipline
 description: How to execute any Lia skill or non-trivial task the way a stronger model would. Load at the start of every Lia skill run (scheduled or interactive) and any multi-step task, for any founder's agent. Covers ground-truth rules (never invent paths, Linear statuses, labels, or commands), stop conditions (what to do when reality doesn't match the skill), verification (done means evidence, per-stage accounting, verify from a cold start so the check can actually fail), judgment calibration (err toward exclusion, quote before you claim), and output discipline. Written by Fable 5 on 2026-07-03 as a distillation of its own working habits for successor models.
-version: 1.6.0
+version: 1.7.0
 created: 2026-07-03
 updated: 2026-08-29
 status: active
@@ -54,7 +54,13 @@ It finds your install by reading Claude Code's own `installed_plugins.json` and,
 
 Three outcomes, and the third is the one that matters: **exit 0** current or ahead · **exit 1** stale · **exit 2 unchecked**. `unchecked` has its own exit code on purpose, so *"I could not find your install"* can never be read as *"you are fine"*. If you are running from a real install and still get `unchecked`, **the finder is wrong and worth a ticket** — pass `--held [path-to-plugin.json]` meanwhile. A session served from `--plugin-dir`, a clone or CI has no install to find, and that is the honest `unchecked`, not a fault.
 
-**A machine can hold several versions at once** (per-scope or per-project installs, or a leftover directory beside a current one). The script reports all of them and, when they disagree, returns `unchecked` rather than a verdict — it cannot tell from outside which copy you are being served, and guessing the oldest tells a current machine it may be stale, which is this rule's own confusion pointed backwards. Pass `--held [path-to-the-manifest-you-load-from]` for a real answer.
+**A machine can hold several versions at once** (per-scope or per-project installs, or a leftover directory beside a current one). The script reports all of them, and then asks whether the disagreement actually reaches the verdict:
+
+- **every copy behind the release → stale.** Certain whichever one is served, so it says so. This is the shape the LIAB-1052 machine was in.
+- **every copy at or ahead of the release → fine.** Also certain either way.
+- **the set straddles the release → `unchecked`.** The one genuine ambiguity, and the only one worth refusing to answer.
+
+`--held [path]` settles that last case, and **you probably cannot supply it** — which is the same gap this section opens with. Two different things are numbered here: a **skill's** version (`lead-engineer` 0.7.0, readable in-band from its changelog) and the **plugin's** (1.17.0, what the script compares). Knowing the first does not tell you the second. So on a straddling answer the honest report is *unverified*, not a guess at which copy is live.
 
 **Why this rule exists** ([LIAB-1052](https://linear.app/lia-creative/issue/LIAB-1052), measured 29 Aug 2026): a lead was dispatched to run the orchestration chain that had merged an hour earlier, and **the loader served it the version from before that merge** — no `§The chain`, no rules 10 or 11. The mandate was invisible to the exact seat built to run it, and two build agents hit the same thing independently. The installed cache was three versions behind `main`. **Nothing merged into this plugin takes effect for a session already running, and until you check, no session can tell.**
 
@@ -106,6 +112,7 @@ Related: `Wiki/synthesis/systems-are-learned-alone.md` — this file's "the judg
 
 ## Changelog
 
+- **1.7.0 (2026-08-29, LIAB-1052)** — 1.6.0 over-corrected. Saying *any* disagreement returns `unchecked` meant the guard shrugged at the machine this ticket was measured on, where a registry spanning 1.2.0 to 1.13.0 sat against a released 1.16.0 — every copy behind, staleness certain whichever was served, and nothing said so. The rule is now whether the disagreement **reaches the verdict**, in three cases. Also names the thing that makes the `--held` escape hatch hard to use: the skill version you can read in-band and the plugin version the script compares are **different numbers**, so knowing one does not give you the other.
 - **1.6.0 (2026-08-29, LIAB-1052)** — the multiple-installs paragraph described behaviour the script no longer has. 1.4.0 said it *judges on the oldest*; a review found that reports a **current** machine with a leftover directory beside it as `stale`, which is false in the damaging direction — it tells a correct agent its rules may be missing. Disagreeing copies now return `unchecked`, and this section says what the script does rather than what it used to. Same lesson as the version numbers this repo has already had lie to it: prose about a check goes stale the moment the check changes.
 - **1.5.0 (2026-08-29, LIAB-1052)** — the command this section names **does not exist for the agents it is aimed at**, caught in review: `scripts/` is at the repo root, outside the shipped plugin, so an installed session has no such file — and this skill loads on every run, for any agent, in any repo, while its own §1 forbids naming a command that is not there. It now says the clone is required and, more usefully, what to do without one: report your version as unverified rather than assume it is current, which is still the answer the ticket wants.
 - **1.4.0 (2026-08-29, LIAB-1052)** — the freshness check this section points at was **unsound on the point it was written for**, caught by an independent review the same day: it looked for the install at three guessed paths, none of them verified and nothing in the repo documenting the real layout — *"never invent a path"* broken inside the guard meant to be authoritative about versions. It now reads `installed_plugins.json` and otherwise **searches** the tree, so a layout its author never saw is still found; `unchecked` gets **exit 2**, so silence cannot read as a pass; and several versions held at once are all reported, judged on the oldest. This section says so.

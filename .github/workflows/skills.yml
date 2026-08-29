@@ -79,5 +79,19 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
-          node-version: 22
-      - run: node scripts/check-plugin-freshness.mjs --self-test
+          node-version: "22"
+      # THE OUTPUT IS ASSERTED, NOT JUST THE EXIT CODE. Two mutations survive
+      # every test the suite can run on itself, because both stop the suite
+      # from running at all: `--self-test` short-circuiting to `exit 0`, and
+      # the `import.meta.url` guard never calling `main()`. A suite cannot
+      # catch its own absence, so the assertion has to sit outside it — here.
+      # Found by mutating the wiring layer, 29 Aug 2026.
+      - name: freshness guard proves it can go red
+        run: |
+          set -euo pipefail
+          out=$(node scripts/check-plugin-freshness.mjs --self-test)
+          echo "$out"
+          case "$out" in
+            "self-test ok"*) ;;
+            *) echo "::error::the self-test exited 0 without reporting a run - it did not execute"; exit 1 ;;
+          esac

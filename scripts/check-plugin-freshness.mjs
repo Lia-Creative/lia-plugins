@@ -43,8 +43,8 @@
 import { readFileSync, readdirSync, existsSync, mkdtempSync, mkdirSync, writeFileSync, rmSync } from 'node:fs';
 import { join, dirname, sep } from 'node:path';
 import { tmpdir, homedir } from 'node:os';
-import { pathToFileURL } from 'node:url';
-import { execFileSync } from 'node:child_process';
+import { fileURLToPath, pathToFileURL } from 'node:url';
+import { execFileSync, spawnSync } from 'node:child_process';
 
 const PLUGIN = 'lia-tools';
 const MARKETPLACE = 'lia-plugins';
@@ -262,6 +262,21 @@ export const EXIT = { OK: 0, STALE: 1, UNCHECKED: 2 };
 // hold several at once (per-scope or per-project installs), and picking one to
 // sound confident is exactly the invention this script exists to prevent.
 // Pure, so the self-test can drive it without touching a filesystem.
+// The same advice serves both stale paths — one copy behind, or every copy
+// behind. Written once so the two cannot drift apart.
+function staleAdvice() {
+  return (
+    `  Every skill you have loaded may be the older copy. A rule you cannot find is\n` +
+    `  more likely missing from your copy than absent from the plugin — check before\n` +
+    `  concluding it does not exist.\n\n` +
+    `  To update:  /plugin marketplace update ${MARKETPLACE}\n` +
+    `              claude plugin update ${PLUGIN}@${MARKETPLACE}\n\n` +
+    `  Auto-update does not deliver on a CLI or desktop machine (LIAB-1030), and a\n` +
+    `  session already running keeps the copy it started with — reloading is the\n` +
+    `  lead's call, but knowing is not optional.`
+  );
+}
+
 export function verdict(held, current) {
   const versions = held == null ? [] : Array.isArray(held) ? held : [held];
 
@@ -285,32 +300,58 @@ export function verdict(held, current) {
     return { code: EXIT.UNCHECKED, state: 'unchecked', message: `unchecked — holding ${versions.join(', ')}, but the released version could not be read, so nothing was compared. Pass --current [version] or run from a clone with an up-to-date origin/release.` };
   }
 
-  // DISAGREEMENT IS UNCHECKED, NOT STALE.
+  // WHEN THE COPIES DISAGREE, ASK WHETHER IT MATTERS.
   //
-  // An earlier version judged several held versions on the oldest. That
-  // produced a false STALE on a perfectly current machine — a live 1.20.0 with
-  // a leftover 1.13.0 directory beside it reported "you are holding 1.13.0",
-  // which is simply false. And a false STALE is the damaging direction: it
-  // tells a correct agent its rules may be missing, which is LIAB-1052's
-  // confusion pointed backwards. This file's own header already said the right
-  // thing — "there is then no single held version, and this script says so
-  // rather than picking one and sounding certain" — and the code did not
-  // honour it.
+  // Two wrong answers have already shipped here. The first judged several held
+  // versions on the OLDEST, which reports a current machine with a leftover
+  // directory as `stale` — false in the damaging direction, since it tells a
+  // correct agent its rules may be missing. The second over-corrected: ANY
+  // disagreement returned `unchecked`, which declines to report staleness even
+  // when every copy on the machine is behind. That is the case LIAB-1052 was
+  // measured on — a registry spanning 1.2.0 to 1.13.0 against a released
+  // 1.16.0 — so the guard shrugged at precisely the machine it was written for.
   //
-  // So when the copies disagree, the honest answer is that this script cannot
-  // tell which one is being served. That yields no false clean (it never
-  // reaches OK) and no false stale (it never reaches STALE).
+  // The question is not "do the copies agree" but "does the disagreement reach
+  // the verdict". Three cases, and only one is genuinely ambiguous:
+  //
+  //   every copy behind          -> STALE. Whichever is served, it is stale.
+  //   every copy current/ahead   -> OK. Whichever is served, it is fine.
+  //   some behind, some not      -> UNCHECKED. This is the real ambiguity, and
+  //                                the only one worth refusing to answer.
   const distinct = [...new Set(versions)];
   if (distinct.length > 1) {
+    const cmps = distinct.map((v) => compareVersions(v, current));
+    if (cmps.some((c) => c === null)) {
+      return { code: EXIT.UNCHECKED, state: 'unchecked', message: `unchecked — this machine holds ${distinct.join(', ')}, and not all of those compare against "${current}" as plain x.y.z versions.` };
+    }
+    // Behind on every copy: certain, so say it. Named on the NEWEST held,
+    // because "even your newest copy is behind" is the strongest claim that is
+    // still true — naming the oldest would overstate what is being served.
+    if (cmps.every((c) => c < 0)) {
+      const newest = distinct.reduce((a, b) => (compareVersions(a, b) >= 0 ? a : b));
+      return {
+        code: EXIT.STALE,
+        state: 'stale',
+        message:
+          `STALE — this machine holds ${distinct.length} copies of ${PLUGIN} (${distinct.join(', ')}) and\n` +
+          `  EVERY ONE is behind the released ${current}. Which one you are being served does not\n` +
+          `  matter: the newest you hold is ${newest}.\n\n` +
+          staleAdvice(),
+      };
+    }
+    if (cmps.every((c) => c >= 0)) {
+      return { code: EXIT.OK, state: 'current', message: `ok — this machine holds ${distinct.join(', ')}; every one is at or ahead of the released ${current}, so whichever is served is current.` };
+    }
     return {
       code: EXIT.UNCHECKED,
       state: 'unchecked',
       message:
         `unchecked — this machine holds ${distinct.length} versions of ${PLUGIN} (${distinct.join(', ')}),\n` +
-        `  and which one is being served cannot be determined from here. The marketplace serves ${current}.\n\n` +
-        `  Not a pass and not a failure: if the newest is the live one you are current, and if an\n` +
-        `  older one is being served you are stale. Pass --held [path-to-the-manifest-you-load-from]\n` +
-        `  to get a real answer.`,
+        `  straddling the released ${current}: some are behind it and some are not, and which one is\n` +
+        `  being served cannot be determined from here.\n\n` +
+        `  Not a pass and not a failure. To settle it, pass --held with the manifest you are actually\n` +
+        `  loaded from. If you cannot tell which that is — and an agent generally cannot — treat your\n` +
+        `  version as UNVERIFIED and say so, rather than assuming the newest copy is the live one.`,
     };
   }
   const held0 = distinct[0];
@@ -324,14 +365,7 @@ export function verdict(held, current) {
       state: 'stale',
       message:
         `STALE — you are holding ${PLUGIN} ${held0}; the marketplace serves ${current}.\n\n` +
-        `  Every skill you have loaded may be the older copy. A rule you cannot find is\n` +
-        `  more likely missing from your copy than absent from the plugin — check before\n` +
-        `  concluding it does not exist.\n\n` +
-        `  To update:  /plugin marketplace update ${MARKETPLACE}\n` +
-        `              claude plugin update ${PLUGIN}@${MARKETPLACE}\n\n` +
-        `  Auto-update does not deliver on a CLI or desktop machine (LIAB-1030), and a\n` +
-        `  session already running keeps the copy it started with — reloading is the\n` +
-        `  lead's call, but knowing is not optional.`,
+        staleAdvice(),
     };
   }
   if (cmp > 0) {
@@ -353,12 +387,21 @@ function selfTest() {
     { name: 'no release readable', held: '1.16.0', current: null, expect: 'unchecked', code: 2 },
     { name: 'neither side readable', held: null, current: null, expect: 'unchecked', code: 2 },
     { name: 'unparseable is unknown, not equal', held: 'main', current: '1.16.0', expect: 'unchecked', code: 2 },
-    // Disagreement is UNCHECKED, never STALE: judging on the oldest reported a
-    // current machine with a leftover directory as stale, which is false in the
-    // damaging direction. Neither a pass nor a failure — the script cannot tell
-    // which copy is served.
-    { name: 'versions disagree: unchecked, not stale', held: ['1.16.0', '1.13.0'], current: '1.16.0', expect: 'unchecked', code: 2 },
-    { name: 'versions disagree even when all are behind', held: ['1.15.0', '1.13.0'], current: '1.16.0', expect: 'unchecked', code: 2 },
+    // Disagreement is judged on whether it REACHES the verdict. Two wrong
+    // answers shipped before this one: oldest-wins (a false stale on a current
+    // machine with a leftover directory) and blanket-unchecked (a shrug at the
+    // very machine LIAB-1052 was measured on, where every copy was behind).
+    //
+    // The second scenario below is the one that matters most: an earlier
+    // version of this suite asserted `unchecked` for it — the defect written in
+    // as the expectation, which no mutation of the code could ever find. Caught
+    // in review, 29 Aug 2026.
+    { name: 'straddling the release: unchecked, since it genuinely cannot tell', held: ['1.16.0', '1.13.0'], current: '1.16.0', expect: 'unchecked', code: 2 },
+    { name: 'EVERY copy behind: stale, because it is certain either way', held: ['1.15.0', '1.13.0'], current: '1.16.0', expect: 'stale', code: 1 },
+    { name: 'the measured LIAB-1052 machine: many copies, all behind', held: ['1.2.0', '1.5.0', '1.11.0', '1.13.0'], current: '1.16.0', expect: 'stale', code: 1 },
+    { name: 'EVERY copy current or ahead: ok, also certain either way', held: ['1.16.0', '1.20.0'], current: '1.16.0', expect: 'current', code: 0 },
+    { name: 'one unparseable among several: unchecked, and SAYS WHY', held: ['main', '1.13.0'], current: '1.16.0', expect: 'unchecked', code: 2, says: /do not all compare|not all of those compare/ },
+    { name: 'straddling says it straddles, not that it is unreadable', held: ['1.20.0', '1.13.0'], current: '1.16.0', expect: 'unchecked', code: 2, says: /straddling/ },
     { name: 'the same version twice is not a disagreement', held: ['1.16.0', '1.16.0'], current: '1.16.0', expect: 'current', code: 0 },
     { name: 'one version, behind: still a plain STALE', held: ['1.13.0'], current: '1.16.0', expect: 'stale', code: 1 },
   ];
@@ -377,6 +420,15 @@ function selfTest() {
     const got = verdict(s.held, s.current);
     if (got.state !== s.expect) failures.push(`${s.name}: expected ${s.expect}, got ${got.state}`);
     if (got.code !== s.code) failures.push(`${s.name}: expected exit ${s.code}, got ${got.code}`);
+    // Some rules change only the EXPLANATION, and an exit code cannot see
+    // them. Deleting the unparseable guard in the multi-version branch left
+    // every code identical (a null comparison fails both `every` tests, so it
+    // falls through to the straddling answer by accident) while the message
+    // went from naming the unreadable version to claiming the set straddles
+    // the release — which is not true and not useful. Caught by mutation,
+    // 29 Aug 2026: a scenario that asserts only a code cannot cover a rule
+    // whose whole job is to say something accurate.
+    if (s.says && !s.says.test(got.message)) failures.push(`${s.name}: the message did not match ${s.says} — got: ${got.message.split('\n')[0]}`);
   }
 
   // ------------------------------------------------------------------
@@ -411,7 +463,10 @@ function selfTest() {
     plantManifest(join(b, '.claude', 'plugins', 'marketplaces', MARKETPLACE, PLUGIN, '.claude-plugin', 'plugin.json'), '1.10.0');
     if (!findHeld(null, b).versions.includes('1.10.0')) failures.push('marketplaces layout: auto-detect FAILED');
 
-    // (c) The REGISTRY wins, and several records mean several versions.
+    // (c) THE REGISTRY IS READ, and several records mean several versions.
+    //     It does not *win* — `400f81d` made this a union precisely so a
+    //     registry claiming current cannot suppress a stale copy on disk;
+    //     fixture (g) is that case. This one only proves it is read at all.
     const c = join(tmp, 'c');
     const reg = join(c, '.claude', 'plugins', 'installed_plugins.json');
     mkdirSync(dirname(reg), { recursive: true });
@@ -420,18 +475,19 @@ function selfTest() {
       plugins: { [`${PLUGIN}@${MARKETPLACE}`]: { version: '1.13.0', scope: 'user' } },
     }));
     const foundC = findHeld(null, c);
-    if (foundC.source !== 'installed_plugins.json') failures.push(`registry: expected it to win, got ${foundC.source}`);
+    if (!foundC.source.includes('installed_plugins.json')) failures.push(`registry: expected it to be read, got ${foundC.source}`);
     if (!foundC.versions.includes('1.13.0')) failures.push('registry: FAILED to read the recorded version');
 
-    // (d) A machine holding TWO versions is judged on the oldest.
+    // (d) A machine holding TWO versions STRADDLING the release: both are
+    //     seen, and the answer is that it cannot tell which is served.
     const d = join(tmp, 'd');
     plantManifest(join(d, '.claude', 'plugins', 'cache', MARKETPLACE, PLUGIN, '1.16.0', '.claude-plugin', 'plugin.json'), '1.16.0');
     plantManifest(join(d, '.claude', 'plugins', 'cache', MARKETPLACE, PLUGIN, '1.2.0', '.claude-plugin', 'plugin.json'), '1.2.0');
     const foundD = findHeld(null, d);
     if (foundD.versions.length !== 2) failures.push(`two installs: expected 2 versions, got ${foundD.versions.length}`);
-    // Both are seen, and disagreement means the script says it cannot tell —
-    // rather than announcing the older one as "what you are holding".
-    if (verdict(foundD.versions, '1.16.0').code !== 2) failures.push('two installs: expected UNCHECKED on disagreement');
+    if (verdict(foundD.versions, '1.16.0').code !== 2) failures.push('two installs straddling the release: expected UNCHECKED');
+    // ...but the same two BOTH behind is certain, and must be reported.
+    if (verdict(foundD.versions, '1.20.0').code !== 1) failures.push('two installs both behind: expected STALE, not a shrug');
 
     // (e) THE NOT-ALWAYS-RED HALF. An empty tree must be UNCHECKED (exit 2),
     //     never a pass — and a matching install must come back green.
@@ -550,13 +606,124 @@ function selfTest() {
     rmSync(tmp, { recursive: true, force: true });
   }
 
+  // ------------------------------------------------------------------
+  // THE WIRING LAYER — proved by RUNNING THIS FILE, not by calling into it.
+  //
+  // Everything above tests `verdict()` and `findHeld()` as functions. `main()`
+  // was tested by nothing at all, and since CI runs only `--self-test`, it
+  // executed in no automated context whatever. A review mutated 30 rules: all
+  // 20 inside the covered layer went red, and ALL TEN in the wiring layer
+  // survived. The worst of them was one character —
+  //
+  //     process.exit(result.code)  ->  process.exit(0)
+  //
+  // — which keeps this suite green while a genuinely stale machine reports a
+  // clean exit 0. That is the false clean this file's own header calls its
+  // worst possible failure, and the exit code is exactly what
+  // `execution-discipline` tells every agent to read.
+  //
+  // The three sibling guards do not have this gap by construction: each ends
+  // in a single `process.exit(cond ? selfTest() : report(...))`, with no
+  // wiring to miss. This one introduced a wiring layer, so this one has to
+  // test it. The lesson generalises past this file: a check's blind spot is
+  // the shape of what it enumerates, and a suite that only ever imports can
+  // never see what the executable does.
+  // ------------------------------------------------------------------
+  if (!process.env.FRESHNESS_NO_SUBPROCESS) {
+  const selfPath = fileURLToPath(import.meta.url);
+  const tmp2 = mkdtempSync(join(tmpdir(), 'freshness-cli-'));
+  try {
+    const manifest = (version) => {
+      const f = join(tmp2, `${version}.json`);
+      writeFileSync(f, JSON.stringify({ name: PLUGIN, version }));
+      return f;
+    };
+    const emptyHome = join(tmp2, 'empty-home');
+    mkdirSync(join(emptyHome, '.claude', 'plugins'), { recursive: true });
+
+    // HOME is redirected so auto-detect cannot reach the real machine, and
+    // --current is passed so no case depends on a git clone being present.
+    const run = (args, home = emptyHome) =>
+      spawnSync(process.execPath, [selfPath, ...args], {
+        encoding: 'utf8',
+        env: { ...process.env, HOME: home, FRESHNESS_NO_SUBPROCESS: '1' },
+      });
+
+    // Literal exit codes, never the EXIT constants: asserting against the same
+    // constant the code uses moves both sides together and proves nothing.
+    // That tautology already shipped here once (caught 29 Aug 2026).
+    const cli = [
+      { why: 'behind the release exits 1', args: ['--held', manifest('1.13.0'), '--current', '1.16.0'], code: 1, expect: /STALE/ },
+      { why: 'matching the release exits 0', args: ['--held', manifest('1.16.0'), '--current', '1.16.0'], code: 0, expect: /^ok/m },
+      { why: 'ahead of the release exits 0', args: ['--held', manifest('1.20.0'), '--current', '1.16.0'], code: 0, expect: /ahead/ },
+      { why: 'a --held path that does not exist exits 2', args: ['--held', join(tmp2, 'nope.json'), '--current', '1.16.0'], code: 2, expect: /unchecked/ },
+      { why: 'no install and no --held exits 2', args: ['--current', '1.16.0'], code: 2, expect: /unchecked/ },
+      { why: 'no readable release exits 2', args: ['--held', manifest('1.13.0'), '--repo', tmp2], code: 2, expect: /unchecked/ },
+      { why: '--self-test still runs and still reports', args: ['--self-test'], code: 0, expect: /^self-test ok/ },
+    ];
+    for (const c of cli) {
+      const got = run(c.args);
+      const out = `${got.stdout ?? ''}${got.stderr ?? ''}`;
+      if (got.status !== c.code) failures.push(`CLI: ${c.why} — got exit ${got.status}`);
+      if (!c.expect.test(out)) failures.push(`CLI: ${c.why} — output did not match ${c.expect}`);
+    }
+
+    // W5: THE MULTI-VERSION PATH MUST REACH THE CLI. Every case above holds
+    // exactly one version, so `verdict(held.versions[0], ...)` — throwing away
+    // every copy but the first — behaved identically and survived. A STRADDLING
+    // home discriminates: the whole set is unchecked (2), while either single
+    // member alone is stale (1) or ok (0).
+    const straddle = join(tmp2, 'straddle-home');
+    for (const v of ['1.20.0', '1.13.0']) {
+      const f = join(straddle, '.claude', 'plugins', 'cache', MARKETPLACE, PLUGIN, v, '.claude-plugin', 'plugin.json');
+      mkdirSync(dirname(f), { recursive: true });
+      writeFileSync(f, JSON.stringify({ name: PLUGIN, version: v }));
+    }
+    const straddled = run(['--current', '1.16.0'], straddle);
+    if (straddled.status !== 2) failures.push(`CLI: a home straddling the release should be unchecked (2), got ${straddled.status} — is the multi-version set reaching verdict()?`);
+    // ...and the same home against a release ahead of BOTH is a certain stale.
+    const bothBehind = run(['--current', '9.9.9'], straddle);
+    if (bothBehind.status !== 1) failures.push(`CLI: a home whose every copy is behind should be stale (1), got ${bothBehind.status}`);
+
+    // W7/W9: THE RELEASE READ MUST BE EXERCISED FOR REAL. Every case above
+    // passes --current, so `releaseVersion` never succeeded in this suite:
+    // pointing it at a bogus ref path, or making its catch return a hardcoded
+    // version, changed nothing. A throwaway git repo with a `release` branch
+    // exercises it without a network or the real clone's state.
+    const repo = join(tmp2, 'repo');
+    mkdirSync(join(repo, PLUGIN, '.claude-plugin'), { recursive: true });
+    writeFileSync(join(repo, PLUGIN, '.claude-plugin', 'plugin.json'), JSON.stringify({ name: PLUGIN, version: '7.7.7' }));
+    const git = (...args) => spawnSync('git', args, { cwd: repo, encoding: 'utf8' });
+    git('init', '-q', '-b', 'release');
+    git('-c', 'user.email=t@t', '-c', 'user.name=t', 'add', '-A');
+    git('-c', 'user.email=t@t', '-c', 'user.name=t', 'commit', '-qm', 'x');
+    const fromRef = run(['--held', manifest('1.13.0'), '--repo', repo, '--ref', 'release']);
+    if (!/current: 7\.7\.7/.test(`${fromRef.stdout ?? ''}`)) failures.push('CLI: the released version was NOT read from the ref — releaseVersion is not exercised');
+    if (fromRef.status !== 1) failures.push(`CLI: 1.13.0 against a release of 7.7.7 should be stale (1), got ${fromRef.status}`);
+    const badRef = run(['--held', manifest('1.13.0'), '--repo', repo, '--ref', 'no-such-ref']);
+    if (badRef.status !== 2) failures.push(`CLI: an unreadable ref should be unchecked (2), not a guess — got ${badRef.status}`);
+
+    // --held must actually be READ, not merely accepted: point it at two
+    // different versions and require the verdict to follow the file.
+    const a1 = run(['--held', manifest('1.13.0'), '--current', '1.16.0']);
+    const a2 = run(['--held', manifest('1.16.0'), '--current', '1.16.0']);
+    if (a1.status === a2.status) failures.push('CLI: --held was ignored — two different manifests gave the same verdict');
+    // ...and so must --current.
+    const b1 = run(['--held', manifest('1.16.0'), '--current', '1.16.0']);
+    const b2 = run(['--held', manifest('1.16.0'), '--current', '9.9.9']);
+    if (b1.status === b2.status) failures.push('CLI: --current was ignored — two different releases gave the same verdict');
+  } finally {
+    rmSync(tmp2, { recursive: true, force: true });
+  }
+  }
+
   if (failures.length) {
     console.error('self-test FAILED');
     for (const f of failures) console.error(`  - ${f}`);
     process.exit(1);
   }
   console.log(
-    `self-test ok — ${scenarios.length} comparator scenarios plus 25 on-disk detector assertions. The detector is proved against layouts this script has NO path list for: version-partitioned cache, a marketplaces/ checkout, and the installed_plugins.json registry (which wins). Versions that disagree are UNCHECKED, never a confident STALE — the false-stale a current machine with a leftover directory used to get. Not-always-red: an empty tree is UNCHECKED (exit 2) not a pass, a matching install is green, a foreign manifest in a directory named after us is not mistaken for ours and a home path containing our name matches nothing, a registry claiming current cannot suppress a stale copy on disk, a sibling named lia-tools-extras and a registry metadata node are not read as us, and --held is honoured. Mutation-swept: 13 deliberate reversions of this script's own rules were each confirmed to turn this suite RED (29 Aug 2026). Two of them did not, first time round — the marketplace half of the path fallback and the registry's node-name branch had no fixture at all, and a third fixture was green either way. Break it again after changing it; green here means nothing until you have watched it go red.`,
+    `self-test ok — ${scenarios.length} comparator scenarios plus 25 on-disk detector assertions. The detector is proved against layouts this script has NO path list for: version-partitioned cache, a marketplaces/ checkout, and the installed_plugins.json registry (read alongside disk, never suppressing it). Versions that disagree are judged on whether the disagreement reaches the verdict: every copy behind is STALE (certain either way), every copy current-or-ahead is ok, and only a set straddling the release is UNCHECKED. Not-always-red: an empty tree is UNCHECKED (exit 2) not a pass, a matching install is green, a foreign manifest in a directory named after us is not mistaken for ours and a home path containing our name matches nothing, a registry claiming current cannot suppress a stale copy on disk, a sibling named lia-tools-extras and a registry metadata node are not read as us, and --held is honoured. Mutation-swept: 13 deliberate reversions of this script's own rules were each confirmed to turn this suite RED (29 Aug 2026). Two of them did not, first time round — the marketplace half of the path fallback and the registry's node-name branch had no fixture at all, and a third fixture was green either way. Break it again after changing it; green here means nothing until you have watched it go red.`,
   );
 }
 
