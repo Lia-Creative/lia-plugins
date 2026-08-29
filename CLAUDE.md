@@ -43,7 +43,8 @@ along with the hand-carried `.plugin` zip.
    what makes them mean something.
 4. **One ticket, one PR; a lead merges — never their own work.** Reviewing and
    landing is part of what a lead *is*, not a permission one seat holds:
-   `lead-engineer`, `design-lead`, `discovery-lead`, `project-manager` and
+   `lead-engineer`, `design-lead`, `discovery-lead`, `research-lead`,
+   `testing-lead`, `project-manager` and
    `plugin-manager` each land work in their own lane under `review-and-merge`
    (its §5 carries the landing rules; §5.7 is the one declared exception, and
    its bar is narrow — a fresh session holding a lead seat counts as another

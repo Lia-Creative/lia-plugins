@@ -2,7 +2,7 @@
 name: lead-engineer
 slug: lead-engineer
 description: "The senior developer's seat — holds the whole technical picture, never builds; fires its own chain of subagents (gate, build, review, feedback, re-review, merge) without returning between beats; routes across the bench: architecture, acceptance-criteria, build-prep, ticket-review (pickability), review-and-merge, security. Use when taking technical ownership of a milestone or deciding which engineering skill a moment needs."
-version: 0.3.0
+version: 0.4.0
 created: 2026-08-26
 updated: 2026-08-29
 status: active
@@ -19,6 +19,7 @@ companions:
   - ticket-review
   - review-and-merge
   - security
+  - testing-lead
   - project-manager
   - execution-discipline
 maintainer: cq
@@ -36,6 +37,12 @@ maintainer: cq
 | A ticket is about to be dispatched | `ticket-review` — the one-question pickability check |
 | A PR is up | `review-and-merge` — the loop, then the merge |
 | Anything touches secrets, data flows, or a client bundle | `security` |
+
+**Where this lane ends.** At the content-verified merge. What follows is the QA stage —
+`testing-lead`'s bench, dispatched by the PM — which tests the merged build as a person will meet it
+before any uat promotion. Its findings come back into this lane as `Bug` tickets on the feature epic,
+and its quality report is the evidence the founder's promotion gate reads. A merge is not the end of
+the work; it is the end of this bench's part of it.
 
 **Lineage.** The orchestrator, promoted and split (CQ, 26 Aug 2026): the board half went to `project-manager`; this seat keeps the judgment. The disciplines carried from `orchestrate` 0.2.0 are intact — only the owner's name changed.
 
@@ -74,6 +81,7 @@ maintainer: cq
 
 ## Changelog
 
+- **0.4.0 (2026-08-29, LIAB-1024)** — a "where this lane ends" note under the routing table: the merge is this bench's finish line, not the work's, and the QA stage (`testing-lead`'s bench) runs after it, returning `Bug` tickets into this lane and a quality report the founder's promotion gate reads. Added as prose rather than a new numbered rule, so every existing citation of the standing rules keeps pointing at the same rule. *(Written against 0.2.0's nine rules and rebased onto 0.3.0, which appended rules 10 and 11 — the prose placement is unchanged and neither rule moved.)*
 - **0.3.0 (2026-08-29, LIAB-1044 + LIAB-1045)** — **the orchestration mandate.** This seat was written as a router — *which skill does this moment need* — with nothing saying who fires the chain, so every beat came back to a founder as a command to paste. New **§The chain**: the six beats (gate → build → review → feedback **to the same build session** → re-review by the **same reviewer** on the **current head** → merge), each a spawned subagent, and the seat does not return to a human between them. New **rule 10**: mid-chain, answer anything the tickets can answer and batch the genuinely unanswerable into one end-of-run report — a chain does not halt on a question the ticket already answered. New **rule 11**: the three walls that legitimately stop it (credential · founder gate · a machine that is not ours), which are also the only place a command block is the right output. **Rule 2 is restated**: freshness is a *context* boundary, not a *bench* boundary — *did not produce the work being graded* — so this seat may run `ready-review` by spawning it, and when it spawns a grader it hands down ticket ids and the rubric only, never its own reading. Rules appended, never renumbered.
 - **0.2.0 (2026-08-28, LIAB-1025)** — new rule 9: the review-and-merge authority is stated as part of what this seat *is*, and stated as **shared** — every lead lands its own lane, so this seat stops being the single gate every other bench queued behind. Appended rather than renumbered, so existing citations of rules 1–8 keep pointing at the same rules. The opening line's unqualified *"responsible … for the merges"* is scoped to this lane, since it otherwise contradicted the rule directly below it.
 - **0.1.0 (2026-08-26, CQ voice memos + Fable 5)** — first version. The orchestrator's technical half as its own seat, with the bench routing table and the standing rules carried from `orchestrate` 0.2.0's split and landmines sections.

@@ -2,9 +2,9 @@
 name: discovery-lead
 slug: discovery-lead
 description: "The discovery bench's own lead — holds the thread from problem to ready story, never writes; routes across problem-definition, insight-extraction, jtbd, feature-definition, scenario-builder, epic-builder, story-writer, task-writer, schema-manager and synthetic-users, and requests ready-review as the exit gate. Use when taking ownership of a discovery stage or deciding which discovery skill a moment needs."
-version: 0.3.1
+version: 0.4.0
 created: 2026-08-27
-updated: 2026-08-28
+updated: 2026-08-29
 status: active
 triggers:
   - "/discovery-lead"
@@ -24,6 +24,7 @@ companions:
   - schema-manager
   - synthetic-users
   - ready-review
+  - research-lead
   - project-manager
   - execution-discipline
 maintainer: cq
@@ -36,6 +37,7 @@ maintainer: cq
 | Moment | Load |
 |---|---|
 | A pile of chats, feedback or research needs its patterns pulled out | `insight-extraction` — ranked, sourced, confidence-capped |
+| A question needs evidence nobody here holds — the problem's literature, the solution space, the competitors, the pattern | `research-lead` — commission it; the corpus comes back cited, the story through `research-insights` |
 | A raw observation, complaint or friction needs formalising | `problem-definition` |
 | The job behind a problem needs naming and its requirements mapping | `jtbd` |
 | An idea needs shaping before an epic — the context, and what the world already does | `feature-definition` |
@@ -73,8 +75,11 @@ maintainer: cq
 
 Rule 2 above has one edge worth naming, because two seats on this bench produce material that *looks* like evidence and is not. **`synthetic-users` produces hypotheses**; they aim a real conversation and never stand behind a problem, a job or a story. **`insight-extraction` produces claims capped by what backs them** — one chat can never make an insight firm, and founder-only evidence stays `forming` however much of it there is. A thread that traces back to either without a real person underneath is a broken thread, and it goes back to the seat that broke it.
 
+**Commissioned research has the same edge, one step further out.** A merged corpus entry from the research bench is citable evidence — that is what its source bar is for. A `research-insights` story is ranked interpretation of that corpus, and it is marked fact-by-fact: **cite the corpus finding, not the story**, and never promote a `DEVELOPING` finding to a firm claim on the way into an epic.
+
 ## Changelog
 
+- **0.4.0 (2026-08-29, LIAB-1023)** — the research bench becomes routable: a question this bench cannot answer from what it holds is commissioned through `research-lead` rather than answered thinly inside a writer seat. The evidence rule gains its third edge — a merged corpus entry is citable, a `research-insights` story is ranked interpretation, so epics cite the corpus finding and never promote a `DEVELOPING` one to firm on the way in. *(Landed on top of 0.3.1 in the rebase of PR #35; rule 4's "fire it, don't sit in it" wording is untouched.)*
 - **0.3.1 (2026-08-29, LIAB-1044)** — rule 4 said *"the gate is not yours to run"*, which was true about the context and false about the seat, and the two readings had already been confused in practice. It now reads **fire it, don't sit in it**: freshness is a context boundary, satisfied by spawning a subagent, so this lead runs `ready-review` itself by spawning it rather than routing a founder a command — and, symmetrically, the gate is not this bench's property, so another lead may spawn it too. Rules 8 and the two pointer lines follow the same wording change. No authority added or removed: a context that wrote the tickets still never grades them.
 - **0.3.0 (2026-08-28, LIAB-1025)** — new rule 8: this seat reviews and lands discovery work in its own lane, on CQ's call that approving and managing PRs is a lead's job. Rule 1 (*the discovery lead never writes*) is named as what qualifies it to judge, and rule 4 is restated inside rule 8 so landing authority is never mistaken for the `ready-review` gate, which stays fresh-eyes.
 - **0.2.0 (2026-08-27, LIAB-996 + LIAB-997)** — the three discovery seats that landed the same day join the routing table: `insight-extraction` before the problem, `feature-definition` between the job and the epic, `synthetic-users` as the pressure test. The evidence rule spells out what neither of the last two may be mistaken for.
