@@ -13,9 +13,9 @@ description: >-
   feedback, bugs, feature feedback, process feedback. Toys mentioned
   generally files at the line level; a specific toy files into that toy's
   folder.
-version: 0.3.0
+version: 0.4.0
 created: 2026-08-16
-updated: 2026-08-28
+updated: 2026-08-30
 status: active
 maintainer: cq
 author: cq
@@ -100,9 +100,10 @@ Substantial scenario-mapping content additionally becomes (or updates) a doc in 
 
 **Bugs go straight to tickets.** For each item in `## Bugs` (unless the stage gate said otherwise):
 
+- **The shape is [What a reported bug carries](https://linear.app/lia-creative/document/what-a-reported-bug-carries-ff781e0d6b8a)** — the seven fields, the `Not captured` block that names anything the video did not give, the title form and the placement. Read it before filing. This is its **walkthrough** intake: tool, version and platform come from the build under review; *what he was doing* is what he was doing on camera, plus the timestamp; and **priority is set** — he is in the room, which is why this differs from the swept intake, which sets none.
 - Team **Lia Build**, project **Lia Tools**, child of the toy's epic — verify the epic ID live (dump LIAB-608, drip LIAB-599, toy box LIAB-637 at time of writing; **check, never trust this list**).
-- Title `Bug · <toy>: <symptom>`, label `Bug`, status Backlog, priority Medium.
-- Description: his words quoted, the video timestamp, expected vs actual where stated.
+- **Title: the symptom, in his words — no `Bug ·` prefix, no toy prefix.** The type label already says it is a bug and the parent already says which toy. *(Corrected 30 Aug 2026: the prefixed form this step used to prescribe is the exact shape [How a Lia Toys ticket is shaped](https://linear.app/lia-creative/document/how-a-lia-toys-ticket-is-shaped-a5d28e39709b) holds up as a bad ticket — LIAB-802 fails for carrying it.)* Label `Bug`, status Backlog.
+- Description: his words quoted verbatim, the video timestamp, and the fields the shape asks for — with anything he did not say listed in the `Not captured` block rather than guessed at.
 - **Frame grab attached when the local `.mp4` exists**: `ffmpeg -nostdin -y -ss <HH:MM:SS> -i "<video>.mp4" -frames:v 1 -q:v 3 frame.jpg`, timestamp grepped from the `.srt`, uploaded via the Linear attachment flow (`prepare_attachment_upload` → `curl PUT` → `create_attachment_from_upload`).
 
 **Everything else is proposed, not created.** Present ideas, features, improvements and jam-worthy items as one tick-list (chat + mirrored in the meeting note). On approval: `Feature`/`Improvement`/`idea` labels per the CLAUDE.md label rules; jam items become `Jam · <topic>` with label `Research`. Never mark any ticket Done — Review is the ceiling, and only when work was actually done.
@@ -127,6 +128,13 @@ Short: the meeting note path, the summaries written, tickets created (IDs), the 
 
 ## Changelog
 
+- **0.4.0 (2026-08-30, LIAB-967)** — Step 6 points at
+  [What a reported bug carries](https://linear.app/lia-creative/document/what-a-reported-bug-carries-ff781e0d6b8a) for what a bug
+  ticket contains, instead of describing it here, and names this skill's **walkthrough** intake and
+  the one rule that differs (priority is set, because he is in the room). **The `Bug · [toy]:
+  [symptom]` title form is dropped** — it was wrong independently of this change: the ticket-shape
+  doc's own worked example of a bad ticket, LIAB-802, fails for carrying exactly that prefix. Bugs
+  now file with the symptom alone. Nothing else about the ingest changes.
 - **0.3.0 (2026-08-28, LIAB-1020)** — the line is **Lia Tools**: `Products/Lia Toys/` → `Products/Lia Tools/`, `toy box/` → `toolbox/`, `toys/` → `tools/`, and the shape is six numbered stages (`02 analysis` replaced `03 strategy`; research left tool folders; requirements live in Linear) plus the line's unnumbered `standards/` · `research/` · `design/`. Paths only — no behaviour changed.
 - **0.2.0 (2026-08-28, LIAB-1006)** — the line gained a design stage on 28 Aug and build moved up one, so per-toy summaries land in `04 build/feedback/`, not `04 build/feedback/` — in the `description:` as well as Step 5, since that string is what a session sees before it opens the skill. Nothing else about the ingest changes.
 - **0.1.2 (2026-08-27, LIAB-997)** — the stage gate and the whisper recipe now point at `prototype-feedback-loop` in this plugin rather than the retired vault path, and the `execution-discipline` load line with them (found in the PR #19 review; the rest of that sweep stays LIAB-963's). No change to the ingest itself. First entry here; earlier versions are unrecorded.

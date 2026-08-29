@@ -80,7 +80,10 @@ along with the hand-carried `.plugin` zip.
    [lia-tools/README.md](lia-tools/README.md#the-one-gap-worth-knowing-about).
 6. **The process the skills implement lives in Linear**, deliberately —
    [How we build tools](https://linear.app/lia-creative/document/how-we-build-tools-4a9cfacc41c8)
-   and [How a Lia Toys ticket is shaped](https://linear.app/lia-creative/document/how-a-lia-toys-ticket-is-shaped-a5d28e39709b).
+   and [How a Lia Toys ticket is shaped](https://linear.app/lia-creative/document/how-a-lia-toys-ticket-is-shaped-a5d28e39709b),
+   joined 30 Aug 2026 by
+   [What a reported bug carries](https://linear.app/lia-creative/document/what-a-reported-bug-carries-ff781e0d6b8a)
+   (LIAB-967), which owns what a bug ticket contains for every intake.
    Skills point at those docs; they never restate them. Where a skill and the
    docs disagree, the docs win and the skill gets fixed.
 7. **Retired from this marketplace, and not to be revived without a ticket:**
