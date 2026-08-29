@@ -1,10 +1,10 @@
 ---
 name: ready-review
 slug: ready-review
-description: "Gate epics and stories before design or build spend work on them — a fresh session grades every story on the five checks (Title/Narrative/Scenarios/Completeness/Scope) with quoted evidence, plus the vault-dependence test; verdict as one comment. Use when asked if an epic or its stories are ready."
-version: 0.2.0
+description: "Gate epics and stories before design or build spend work on them — a context that did not write them (a spawned subagent counts) grades every story on the five checks (Title/Narrative/Scenarios/Completeness/Scope) with quoted evidence, plus the vault-dependence test; verdict as one comment. Use when asked if an epic or its stories are ready."
+version: 0.3.0
 created: 2026-08-26
-updated: 2026-08-26
+updated: 2026-08-29
 status: active
 triggers:
   - "/ready-review"
@@ -34,7 +34,9 @@ maintainer: cq
 
 ## 0. Two hard rules
 
-1. **A fresh session only.** Never review tickets your own session wrote — a session that shaped the frame will defend it. Same rule as `ticket-review`, same reason.
+1. **A context that did not produce the work being graded.** That is the whole rule, and it is a **context** boundary, not a **bench** boundary — it names no seat. A session that shaped the frame will defend it, so the session that wrote the tickets, or led the writing, never grades them. Every other context may, whatever bench it sits on.
+   - **A spawned subagent satisfies it.** Its context window is its own. So any seat holding the work — the discovery lead, the lead engineer, the PM — runs this gate by **spawning** it, and nobody opens a terminal to achieve freshness (LIAB-1044: this gate was refused to a lead engineer on the grounds that `ready-review` sits with the discovery bench; that reading was wrong and it cost a round trip).
+   - **The parent hands down ticket ids and this rubric — only.** Never its own reading of the tickets, never a summary, never "I think 3 and 5 are the weak ones". A conclusion passed downward arrives pre-formed, which is precisely what freshness exists to prevent. The parent may compare afterwards; a disagreement is worth more than an agreement it manufactured.
 2. **Evidence, never vibes.** Every verdict line quotes the ticket or names the absence. "Looks good" is not a verdict.
 
 ## 1. What to check — the epic
@@ -71,7 +73,7 @@ Plus the check that predates the rubric and still fails tickets first:
 One comment, on the epic, in this shape — **verdicts are comments, never labels** (the `gate:*` labels were deleted 25 Aug):
 
 ```markdown
-**Ready review — <date>, fresh session**
+**Ready review — <date> · fresh context: <what this session did not produce>**
 
 **Epic:** ready | not ready — <the specific gap, quoted or named>
 **<story name>:** Title ✓/~/✗ · Narrative ✓/~/✗ · Scenarios ✓/~/✗ · Completeness ✓/~/✗ · Scope ✓/~/✗ — <the quoted evidence line for anything not ✓> → fix is <which seat, whose>
@@ -80,11 +82,12 @@ One comment, on the epic, in this shape — **verdicts are comments, never label
 **Verdict:** ready for design | not ready — <n> gaps above.
 ```
 
-Three rules for it:
+Four rules for it:
 
-1. **A gap names its fix and its seat.** "Not ready" with no named fix blocks silently, which is worse than passing it.
-2. **Not-ready goes back, labelled.** `defect:discovery` on the tickets that failed, per the round-trip convention — that's the data the pipeline learns from.
-3. **Don't grow the scope.** You're checking readiness against the standard, not redesigning the epic. A better idea you had is a comment marked as such, not a failure.
+1. **The verdict says what makes it fresh** — *"spawned by the lead engineer; did not write these tickets"*. One clause, and it is the only part of the comment a reader cannot reconstruct later.
+2. **A gap names its fix and its seat.** "Not ready" with no named fix blocks silently, which is worse than passing it.
+3. **Not-ready goes back, labelled.** `defect:discovery` on the tickets that failed, per the round-trip convention — that's the data the pipeline learns from.
+4. **Don't grow the scope.** You're checking readiness against the standard, not redesigning the epic. A better idea you had is a comment marked as such, not a failure.
 
 ---
 
@@ -96,5 +99,6 @@ Three rules for it:
 
 ## Changelog
 
+- **0.3.0 (2026-08-29, LIAB-1044)** — rule 0.1 said *"a fresh session only"*, and *session* was being read as *a terminal a human opens* and, worse, as *a seat that is not yours*. It is neither: the rule is **did not produce the work being graded** — a context boundary that names no bench. **A spawned subagent satisfies it**, so any seat holding the work runs this gate by spawning it rather than handing a founder a command; and **the parent hands down ticket ids and this rubric only, never its own reading of them**, since a conclusion passed downward arrives pre-formed. The verdict block gains a clause naming what makes the grading context fresh — the one thing a later reader cannot reconstruct.
 - **0.2.0 (2026-08-26, LIAB-949 + Fable 5)** — stories graded on the five-check rubric with quoted evidence per check; the verdict line carries the five marks. The rubric stays a vault document run by hand at real gates (the brief's own rule — no story-eval skill yet); this seat is where it runs.
 - **0.1.0 (2026-08-26, CQ voice memos + Fable 5)** — first version. The entry gate: shape, grounding, user-terms ACs, sizing, the vault-dependence test, and a verdict format with named fixes. Working name — renaming is Chris's.
