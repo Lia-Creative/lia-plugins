@@ -241,6 +241,36 @@ writing"*. Saying so explicitly is the row.
 | `7819b12` — PR #22 (**28 Aug**, LIAB-1004) | `ux-writing` |
 | PR #34 (28 Aug, LIAB-1028) | *(none — both skills in this PR were ports; see §The later ports)* |
 | `6f49080` — PR #25 (28 Aug, LIAB-1008) | `file-management` |
+| the research bench (**29 Aug**, LIAB-1023) | `research-lead` · `researcher` · `research-problem` · `research-solution-space` · `research-solution-patterns` · `research-psychology` · `research-strategy` · `research-competitors` · `research-brand` · `research-ux-patterns` · `research-technology` · `research-schema-scrape` · `research-insights` |
+| the QA bench (**29 Aug**, LIAB-1024) | `testing-lead` · `test-analyst` · `tester` · `rogue` · `bug-writer` |
+
+**The research bench needs its second and third answers spelled out, because one
+of them looks like a port and is not.** Where it came from: CQ's LIAB-1023, the
+seat structure and the ten domains taken from the ticket, written fresh for this
+plugin. What it superseded: **nothing** — and specifically **not the vault
+research engine**. `research-plan`, `research-run`, `research-verify`,
+`research-library` and `acquired-ingest` remain canonical in the vault for vault
+research and its claims library; none of them was copied, adapted or read into
+these files. How that was established: the README's *What doesn't belong here*
+still excludes them by name, and the bench's own skills say so in their
+*What this seat is not* sections — the two copies answer different questions
+(a ticket's commission, filed beside a product; versus vault research, filed in
+the vault's library), which is why both can be live without the drift LIAB-918
+spent a ticket undoing. `research-insights` is the one seat with a plugin
+neighbour: it **loads** `insight-extraction` as its method rather than restating
+it, so there is one copy of that rubric, in the seat that already owned it.
+
+**The QA bench**: from CQ's LIAB-1024, seats and all, written fresh. It
+superseded nothing — the plugin had no QA seat, and the pipeline's QA stage had
+named no crew since it was written. Established by the same reading that raised
+the overlap question on the ticket: `review-and-merge` reviews code against its
+criteria before a merge, `ticket-review` checks pickability before dispatch, and
+the toys' own testing loop handles bugs reported by real people afterwards — none
+of them tests the merged build, which is the gap this bench fills. The one shape
+it deliberately does **not** invent is the bug: `bug-writer` adopts the house bug
+convention and hands over to
+[LIAB-967](https://linear.app/lia-creative/issue/LIAB-967)'s template when it
+lands, so QA-found and user-reported bugs stay one population.
 
 ## Ports out of the vault — PR #19, LIAB-997
 

@@ -1,8 +1,8 @@
 ---
 name: project-manager
 slug: project-manager
-description: "Run tickets front to end — passing work between the stage leads so tickets move discovery to design to build to review on gate verdicts, spawning each seat itself rather than handing a person a command, checking nobody already holds a ticket, statuses kept true, traffic-light updates written for a person. Use when running the board, handing out work, moving a ticket between stages, or writing a milestone update."
-version: 0.4.0
+description: "Run tickets front to end — passing work between the stage leads so tickets move discovery to design to build to review to QA on gate verdicts, spawning each seat itself rather than handing a person a command, checking nobody already holds a ticket, statuses kept true, traffic-light updates written for a person. Use when running the board, handing out work, moving a ticket between stages, or writing a milestone update."
+version: 0.5.0
 created: 2026-08-26
 updated: 2026-08-29
 status: active
@@ -18,6 +18,8 @@ companions:
   - discovery-lead
   - design-lead
   - lead-engineer
+  - testing-lead
+  - research-lead
   - plugin-manager
   - ready-review
   - build
@@ -56,7 +58,7 @@ Three things go into the child, and nothing else:
 
 **Context lives on the ticket, never in the prompt — and the PM enforces it at every handoff.** If a seat needs something the prompt doesn't carry, **fix the ticket**, then dispatch. A prompt is read once; a ticket is read by every seat after it. Before a build dispatch specifically: the lead engineer's `ticket-review` has answered its one question, or the dispatch waits.
 
-**Which seat gets what:** discovery work → `discovery-lead`'s bench · the design stage → `design-lead`'s bench · prep and review → `lead-engineer`'s bench · epics → one `build` session · standalone tickets → `pickup` · marketplace and skill changes → `plugin-manager`. **Never change a dispatch after its first action**; if you must, the first words are *"stop — new order"*.
+**Which seat gets what:** discovery work → `discovery-lead`'s bench · the design stage → `design-lead`'s bench · prep and review → `lead-engineer`'s bench · epics → one `build` session · standalone tickets → `pickup` · the QA stage → `testing-lead`'s bench · research commissions → `research-lead`'s bench · marketplace and skill changes → `plugin-manager`. **Never change a dispatch after its first action**; if you must, the first words are *"stop — new order"*.
 
 **Gates stay fresh, and the PM spawns them like anything else.** The rule is **did not produce the work being graded** — a *context* boundary, not a bench boundary and not a seat's private property. A spawned subagent has its own context window, so it satisfies freshness on its own; the PM (or any lead) runs `ready-review` by spawning it, and hands the child **ticket ids and the rubric only, never its own reading of them**. What a gate may never be is the session that wrote the tickets, grading itself.
 
@@ -84,7 +86,7 @@ So before every dispatch, on the ticket **and its subtree**:
 
 ## 2c. The stages — a ticket moves on gate verdicts, nothing else
 
-The pipeline is discovery → design → build → review, each stage owned by its lead, each exited through its gate:
+The pipeline is discovery → design → build → review → QA, each stage owned by its lead, each exited through its gate:
 
 | Stage | Owned by | Exit gate |
 |---|---|---|
@@ -92,7 +94,9 @@ The pipeline is discovery → design → build → review, each stage owned by i
 | Design | `design-lead`'s bench | the design lead's coverage verdict |
 | Build prep + build | `lead-engineer`'s bench, then `build` / `pickup` | `ticket-review` before dispatch; the build's PR |
 | Review + merge | `review-and-merge` | content-verified on `main` |
+| QA | `testing-lead`'s bench | the quality report on the epic — the founder's uat gate (`toy-release`) reads it |
 
+- **Research is a service, not a stage.** Any lead can commission it mid-stage through `research-lead`; the PM tracks the commission as a ticket like any other and sequences around it, but the pipeline does not stop at it.
 - **A gate verdict is the PM's cue** — the verdict lands, the PM moves the ticket and dispatches the next stage's lead. No verdict, no move: a ticket that "feels ready" isn't.
 - **No stage is skipped silently.** Plenty of tickets have no design stage; the dispatch *says so* — "no design stage: copy change" costs one line and saves the archaeology.
 - **Backwards is a first-class direction.** The `defect:*` family (`pickup` §5) names which stage a kickback belongs to — `defect:discovery` goes to `discovery-lead`, `defect:design` to `design-lead`, `defect:build` to the build session's successor. The PM routes it and corrects the board backwards, because that's what's true.
@@ -104,7 +108,7 @@ The pipeline is discovery → design → build → review, each stage owned by i
 
 ## 4. The board tells the truth — the PM's standing sweep
 
-- **Review means the PR is up. Done means content-verified on `main`.** Nothing else earns either word — and the *moving* of tickets to Done stays with the lead who merged the work, per `review-and-merge` §5.5.
+- **Review means the PR is up. Done means content-verified on `main`** — and, where a QA stage follows, tested against the quality report as well. Nothing else earns either word. The move *out of Review* stays with the lead who merged the work, per `review-and-merge` §5.5; where §2c puts a QA stage after that merge, the lead's move is to QA and **this seat** moves the ticket on `testing-lead`'s verdict, like any other gate.
 - **Landing the board's and the process's own work is the PM's, like any lead.** Dispatch mechanics, board tooling, the process docs this seat owns: reviewed and merged under `review-and-merge`, because approving and managing PRs is what a lead is for. Never your own work, same as every seat — and another lane's PR is still not yours to grade.
 - **A parent never sits ahead of an open child. A merged ticket doesn't sit in Todo.** When the board and the code disagree, the code wins and the board gets corrected — immediately, backwards if that's what's true.
 - **`human:chris` goes on the moment work stops for him**, not at the next groom.
@@ -128,6 +132,7 @@ Traffic-light, on every check-in and whenever asked:
 
 ## Changelog
 
+- **0.5.0 (2026-08-29, LIAB-1023 + LIAB-1024)** — the pipeline gains its fifth stage in the stages section: **QA**, owned by `testing-lead`'s bench and exited on the quality report, which is also what the founder's uat gate reads. It was always in the process and never in this skill, so a merged epic had nowhere to go but Done. Research is added to §2's routing as a **service, not a stage** — commissioned mid-stage through `research-lead`, tracked as a ticket, never something the pipeline waits at. §4's board-honesty bullet moves with it: the lead who merged still makes the move *out of Review*, but where §2c puts QA after that merge the move is to QA and this seat carries it on `testing-lead`'s verdict — `review-and-merge` §5.5 was rewritten in the same pass, because as written it claimed both that a merge sends a ticket to Done and that no other seat may move it, and this change makes both false. Caught in review. *(Written against the stages section when it was §2b and rebased onto 0.4.0, which moved it to §2c; the QA row and the research bullet went to §2c, and 0.4.0's own §2b — the collision check — is untouched. 0.4.0 also replaced the one-line "gates stay fresh" clause in §2's routing paragraph with the fuller context-boundary rule below it, so this version did not restore the shorter sentence: the rule is kept once, in its stronger form.)*
 - **0.4.0 (2026-08-29, LIAB-1044)** — **§2 stops being a hand-off format.** It said *"the tickets · the worktree command · the prompt in a code block"*, a shape that only makes sense if a person pastes it — so the skill made handing a founder a command the correct behaviour, and on 29 Aug it happened four times in one session for work no human needed to touch. The PM now **spawns the seat itself**; the three things move into the child's prompt. New **§2a** keeps the code block as the fallback and fences it to the three cases where a person is genuinely required — a credential, a founder gate, a machine that is not ours — with the stop stating what is needed and why. New **§2b**: check the board, the tree and the open PRs for a live session already holding the ticket before dispatching, because *"one PM at a time"* is about two PMs and the 29 Aug near-miss on LIAB-911/899 was between sessions; the mirror duty is that a session taking a ticket says so on it. The freshness line is restated as a **context** boundary — *did not produce the work being graded* — with a spawned subagent satisfying it and the parent handing down ids and the rubric only. The stages section moves from §2b to **§2c** to make room; nothing outside this file cited it by number (grepped).
 - **0.3.0 (2026-08-28, LIAB-1025)** — this seat lands work in its own lane, on CQ's call that approving and managing PRs is a lead's job. *"Not a builder, not a reviewer, not a merger"* becomes *not a builder — and not the reviewer of another lane's work*: **the non-production half is kept deliberately and stated more strongly**, because it is the whole basis on which any seat holds this authority, and an earlier draft of this change dropped it (caught in review). The movement-not-judgment seam with the three benches is unchanged, and every seam rule that names it still reads true. Done-moving is attributed to the lead who merged rather than to the lead engineer specifically.
 - **0.2.0 (2026-08-27, CQ + LIAB-995)** — the stage-router rescope, per CQ: *"its job is to pass between agents so they can push tickets through each stage."* New §2b (§2c since 0.4.0): the four stages with their leads and gates, gate-verdict-as-cue, skips named out loud, `defect:*` kickbacks routed backwards. Seat routing rewritten to the three leads plus `plugin-manager`. Every 0.1.0 discipline intact — nothing softened.

@@ -27,6 +27,24 @@ The process the skills implement is written down in [Tool shop — how a lia.too
 | `ticket-builder` | The shared mechanics under the writers, Shape B for Lia Creative workstreams, and the old front door — it routes. |
 | `backlog-grooming` | The maintenance pass for an existing backlog. |
 
+**The research bench** — commissioned by any stage, filed as a cited corpus:
+
+| Skill | The seat |
+|---|---|
+| `research-lead` | The bench's lead — the plan, the dispatch, the source bar at review, the hand to insights. Never researches. |
+| `researcher` | The shared method under every domain: source before claim, citations that resolve, gaps named, collection only. |
+| `research-problem` | What the problem is and what is already known about it — prevalence, cost, the field's own name for it. |
+| `research-solution-space` | What already exists against it, why each wins or loses, and what its customers say. |
+| `research-solution-patterns` | The established shape of a solved problem, its variants and their costs. |
+| `research-psychology` | What the person is actually after — motivation, anxiety, identity, social context. Never a generated persona. |
+| `research-strategy` | The strategies available for the goal, classified by the power each rests on (7 Powers). |
+| `research-competitors` | Who we are up against and how the market moves — captured and torn down, not recalled. |
+| `research-brand` | The brand tenets in play, evidenced from the surfaces rather than the manifesto. |
+| `research-ux-patterns` | The flow a person already expects, established across several implementations. |
+| `research-technology` | What a technology does, costs, limits and risks — licence and data terms quoted. |
+| `research-schema-scrape` | An existing product's data model recovered, marked documented or inferred. |
+| `research-insights` | The corpus understood: the ranked insight log, and the story a human reads. Can send a corpus back. |
+
 **Management**
 
 | Skill | The seat |
@@ -66,6 +84,16 @@ The process the skills implement is written down in [Tool shop — how a lia.too
 | `pickup` | The front door for single tickets, and the hand-back path. |
 | `wrap-up` | Landing a session: handover, retro, housekeeping. |
 | `product-retro` | The mandatory per-session entry `wrap-up` and `pickup` both call. |
+
+**The QA bench** — the stage between a merge and a person:
+
+| Skill | The seat |
+|---|---|
+| `testing-lead` | The QA stage owned: the test plan, the bench, and the quality report the founder's uat gate reads. Never tests. |
+| `test-analyst` | Frozen criteria and walked scenarios become runnable cases — indexed, concrete, decidable. Never runs them. |
+| `tester` | The plan executed against the real build: verdict per case with evidence, nothing skipped, nothing fixed. |
+| `rogue` | The deliberately hostile pass — off-plan, reproducible, every gap handed back as a case candidate. |
+| `bug-writer` | The bug shape: symptom title, steps-to-repeat, expected against actual, deduped, onto the feature epic. |
 
 **The toys nine** — the product line's own process:
 
@@ -110,11 +138,24 @@ The process the skills implement is written down in [Tool shop — how a lia.too
 
 ## What doesn't belong here
 
-The vault pipeline (`wiki-ingest`, `lint`, `enrich`, `discover`, `slack-ingest`, `weekly-context-enrich`), the research engine (`research-plan`, `research-run`, `research-verify`, `research-library`, `acquired-ingest`), the publishing skills (`lia-html-render`, `add-website-experiment`), the brand-asset and Figma-authoring tooling (`lia-blockprint-treatment`, `figma-dls-build` — **re-confirmed out on 28 Aug 2026**, CQ, so the question stops being re-raised), and the founder-personal bundles (`cq`, `chris-music`, `chris-quinton-diagrams` — including the whole `cq:writing-style-*` set, which is Chris's own voice and not shared).
+The vault pipeline (`wiki-ingest`, `lint`, `enrich`, `discover`, `slack-ingest`, `weekly-context-enrich`), **the vault research engine** (`research-plan`, `research-run`, `research-verify`, `research-library`, `acquired-ingest`), the publishing skills (`lia-html-render`, `add-website-experiment`), the brand-asset and Figma-authoring tooling (`lia-blockprint-treatment`, `figma-dls-build` — **re-confirmed out on 28 Aug 2026**, CQ, so the question stops being re-raised), and the founder-personal bundles (`cq`, `chris-music`, `chris-quinton-diagrams` — including the whole `cq:writing-style-*` set, which is Chris's own voice and not shared).
 
 **The `cq` bundle stays out; three skills have been taken out of it** — `feature-definition` and `insight-extraction` (LIAB-996), and `decision-check` (LIAB-1028, de-personalised on the way in). Extracting a skill is not the same as adopting the bundle: each one is argued on the membership test below, and the rest of `cq` remains Chris's. The test: *does an agent building a lia.tools product need it?* If not, it stays where it is.
 
-Two of those lines have a nearby cousin **in** the roster, and the difference is the corpus, not the craft. `insight-extraction` mines the discovery backbone — chats with real people about the work — and its output is a ledger entry a story can cite; the research engine answers commissioned questions and keeps its own library. `synthetic-users` generates hypotheses to aim discovery with, and is barred from the ledger for exactly that reason.
+**The research bench being in does not reopen the vault engine.** Those five skills stay canonical in
+the vault, for vault research and its claims library, and nothing was ported: the bench on this
+roster is new writing against [LIAB-1023](https://linear.app/lia-creative/issue/LIAB-1023), so there
+is no second copy of anything and no drift to manage. What changed is the membership test's answer,
+not the test — a build agent with Linear and this plugin now needs to commission research it can
+cite, and it cannot mount the vault to do it.
+
+Three lines here run near each other, and the difference is the corpus, not the craft.
+`insight-extraction` mines the discovery backbone — chats with real people about the work — and its
+output is a ledger entry a story can cite. **The research bench** answers a question commissioned by
+a ticket, from real sources, and files a PR-reviewed corpus beside the product it serves;
+`research-insights` loads `insight-extraction` as its method rather than repeating it. **The vault
+engine** answers vault questions and keeps its own library. `synthetic-users` generates hypotheses to
+aim discovery with, and is barred from every one of those ledgers for exactly that reason.
 
 ## Install
 
