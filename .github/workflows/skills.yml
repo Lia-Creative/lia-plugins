@@ -68,3 +68,30 @@ jobs:
       # Same rule as the other two: red first, then trusted.
       - run: node scripts/check-skill-roster.mjs --self-test
       - run: node scripts/check-skill-roster.mjs
+
+  freshness:
+    # LIAB-1052: an agent cannot tell which version of a skill it is holding.
+    # The real check runs on a machine with an install; here we prove the
+    # detector itself works, because a check nobody has watched fail is a
+    # check nobody knows works.
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      # THE OUTPUT IS ASSERTED, NOT JUST THE EXIT CODE. Two mutations survive
+      # every test the suite can run on itself, because both stop the suite
+      # from running at all: `--self-test` short-circuiting to `exit 0`, and
+      # the `import.meta.url` guard never calling `main()`. A suite cannot
+      # catch its own absence, so the assertion has to sit outside it — here.
+      # Found by mutating the wiring layer, 29 Aug 2026.
+      - name: freshness guard proves it can go red
+        run: |
+          set -euo pipefail
+          out=$(node scripts/check-plugin-freshness.mjs --self-test)
+          echo "$out"
+          case "$out" in
+            "self-test ok"*) ;;
+            *) echo "::error::the self-test exited 0 without reporting a run - it did not execute"; exit 1 ;;
+          esac

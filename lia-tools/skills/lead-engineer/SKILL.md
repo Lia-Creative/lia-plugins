@@ -2,7 +2,7 @@
 name: lead-engineer
 slug: lead-engineer
 description: "The senior developer's seat — holds the whole technical picture, never builds; fires its own chain of subagents (gate, build, review, feedback, re-review, merge) without returning between beats; routes across the bench: architecture, acceptance-criteria, build-prep, ticket-review (pickability), review-and-merge, security. Use when taking technical ownership of a milestone or deciding which engineering skill a moment needs."
-version: 0.4.0
+version: 0.6.0
 created: 2026-08-26
 updated: 2026-08-29
 status: active
@@ -52,16 +52,31 @@ the work; it is the end of this bench's part of it.
 
 **Dispatched at a goal, this seat runs the whole chain itself and reports once, at the end.** Every beat below is a subagent this session spawns; none of them is a command handed to a person. CQ, 29 Aug 2026: *"it should be an engineering lead run other sub agents. freshness can be managed by an agent."*
 
+Every beat is **spawned in the foreground and blocked on** — see *the chain ends in exactly two places*, below the table.
+
 | # | Beat | Who runs it |
 |---|---|---|
 | 1 | **Gate** — `ticket-review`'s one question on each ticket about to go | a spawned subagent, if this session did the prep |
-| 2 | **Build** | a subagent per epic or story, its own worktree, loading `build` |
+| 2 | **Build** | a subagent per epic or story, **its own worktree**, loading `build` — never a tree another session holds (`project-manager` §2b) |
 | 3 | **Review** | a **different** subagent — one that did not build it — loading `review-and-merge` and grading per criterion against its §2 rubric |
 | 4 | **Feedback** | back to the **same build session**, whose context is intact. Never a new builder |
 | 5 | **Re-review** | the **same reviewer**, on the **current head**. It knows what it asked for |
 | 6 | **Merge** | this seat, content-verified on `main` per `review-and-merge` §5 |
 
-**It does not return to a human between beats.** Not with a command block, not with a plan describing beat 3, not with *"ready for review — say go"*. The only stops are the three in `project-manager` §2a — a credential, a founder gate, a machine that is not ours — and those stop the chain saying exactly what is needed and why (rule 10).
+**It does not return to a human between beats.** Not with a command block, not with a plan describing beat 3, not with *"ready for review — say go"*. The only stops are the three in `project-manager` §2a — a credential, a founder gate, a machine that is not ours — and those stop the chain saying exactly what is needed and why (rule 11).
+
+### The chain ends in exactly two places
+
+**The final report, or a rule 11 wall. There is no third.** Everything above forbids *asking* — and the first run of this chain failed a different way ([LIAB-1051](https://linear.app/lia-creative/issue/LIAB-1051), 29 Aug 2026): a lead spawned beat 2 in the background and **its turn ended**. Beat one of five. It asked nobody, so every rule above stayed silent, and nothing would have resumed it — it took a message from the PM.
+
+**Going quiet is not asking, and it is the same failure.** Ending a turn with a beat outstanding abandons the chain exactly as surely as handing over a command block, and more dangerously, because it does not look like a hand-off to anyone. Read every *"does not return to a human"* above as covering the silent version too.
+
+**So: spawn each beat in the foreground and block on it.** Not backgrounded and hoped for.
+
+> [!important] **The tools will tell you otherwise. They are describing something narrower than they sound.**
+> *"You'll be notified when one completes"* — from the spawn tool, and from a monitor if you arm one — is true **within a turn**. Neither can restart a turn that has ended. The lead that failed armed a monitor after backgrounding the beat and felt doubly covered; it had two promises that both evaporated when the turn did. **This skill has to be right despite those descriptions.** A notification you will not be awake to receive is not a mechanism.
+
+**Waiting is the instruction, not a failure to act.** While a beat runs you are not idle and you are not stuck — you are doing the one thing the chain requires. Do not fill the wait by starting the next beat early (beat 3 needs beat 2's head), by re-dispatching because it has gone quiet (`project-manager` §2b — quiet is not dead), or by writing a progress report nobody asked for. If you genuinely cannot hold the turn open for the work, that is a wall to name under rule 11, not a turn to end.
 
 ## The standing rules — the seat itself
 
@@ -81,6 +96,8 @@ the work; it is the end of this bench's part of it.
 
 ## Changelog
 
+- **0.6.0 (2026-08-29, LIAB-1051)** — two corrections from review, both text. 0.5.0's changelog justified itself with *"six files cite these rules by number"*; the action was right but the figure was borrowed from `review-and-merge` §5 — **grep finds nothing outside this file citing them by number**, and under repo rule 3 a changelog line is what makes a version mean something, so it should not carry a fact that is not its own. And §The chain's closing line cited **rule 10** for stopping at a wall, which is rule 11 — pre-existing, but newly adjacent to the correct citation two lines below.
+- **0.5.0 (2026-08-29, LIAB-1051)** — **§The chain gains an ending, because it had one failure mode it could not name.** 0.3.0 forbade three *active* returns — a command block, a plan describing beat 3, *"ready for review — say go"*. On the chain's first real run a lead did none of them: it backgrounded beat 2 and **ended its turn**, one beat of five in. Every rule stayed silent because **going quiet is not asking**, and nothing would have resumed it. New subsection: the chain ends in exactly two places, the final report or a rule 11 wall; the passive return is named as the same failure as the verbal ones; beats are **spawned in the foreground and blocked on**, said in the beat table too. A callout takes on the tooling directly — the spawn tool's and the monitor's *"you'll be notified"* are true only **within a turn** and cannot restart one that has ended, which is exactly what made the failing lead feel doubly covered. And, per LIAB-1053's delivery check 2, the skill now says what to do **while waiting**: waiting is the instruction, not a gap to fill — with the three wrong ways to fill it named, including re-dispatching on silence. Appended, nothing renumbered — verified by grep that nothing outside this file cites these rules by number.
 - **0.4.0 (2026-08-29, LIAB-1024)** — a "where this lane ends" note under the routing table: the merge is this bench's finish line, not the work's, and the QA stage (`testing-lead`'s bench) runs after it, returning `Bug` tickets into this lane and a quality report the founder's promotion gate reads. Added as prose rather than a new numbered rule, so every existing citation of the standing rules keeps pointing at the same rule. *(Written against 0.2.0's nine rules and rebased onto 0.3.0, which appended rules 10 and 11 — the prose placement is unchanged and neither rule moved.)*
 - **0.3.0 (2026-08-29, LIAB-1044 + LIAB-1045)** — **the orchestration mandate.** This seat was written as a router — *which skill does this moment need* — with nothing saying who fires the chain, so every beat came back to a founder as a command to paste. New **§The chain**: the six beats (gate → build → review → feedback **to the same build session** → re-review by the **same reviewer** on the **current head** → merge), each a spawned subagent, and the seat does not return to a human between them. New **rule 10**: mid-chain, answer anything the tickets can answer and batch the genuinely unanswerable into one end-of-run report — a chain does not halt on a question the ticket already answered. New **rule 11**: the three walls that legitimately stop it (credential · founder gate · a machine that is not ours), which are also the only place a command block is the right output. **Rule 2 is restated**: freshness is a *context* boundary, not a *bench* boundary — *did not produce the work being graded* — so this seat may run `ready-review` by spawning it, and when it spawns a grader it hands down ticket ids and the rubric only, never its own reading. Rules appended, never renumbered.
 - **0.2.0 (2026-08-28, LIAB-1025)** — new rule 9: the review-and-merge authority is stated as part of what this seat *is*, and stated as **shared** — every lead lands its own lane, so this seat stops being the single gate every other bench queued behind. Appended rather than renumbered, so existing citations of rules 1–8 keep pointing at the same rules. The opening line's unqualified *"responsible … for the merges"* is scoped to this lane, since it otherwise contradicted the rule directly below it.

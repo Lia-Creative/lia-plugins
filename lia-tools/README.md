@@ -264,7 +264,9 @@ machine runs** — the marketplace serves `lia-tools` from the `release` ref
 step below, and the way back out is the rollback next to it.
 
 1. Edit the skill **here**, bump the skill's `version:` frontmatter with a changelog line, and bump this plugin's version in `.claude-plugin/plugin.json`. The plugin bump is not bookkeeping: **machines only receive an update when the version field changes**, so a promotion without a bump delivers to nobody. CI fails any PR touching `lia-tools/**` without one (`scripts/check-version-bump.mjs` — the version-vs-SHA call went to keeping the explicit version, enforced, 26 Aug 2026).
-2. PR, review, merge. CI runs the frontmatter guard and the version-bump guard on the PR. The merge lands on `main` and reaches nobody yet.
+2. PR, review, merge. CI runs four guards on the PR — frontmatter, roster, version-bump, and the freshness detector's self-test. The merge lands on `main` and reaches nobody yet.
+
+   *(The fourth guard is the odd one out: `scripts/check-plugin-freshness.mjs` gates nothing. It answers a question an **agent** has — which copy of these skills am I holding? — by comparing the install on this machine against what `release` serves, and it reports `unchecked` (exit 2) rather than a pass when it cannot tell, because "I could not find your install" must never read as "you are fine". It needs a clone; `scripts/` sits outside the shipped plugin. What to do with each answer is in `execution-discipline` §Which copy am I holding? — [LIAB-1052](https://linear.app/lia-creative/issue/LIAB-1052).)*
 3. **Promote.** One command, from any clone:
 
    ```

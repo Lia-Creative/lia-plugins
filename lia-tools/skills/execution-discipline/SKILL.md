@@ -1,9 +1,9 @@
 ---
 name: execution-discipline
 description: How to execute any Lia skill or non-trivial task the way a stronger model would. Load at the start of every Lia skill run (scheduled or interactive) and any multi-step task, for any founder's agent. Covers ground-truth rules (never invent paths, Linear statuses, labels, or commands), stop conditions (what to do when reality doesn't match the skill), verification (done means evidence, per-stage accounting, verify from a cold start so the check can actually fail), judgment calibration (err toward exclusion, quote before you claim), and output discipline. Written by Fable 5 on 2026-07-03 as a distillation of its own working habits for successor models.
-version: 1.2.0
+version: 1.8.0
 created: 2026-07-03
-updated: 2026-08-28
+updated: 2026-08-29
 status: active
 maintainer: dan
 author: dan
@@ -36,6 +36,35 @@ A skill describes the world as it was when the skill was written. When the world
 - **A step references a retired convention** (dead Linear status, retired folder, superseded spine) → do not use it and do not silently substitute a guess. Find the live equivalent from the source of truth (`list_issue_statuses`, `CLAUDE.md`, the operating model), apply it, and flag the stale skill line in the relevant rolling queue (`Inbox/lia-*.md`) so it gets fixed.
 - **Empty or absurd input → treat as a signal, not a shrug.** Zero candidates from a source that usually yields ten means the probe broke, not that nothing happened. Confirm the pipe before accepting the zero. A genuinely quiet week is fine — "zero is a valid outcome" — but only after the pipe is confirmed.
 - **When you stop, stop loudly.** A skipped stage or aborted run must appear in `_meta/log.md` and the skill's queue file. The silent skip is the failure mode that costs weeks, because everything looks fine.
+- **A rule you cannot find is more likely missing from your copy than absent from the plugin.** You may be holding an old one. The two explanations are indistinguishable from the inside, and the second is far more likely — so suspect it *before* concluding a rule does not exist, and certainly before writing a ticket saying so.
+
+### Which copy am I holding?
+
+**The version you hold is the top entry of the skill's own `## Changelog`** — the version-bump guard requires every change to head an entry there, so the first entry is what you were served. That is the only version visible in-band: **frontmatter is not served to you** (measured 29 Aug 2026), so a skill's `version:` field is not something you can read from what you were given.
+
+Knowing your version is half the answer. The other half is what the marketplace *currently* serves, and for that there is a check:
+
+```
+node scripts/check-plugin-freshness.mjs        # from a clone of Lia-Creative/lia-plugins
+```
+
+**You need that clone.** `scripts/` sits at the repo root, *outside* the shipped plugin — an installed copy carries `skills/` and its manifest, not the guards — so this command does not exist for a session that only has the plugin. **If you have no clone, you cannot run it, and the honest move is to say your version is unverified rather than to assume it is current.** That is itself the answer LIAB-1052 wants: an agent that knows it cannot check has still avoided concluding a rule does not exist.
+
+It finds your install by reading Claude Code's own `installed_plugins.json` **and** searching the plugins tree — both, never one as a fallback for the other — then compares against the `release` ref. The union is deliberate: when the registry was allowed to answer alone, a registry recording a current version over a cache still holding an old one reported *green*, which is this very defect passed by the check built to catch it.
+
+Three outcomes, and the third is the one that matters: **exit 0** current or ahead · **exit 1** stale · **exit 2 unchecked**. `unchecked` has its own exit code on purpose, so *"I could not find your install"* can never be read as *"you are fine"*. If you are running from a real install and still get `unchecked`, **the finder is wrong and worth a ticket** — pass `--held [path-to-plugin.json]` meanwhile. A session served from `--plugin-dir`, a clone or CI has no install to find, and that is the honest `unchecked`, not a fault.
+
+**A machine can hold several versions at once** (per-scope or per-project installs, or a leftover directory beside a current one). The script reports all of them, and then asks whether the disagreement actually reaches the verdict:
+
+- **every copy behind the release → stale.** Certain whichever one is served, so it says so. This is the shape the LIAB-1052 machine was in.
+- **every copy at or ahead of the release → fine.** Also certain either way.
+- **the set straddles the release → `unchecked`.** The one genuine ambiguity, and the only one worth refusing to answer.
+
+`--held [path]` settles that last case, and **you probably cannot supply it** — which is the same gap this section opens with. Two different things are numbered here: a **skill's** version (`lead-engineer` 0.7.0, readable in-band from its changelog) and the **plugin's** (1.17.0, what the script compares). Knowing the first does not tell you the second. So on a straddling answer the honest report is *unverified*, not a guess at which copy is live.
+
+**Why this rule exists** ([LIAB-1052](https://linear.app/lia-creative/issue/LIAB-1052), measured 29 Aug 2026): a lead was dispatched to run the orchestration chain that had merged an hour earlier, and **the loader served it the version from before that merge** — no `§The chain`, no rules 10 or 11. The mandate was invisible to the exact seat built to run it, and two build agents hit the same thing independently. The installed cache was three versions behind `main`. **Nothing merged into this plugin takes effect for a session already running, and until you check, no session can tell.**
+
+Knowing is the deliverable. What to do about it — reload, carry on with the gap named, or stop — is the lead's call, not this skill's.
 
 ## 3. Verification — done means evidence
 
@@ -83,4 +112,10 @@ Related: `Wiki/synthesis/systems-are-learned-alone.md` — this file's "the judg
 
 ## Changelog
 
+- **1.8.0 (2026-08-29, LIAB-1052)** — this section said the tree search runs *"failing that"*, i.e. as a **fallback** to the registry. It is a **union**, and the union is the whole point: reading the registry alone is what let a registry claiming current suppress a stale copy on disk. Third time in two days that prose here has described behaviour the script no longer had — in the section whose own 1.6.0 entry was written about exactly that. The pattern is worth more than the fix: **a sentence about a check is a copy of the check, and copies drift.** When the script changes, this section is part of the change.
+- **1.7.0 (2026-08-29, LIAB-1052)** — 1.6.0 over-corrected. Saying *any* disagreement returns `unchecked` meant the guard shrugged at the machine this ticket was measured on, where a registry spanning 1.2.0 to 1.13.0 sat against a released 1.16.0 — every copy behind, staleness certain whichever was served, and nothing said so. The rule is now whether the disagreement **reaches the verdict**, in three cases. Also names the thing that makes the `--held` escape hatch hard to use: the skill version you can read in-band and the plugin version the script compares are **different numbers**, so knowing one does not give you the other.
+- **1.6.0 (2026-08-29, LIAB-1052)** — the multiple-installs paragraph described behaviour the script no longer has. 1.4.0 said it *judges on the oldest*; a review found that reports a **current** machine with a leftover directory beside it as `stale`, which is false in the damaging direction — it tells a correct agent its rules may be missing. Disagreeing copies now return `unchecked`, and this section says what the script does rather than what it used to. Same lesson as the version numbers this repo has already had lie to it: prose about a check goes stale the moment the check changes.
+- **1.5.0 (2026-08-29, LIAB-1052)** — the command this section names **does not exist for the agents it is aimed at**, caught in review: `scripts/` is at the repo root, outside the shipped plugin, so an installed session has no such file — and this skill loads on every run, for any agent, in any repo, while its own §1 forbids naming a command that is not there. It now says the clone is required and, more usefully, what to do without one: report your version as unverified rather than assume it is current, which is still the answer the ticket wants.
+- **1.4.0 (2026-08-29, LIAB-1052)** — the freshness check this section points at was **unsound on the point it was written for**, caught by an independent review the same day: it looked for the install at three guessed paths, none of them verified and nothing in the repo documenting the real layout — *"never invent a path"* broken inside the guard meant to be authoritative about versions. It now reads `installed_plugins.json` and otherwise **searches** the tree, so a layout its author never saw is still found; `unchecked` gets **exit 2**, so silence cannot read as a pass; and several versions held at once are all reported, judged on the oldest. This section says so.
+- **1.3.0 (2026-08-29, LIAB-1052)** — §2 gains the case it was missing: **a rule you cannot find is more likely missing from your copy than absent from the plugin.** Measured that day — a lead was served the `lead-engineer` from *before* the orchestration chain merged an hour earlier, so the mandate was invisible to the seat built to run it, and two build agents hit it independently with the installed cache three versions behind `main`. §2 already covered a skill that disagrees with the world; it had nothing for a skill that is simply *old*, and the two are indistinguishable from the inside. New §Which copy am I holding? — the held version is the top changelog entry (**frontmatter is not served to an agent**, measured, so `version:` is not readable from what you were given), the current version comes from `scripts/check-plugin-freshness.mjs`, and an unknown is reported as unchecked rather than passed. Knowing is the deliverable; what to do about it stays the lead's call.
 - **1.2.0 (2026-08-28, LIAB-963)** — this skill described itself by a home it no longer has. `_meta/skills/` was retired on 26 Aug (LIAB-919), and the `description:` is the string auto-triggering matches on, so "every `_meta/skills/` run" was both false and the most load-bearing sentence in the file. It now says *every Lia skill run*, which is what it always meant and stays true wherever canonical lives next. The §Grounding line naming Dan's `Drive Vault/_meta/skills/execution-discipline/` is **kept on purpose**: that is a real, separate file in his personal vault, maintained independently, and the note says so.
