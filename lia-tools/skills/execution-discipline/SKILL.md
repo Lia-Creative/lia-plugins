@@ -1,7 +1,7 @@
 ---
 name: execution-discipline
 description: How to execute any Lia skill or non-trivial task the way a stronger model would. Load at the start of every Lia skill run (scheduled or interactive) and any multi-step task, for any founder's agent. Covers ground-truth rules (never invent paths, Linear statuses, labels, or commands), stop conditions (what to do when reality doesn't match the skill), verification (done means evidence, per-stage accounting, verify from a cold start so the check can actually fail), judgment calibration (err toward exclusion, quote before you claim), and output discipline. Written by Fable 5 on 2026-07-03 as a distillation of its own working habits for successor models.
-version: 1.7.0
+version: 1.8.0
 created: 2026-07-03
 updated: 2026-08-29
 status: active
@@ -50,7 +50,7 @@ node scripts/check-plugin-freshness.mjs        # from a clone of Lia-Creative/li
 
 **You need that clone.** `scripts/` sits at the repo root, *outside* the shipped plugin — an installed copy carries `skills/` and its manifest, not the guards — so this command does not exist for a session that only has the plugin. **If you have no clone, you cannot run it, and the honest move is to say your version is unverified rather than to assume it is current.** That is itself the answer LIAB-1052 wants: an agent that knows it cannot check has still avoided concluding a rule does not exist.
 
-It finds your install by reading Claude Code's own `installed_plugins.json` and, failing that, **searching** the plugins tree — rather than guessing at a path layout — then compares against the `release` ref.
+It finds your install by reading Claude Code's own `installed_plugins.json` **and** searching the plugins tree — both, never one as a fallback for the other — then compares against the `release` ref. The union is deliberate: when the registry was allowed to answer alone, a registry recording a current version over a cache still holding an old one reported *green*, which is this very defect passed by the check built to catch it.
 
 Three outcomes, and the third is the one that matters: **exit 0** current or ahead · **exit 1** stale · **exit 2 unchecked**. `unchecked` has its own exit code on purpose, so *"I could not find your install"* can never be read as *"you are fine"*. If you are running from a real install and still get `unchecked`, **the finder is wrong and worth a ticket** — pass `--held [path-to-plugin.json]` meanwhile. A session served from `--plugin-dir`, a clone or CI has no install to find, and that is the honest `unchecked`, not a fault.
 
@@ -112,6 +112,7 @@ Related: `Wiki/synthesis/systems-are-learned-alone.md` — this file's "the judg
 
 ## Changelog
 
+- **1.8.0 (2026-08-29, LIAB-1052)** — this section said the tree search runs *"failing that"*, i.e. as a **fallback** to the registry. It is a **union**, and the union is the whole point: reading the registry alone is what let a registry claiming current suppress a stale copy on disk. Third time in two days that prose here has described behaviour the script no longer had — in the section whose own 1.6.0 entry was written about exactly that. The pattern is worth more than the fix: **a sentence about a check is a copy of the check, and copies drift.** When the script changes, this section is part of the change.
 - **1.7.0 (2026-08-29, LIAB-1052)** — 1.6.0 over-corrected. Saying *any* disagreement returns `unchecked` meant the guard shrugged at the machine this ticket was measured on, where a registry spanning 1.2.0 to 1.13.0 sat against a released 1.16.0 — every copy behind, staleness certain whichever was served, and nothing said so. The rule is now whether the disagreement **reaches the verdict**, in three cases. Also names the thing that makes the `--held` escape hatch hard to use: the skill version you can read in-band and the plugin version the script compares are **different numbers**, so knowing one does not give you the other.
 - **1.6.0 (2026-08-29, LIAB-1052)** — the multiple-installs paragraph described behaviour the script no longer has. 1.4.0 said it *judges on the oldest*; a review found that reports a **current** machine with a leftover directory beside it as `stale`, which is false in the damaging direction — it tells a correct agent its rules may be missing. Disagreeing copies now return `unchecked`, and this section says what the script does rather than what it used to. Same lesson as the version numbers this repo has already had lie to it: prose about a check goes stale the moment the check changes.
 - **1.5.0 (2026-08-29, LIAB-1052)** — the command this section names **does not exist for the agents it is aimed at**, caught in review: `scripts/` is at the repo root, outside the shipped plugin, so an installed session has no such file — and this skill loads on every run, for any agent, in any repo, while its own §1 forbids naming a command that is not there. It now says the clone is required and, more usefully, what to do without one: report your version as unverified rather than assume it is current, which is still the answer the ticket wants.

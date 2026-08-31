@@ -165,6 +165,38 @@ export function searchForManifests(root, dir = root, depth = 0, found = []) {
   return found;
 }
 
+// Versions carried by a value sitting under a key that names this plugin.
+//
+// SHAPE-TOLERANT ON PURPOSE. The registry's layout is not guaranteed across
+// Claude Code versions, and the previous reader only recognised ONE shape —
+// a value that is itself an object carrying `version`. A review found the
+// consequence: where the value is an ARRAY of records (one per scope or
+// project) whose elements carry no `name` of their own, identity lives only
+// in the parent key, `typeof value.version === 'string'` is false for an
+// array, and the recursive descent then skips every unnamed element. Result:
+// zero records, and the source this file documents as #1 — "the authoritative
+// answer when it holds a record" — was inert.
+//
+// So this does not pattern-match one reported layout, which would be the same
+// mistake as the path list that started all this: a shape the author chose,
+// one level removed. Under a key that names us, take versions from a record,
+// from an array of records, or from a map of records keyed by scope. Bounded
+// by depth and by the key check, so a stray `version` elsewhere in the file
+// still cannot be read as an install.
+export function harvestVersions(value, out = [], depth = 0) {
+  if (!value || typeof value !== 'object' || depth > 3) return out;
+  if (Array.isArray(value)) {
+    for (const v of value) harvestVersions(v, out, depth + 1);
+    return out;
+  }
+  if (typeof value.version === 'string') {
+    out.push({ version: value.version, scope: value.scope ?? value.projectPath ?? null });
+    return out;
+  }
+  for (const v of Object.values(value)) harvestVersions(v, out, depth + 1);
+  return out;
+}
+
 // The registry. Shape is not guaranteed across versions, so read defensively
 // and treat anything unrecognised as "no record" rather than as an answer.
 export function readRegistry(home = homedir()) {
@@ -176,24 +208,35 @@ export function readRegistry(home = homedir()) {
     return { path, records: [] };
   }
   const records = [];
-  const visit = (node) => {
-    if (!node || typeof node !== 'object') return;
-    if (Array.isArray(node)) return node.forEach(visit);
+  const visit = (node, depth = 0) => {
+    if (!node || typeof node !== 'object' || depth > 6) return;
+    if (Array.isArray(node)) return node.forEach((n) => visit(n, depth + 1));
+    // A record that carries its own name.
     const name = String(node.name ?? node.plugin ?? '');
     if (typeof node.version === 'string' && namesThisPlugin(name)) {
       records.push({ version: node.version, scope: node.scope ?? node.projectPath ?? null });
     }
     for (const [key, value] of Object.entries(node)) {
       if (value && typeof value === 'object') {
-        if (typeof value.version === 'string' && namesThisPlugin(key)) {
-          records.push({ version: value.version, scope: value.scope ?? value.projectPath ?? null });
-        }
-        visit(value);
+        // A key that names us: harvest whatever it holds.
+        if (namesThisPlugin(key)) harvestVersions(value, records);
+        visit(value, depth + 1);
       }
     }
   };
   visit(parsed);
-  return { path, records };
+  // A record reachable both ways (named node under a naming key) lands twice.
+  // Harmless to the verdict, which de-duplicates versions, but a record count
+  // that overstates what is installed is the kind of number that later gets
+  // quoted, so collapse it here.
+  const seen = new Set();
+  const unique = records.filter((r) => {
+    const k = `${r.version}|${r.scope ?? ''}`;
+    if (seen.has(k)) return false;
+    seen.add(k);
+    return true;
+  });
+  return { path, records: unique };
 }
 
 // Returns { versions: [...], source, path } — versions is every distinct
@@ -318,7 +361,18 @@ export function verdict(held, current) {
   //   every copy current/ahead   -> OK. Whichever is served, it is fine.
   //   some behind, some not      -> UNCHECKED. This is the real ambiguity, and
   //                                the only one worth refusing to answer.
-  const distinct = [...new Set(versions)];
+  // Sorted for the READER only. Every verdict below is computed with
+  // compareVersions, never from position — the newest-held reduce correctly
+  // named 1.13.0 from a set whose lexical maximum is 1.9.0. But the list was
+  // printed in whatever order the sources happened to yield, so a human
+  // scanning "1.9.0, 1.13.0, 1.2.0" had to sort it in their head to check the
+  // script's arithmetic. Anything unparseable sorts last rather than being
+  // dropped: it is part of what the machine holds.
+  const distinct = [...new Set(versions)].sort((a, b) => {
+    const c = compareVersions(a, b);
+    if (c !== null) return c;
+    return parseVersion(a) ? -1 : parseVersion(b) ? 1 : String(a).localeCompare(String(b));
+  });
   if (distinct.length > 1) {
     const cmps = distinct.map((v) => compareVersions(v, current));
     if (cmps.some((c) => c === null)) {
@@ -590,6 +644,70 @@ function selfTest() {
     if (foundL.versions.includes('0.0.4')) failures.push(`a registry record named ${PLUGIN}-extras was read as ours`);
     if (!foundL.versions.includes('1.19.0')) failures.push('a registry record listed by name was MISSED');
 
+    // (h6) THE REGISTRY'S SHAPES — and the case that proves it works at all.
+    //
+    // A review found `readRegistry()` returning ZERO records for a registry
+    // whose identity lives in the PARENT KEY over an ARRAY of records carrying
+    // no name of their own. The old key branch required
+    // `typeof value.version === 'string'`, which an array never satisfies, and
+    // the descent then skipped the unnamed elements. Source #1 — the one this
+    // file calls "the authoritative answer when it holds a record" — was inert,
+    // and nothing here could see it, because every registry fixture planted a
+    // shape the reader already expected.
+    //
+    // BE CLEAR ABOUT WHAT THESE ARE. None of these shapes was observed on disk
+    // from here: this container's registry is `{"version":2,"plugins":{}}`,
+    // with no install of anything. Deriving a fixture from a live file is the
+    // right instinct and is not available, so these test SHAPE TOLERANCE and
+    // are not a claim about any machine's layout. That is also why the reader
+    // harvests generically rather than matching one reported shape — a fixture
+    // and a reader built from the same guess prove each other and nothing else.
+    const shapes = {
+      'key over an array of unnamed records': [{ version: '1.13.0', installPath: '/x', scope: 'user' }, { version: '1.2.0', projectPath: '/p' }],
+      'key over a single record': { version: '1.13.0', scope: 'user' },
+      'key over a map of records by scope': { user: { version: '1.13.0' }, project: { version: '1.2.0', projectPath: '/p' } },
+    };
+    for (const [why, value] of Object.entries(shapes)) {
+      const dir = join(tmp, `shape-${Object.keys(shapes).indexOf(why)}`);
+      const rf = join(dir, '.claude', 'plugins', 'installed_plugins.json');
+      mkdirSync(dirname(rf), { recursive: true });
+      writeFileSync(rf, JSON.stringify({ version: 2, plugins: { [`${PLUGIN}@${MARKETPLACE}`]: value } }));
+      const got = findHeld(null, dir).versions;
+      if (!got.includes('1.13.0')) failures.push(`registry shape, ${why}: 1.13.0 was NOT found (got ${JSON.stringify(got)})`);
+    }
+
+    // (h7) THE REGISTRY ALONE, WITH NOTHING ON DISK. Every other registry
+    //      fixture would also pass on a machine where the cache search finds
+    //      the same version, so none of them can tell a working registry reader
+    //      from an inert one. This one can: no cache, no marketplaces
+    //      checkout, nothing to search — if the registry does not work, the
+    //      answer is `unchecked` and the verdict below goes red.
+    const only = join(tmp, 'registry-only');
+    const onlyReg = join(only, '.claude', 'plugins', 'installed_plugins.json');
+    mkdirSync(dirname(onlyReg), { recursive: true });
+    writeFileSync(onlyReg, JSON.stringify({ version: 2, plugins: { [`${PLUGIN}@${MARKETPLACE}`]: [{ version: '1.13.0', scope: 'user' }] } }));
+    const foundOnly = findHeld(null, only);
+    if (!foundOnly.versions.includes('1.13.0')) failures.push('registry ALONE: source #1 is inert — nothing on disk, and the registry found nothing either');
+    if (!foundOnly.source.includes('installed_plugins.json')) failures.push(`registry ALONE: expected the registry as the source, got ${foundOnly.source}`);
+    if (verdict(foundOnly.versions, '1.16.0').code !== 1) failures.push('registry ALONE: the LIAB-1052 skew was not reported STALE from the registry alone');
+
+    // (h8) AND THE SAME HARVEST MUST NOT WIDEN THE NET. A sibling key and a
+    //      metadata key hold arrays too, and neither is an install of ours.
+    const harvestFP = join(tmp, 'harvest-fp');
+    const fpReg = join(harvestFP, '.claude', 'plugins', 'installed_plugins.json');
+    mkdirSync(dirname(fpReg), { recursive: true });
+    writeFileSync(fpReg, JSON.stringify({ version: 2, plugins: {
+      [`${PLUGIN}-extras`]: [{ version: '0.0.1' }],
+      [`${PLUGIN} marketplace`]: [{ version: '0.0.3' }],
+      'unrelated@other': [{ version: '5.0.0' }],
+    } }));
+    if (findHeld(null, harvestFP).versions.length) failures.push(`the key harvest read a sibling or metadata key as ours: ${JSON.stringify(findHeld(null, harvestFP).versions)}`);
+
+    // (h9) THE DISPLAY IS SORTED, because the reader has to check the
+    //      arithmetic and was being handed an unordered list to do it from.
+    const shown = verdict(['1.9.0', '1.13.0', '1.2.0'], '1.16.0').message;
+    if (!shown.includes('1.2.0, 1.9.0, 1.13.0')) failures.push('the held-version list is not sorted semver-ascending for display');
+
     // (i) --held IS THE ESCAPE HATCH THE UNCHECKED MESSAGE POINTS AT, so it is
     //     tested. It was not, and ignoring it entirely left this suite green.
     const k = join(tmp, 'k', 'somewhere', 'plugin.json');
@@ -723,7 +841,7 @@ function selfTest() {
     process.exit(1);
   }
   console.log(
-    `self-test ok — ${scenarios.length} comparator scenarios plus 25 on-disk detector assertions. The detector is proved against layouts this script has NO path list for: version-partitioned cache, a marketplaces/ checkout, and the installed_plugins.json registry (read alongside disk, never suppressing it). Versions that disagree are judged on whether the disagreement reaches the verdict: every copy behind is STALE (certain either way), every copy current-or-ahead is ok, and only a set straddling the release is UNCHECKED. Not-always-red: an empty tree is UNCHECKED (exit 2) not a pass, a matching install is green, a foreign manifest in a directory named after us is not mistaken for ours and a home path containing our name matches nothing, a registry claiming current cannot suppress a stale copy on disk, a sibling named lia-tools-extras and a registry metadata node are not read as us, and --held is honoured. Mutation-swept: 13 deliberate reversions of this script's own rules were each confirmed to turn this suite RED (29 Aug 2026). Two of them did not, first time round — the marketplace half of the path fallback and the registry's node-name branch had no fixture at all, and a third fixture was green either way. Break it again after changing it; green here means nothing until you have watched it go red.`,
+    `self-test ok — ${scenarios.length} comparator scenarios plus 32 detector assertions. The detector is proved against layouts this script has NO path list for: version-partitioned cache, a marketplaces/ checkout, and the installed_plugins.json registry (read alongside disk, never suppressing it). Versions that disagree are judged on whether the disagreement reaches the verdict: every copy behind is STALE (certain either way), every copy current-or-ahead is ok, and only a set straddling the release is UNCHECKED. Not-always-red: an empty tree is UNCHECKED (exit 2) not a pass, a matching install is green, a foreign manifest in a directory named after us is not mistaken for ours and a home path containing our name matches nothing, a registry claiming current cannot suppress a stale copy on disk, a sibling named lia-tools-extras and a registry metadata node are not read as us, and --held is honoured. The REGISTRY is proved on three shapes and, crucially, ALONE with nothing on disk to search — the case that separates a working registry reader from an inert one, which no fixture covered while it was in fact inert. Mutation-swept: 30 deliberate reversions of this script's own rules were each confirmed to turn this suite RED (29 Aug 2026), across the comparator, the detector, the registry reader and the CLI wiring. Five did not, first time round: the marketplace half of the path fallback, the registry's node-name branch, a fixture that was green either way, and the whole of main(), which no test touched. Break it again after changing it; green here means nothing until you have watched it go red.`,
   );
 }
 
