@@ -19,6 +19,16 @@ That's it. New tools added here later show up with a `/plugin marketplace update
 
 **Cloud and web sessions** (claude.ai/code, the mobile app) have no `/plugin` command. They pick these up only where a repo declares them in `.claude/settings.json` — see [lia-tools/README.md](lia-tools/README.md#the-one-gap-worth-knowing-about).
 
+## Cursor
+
+Same skills, same files — Cursor reads `lia-tools/` as a plugin instead of going through Claude Code's `/plugin`. This is not a second artifact.
+
+**This repo.** A Cursor session that opens `lia-plugins` loads `lia-tools` from the checkout: [`.cursor/skills`](.cursor/skills) is a symlink onto `lia-tools/skills`, and `lia-tools/.cursor-plugin/plugin.json` is the Cursor plugin manifest. Cloud Agents included — they never fire `workspaceOpen`, so the symlink is the install, not a hook.
+
+**Other repos, and everyone on the team.** Import this repository as a Cursor team marketplace (Dashboard → Plugins → Add Marketplace → Import from Repo → `https://github.com/Lia-Creative/lia-plugins`). Cursor reads [`.cursor-plugin/marketplace.json`](.cursor-plugin/marketplace.json), which lists `lia-tools`. Mark it Required if every Cloud Agent should arrive with the roster. Auto-refresh tracks the branch the marketplace is pointed at; point it at `release` so Cursor follows the same promotion as Claude Code.
+
+`design-and-refine` is not in this tree (it is a pin on `Lia-Creative/design-plugin`). It stays a Claude Code install until that repo carries a Cursor manifest of its own.
+
 ## What's in here
 
 ### lia-tools — the build process

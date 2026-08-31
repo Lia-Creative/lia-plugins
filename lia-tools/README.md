@@ -196,9 +196,9 @@ node scripts/check-skill-frontmatter.mjs --self-test # proves it can go red
 ```
 
 It reads every `SKILL.md`'s frontmatter — all fields, not just `description` —
-plus every `commands/*.md` frontmatter and every `.claude-plugin/plugin.json`
-and `marketplace.json` `description`, since those are published prose the same
-validator sees.
+plus every `commands/*.md` frontmatter and every `.claude-plugin` and
+`.cursor-plugin` `plugin.json` and `marketplace.json` `description`, since those
+are published prose the same validator sees.
 
 Three things it deliberately leaves alone, because a guard that fails on correct
 input is a guard someone deletes in a hurry:
@@ -330,6 +330,24 @@ record stands, and it was a manual update.)
 Without it, a cloud session falls back to whatever account-level skills happen to
 sync into it, which is exactly the shadowing LIAB-924 exists to end. **Add it to
 a repo before retiring anything that repo's sessions currently rely on.**
+
+### Cursor sessions
+
+Cursor is not a second publish. It loads the same `skills/` directory this
+plugin already is. Two ways, depending on which repo the session opened:
+
+- **This repo.** [`.cursor/skills`](../.cursor/skills) is a symlink onto
+  `lia-tools/skills`, and this directory carries a
+  [`.cursor-plugin/plugin.json`](.cursor-plugin/plugin.json). A Cloud Agent
+  that opens `lia-plugins` gets the roster from the checkout. (`workspaceOpen`
+  does not run on Cloud Agents; the symlink is the mechanism that does.)
+- **Any other repo.** Import `Lia-Creative/lia-plugins` as a Cursor team
+  marketplace and enable `lia-tools` — the listing is
+  [`.cursor-plugin/marketplace.json`](../.cursor-plugin/marketplace.json) at
+  the repo root. Point the marketplace at `release`. Copying
+  `.claude/settings.json` does nothing for Cursor.
+
+The copy that ships is still this directory on `release`. Edit a skill here.
 
 Old copies — the vault's `_meta/skills/`, the claude.ai `lia-build` and `lia-toys`
 plugins, and the claude.ai standalone skills that duplicate this roster — are

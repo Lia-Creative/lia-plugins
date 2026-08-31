@@ -10,7 +10,7 @@
 // What it reads:
 //   - every SKILL.md's YAML frontmatter — all fields, not just `description`
 //   - every commands/*.md frontmatter, except its `argument-hint:` line
-//   - every .claude-plugin/plugin.json and marketplace.json `description`
+//   - every .claude-plugin and .cursor-plugin plugin.json and marketplace.json `description`
 //
 // The rule is deliberately wider than the failure. The Cowork validator names
 // a skill's `description`, but which other fields and files it reads is not
@@ -38,6 +38,7 @@ import { fileURLToPath } from "node:url";
 const REPO_ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 const SKIP_DIRS = new Set([".git", "node_modules"]);
 const MANIFESTS = new Set(["plugin.json", "marketplace.json"]);
+const PLUGIN_DIRS = new Set([".claude-plugin", ".cursor-plugin"]);
 
 // `description: >-`, `body: |2-`, `text: |-2` — the indicator is YAML
 // structure, not value. YAML 1.2 permits the indentation and chomping
@@ -59,7 +60,7 @@ function findFiles(root) {
         skills.push(path);
       } else if (inCommands && entry.name.endsWith(".md")) {
         commands.push(path);
-      } else if (MANIFESTS.has(entry.name) && basename(dir) === ".claude-plugin") {
+      } else if (MANIFESTS.has(entry.name) && PLUGIN_DIRS.has(basename(dir))) {
         manifests.push(path);
       }
     }
@@ -208,7 +209,7 @@ function selfTest() {
     writeFileSync(join(dir, "commands", `${name}.md`), body);
   };
   const DEFECT = `description: "Use when asked 'epic: <name>'."`;
-  const falsePositiveFixtures = 7; // [name], folded >-, indented >2-, body, BOM, command argument-hint, clean manifest
+  const falsePositiveFixtures = 8; // [name], folded >-, indented >2-, body, BOM, command argument-hint, clean claude manifest, clean cursor manifest
 
   try {
     // Must be caught.
@@ -221,6 +222,11 @@ function selfTest() {
     writeFileSync(
       join(dir, "broken-plugin", ".claude-plugin", "plugin.json"),
       JSON.stringify({ name: "broken-plugin", version: "1.0.0", description: "Use when asked 'epic: <name>'." }, null, 2),
+    );
+    mkdirSync(join(dir, "broken-cursor-plugin", ".cursor-plugin"), { recursive: true });
+    writeFileSync(
+      join(dir, "broken-cursor-plugin", ".cursor-plugin", "plugin.json"),
+      JSON.stringify({ name: "broken-cursor-plugin", version: "1.0.0", description: "Use when asked 'epic: <name>'." }, null, 2),
     );
 
     // Must NOT be caught.
@@ -239,8 +245,13 @@ function selfTest() {
       join(dir, "clean-plugin", ".claude-plugin", "marketplace.json"),
       JSON.stringify({ name: "m", description: "Fine.", plugins: [{ name: "p", description: "Also fine." }] }, null, 2),
     );
+    mkdirSync(join(dir, "clean-cursor-plugin", ".cursor-plugin"), { recursive: true });
+    writeFileSync(
+      join(dir, "clean-cursor-plugin", ".cursor-plugin", "marketplace.json"),
+      JSON.stringify({ name: "m", description: "Fine.", plugins: [{ name: "p", description: "Also fine." }] }, null, 2),
+    );
 
-    const expectedRed = ["broken", "broken-bom", "broken-unterminated", "broken-folded", "broken-plugin", "broken-command"];
+    const expectedRed = ["broken", "broken-bom", "broken-unterminated", "broken-folded", "broken-plugin", "broken-cursor-plugin", "broken-command"];
     const { offences } = scan(dir);
     const nameOf = (o) => o.file.split(/[\\/]/).map((s) => s.replace(/\.md$/, "")).find((s) => s.startsWith("broken") || s.startsWith("clean"));
 
@@ -260,7 +271,7 @@ function selfTest() {
       return 1;
     }
     console.log(
-      `self-test ok — ${expectedRed.length} planted defects caught (raw, BOM at the real line, unterminated, folded continuation, plugin.json, command); ${falsePositiveFixtures} legal spellings left alone`,
+      `self-test ok — ${expectedRed.length} planted defects caught (raw, BOM at the real line, unterminated, folded continuation, plugin.json, cursor plugin.json, command); ${falsePositiveFixtures} legal spellings left alone`,
     );
     return 0;
   } finally {
