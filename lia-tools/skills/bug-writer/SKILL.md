@@ -1,10 +1,10 @@
 ---
 name: bug-writer
 slug: bug-writer
-description: "The QA bench's bug shape and filing seat — a finding becomes a Bug ticket on the feature epic: symptom title, steps-to-repeat with concrete inputs, expected against actual, evidence attached, severity honest, deduped against the epic's open bugs. Tester and rogue load this shape and file in-session; the standalone session exists for a pile of raw findings. Use when filing QA findings as tickets or sweeping a pile of them."
-version: 0.1.0
+description: "The QA bench's bug filing seat — a finding becomes a Bug ticket on the feature epic: symptom title, steps-to-repeat with concrete inputs, expected against actual, evidence attached, severity honest, deduped against the epic's open bugs. Tester and rogue load this shape and file in-session; the standalone session exists for a pile of raw findings. Use when filing QA findings as tickets or sweeping a pile of them."
+version: 0.2.0
 created: 2026-08-29
-updated: 2026-08-29
+updated: 2026-08-30
 status: active
 triggers:
   - "/bug-writer"
@@ -38,22 +38,37 @@ sweep.
 
 ## 1. The shape
 
-- **Title: the symptom, in the user's terms.** What went wrong, not what you think caused it. A title
-  naming a suspected cause ages badly and sends the fixer to the wrong file.
-- **Steps to repeat**, numbered, from a clean state, with the **concrete inputs** — the actual file,
-  the actual value, the actual account type. This is the field the whole ticket exists for.
-- **Expected against actual**, both stated. "It's broken" is not an actual.
-- **Evidence attached:** the screenshot, the log line, the stored value, the error text verbatim.
-- **Environment:** build, version and stage from the release register. **A bug is evidence for one
-  build** — without the version, a fixer cannot tell a live bug from a fixed one.
-- **Where it came from:** the case index it failed, or the rogue pass that found it.
-- **Type `Bug`, on the feature epic** whose work produced it — which is how it reaches the lane that
-  built it. Priority set honestly; the ticket shape's own conventions apply
-  ([How a Lia Toys ticket is shaped](https://linear.app/lia-creative/document/how-a-lia-toys-ticket-is-shaped-a5d28e39709b)).
+**The shape is not this seat's to define.** It is
+[What a reported bug carries](https://linear.app/lia-creative/document/what-a-reported-bug-carries-ff781e0d6b8a) — the seven fields, the
+`Not captured` block that makes a gap visible, the inference rule, the title form and the
+placement. **Read it before filing anything.** This seat owns the QA *intake*: what the bench fills
+differently, and why.
 
-**When [LIAB-967](https://linear.app/lia-creative/issue/LIAB-967)'s bug ticket template lands, that
-document wins and this seat gets fixed.** Same shape, one home — this seat states it now because the
-bench needs it now, not to compete with it.
+*This replaces the shape 0.1.0 stated here. That version said so itself — "when LIAB-967's bug
+ticket template lands, that document wins and this seat gets fixed" — and it has landed.*
+
+### What the QA intake fills differently
+
+Stated here **and** in that document's intake table, because an unstated difference between two
+intakes is how they drift into contradicting each other.
+
+- **Field 7 — *what the person was doing* — is numbered steps to repeat**, from a clean state, with
+  the **concrete inputs**: the actual file, the actual value, the actual account type. A reported
+  take can rarely manage that; a finder who just ran it always can. **This is the field the whole
+  ticket exists for.**
+- **Fields 2–4 — tool, version, platform — come from the release register**, not from a take
+  envelope, because there is no take. **A bug is evidence for one build** — without the version, a
+  fixer cannot tell a live bug from a fixed one.
+- **Evidence is attached, not cited:** the screenshot, the log line, the stored value, the error
+  text verbatim.
+- **Where it came from:** the case index it failed, or the rogue pass that found it.
+- **The parent is the feature epic whose work produced it** — there is no take to inherit a parent
+  from. Rule 5 below.
+- **Priority is set, honestly.** This is the one place the seat deliberately differs from the
+  reported intake, which sets none: a sweep ranking its own output is deciding what gets fixed,
+  which is `bug review`'s job — whereas **an agent filing a bug it found itself already has the
+  context to rank it, and is not ranking a queue.** Both are right; the difference is the
+  situation, not a disagreement.
 
 ## 2. The rules
 
@@ -93,6 +108,16 @@ are duplicates of what was already open.
 
 ## Changelog
 
+- **0.2.0 (2026-08-30, LIAB-967)** — §1 no longer states the shape; it points at
+  [What a reported bug carries](https://linear.app/lia-creative/document/what-a-reported-bug-carries-ff781e0d6b8a), which is
+  now the one home for what a bug ticket contains. 0.1.0 had written its own handover — *"when
+  LIAB-967's bug ticket template lands, that document wins and this seat gets fixed"* — and this
+  makes it true. What replaces it is the part that is genuinely this seat's: **what the QA intake
+  fills differently** — steps to repeat as field 7, the release register as the source for
+  tool/version/platform, evidence attached, the feature epic as parent, and **priority set**, which
+  the reported intake deliberately does not do. The difference is stated rather than left implicit,
+  because two intakes that differ silently drift into contradicting each other. §2's rules,
+  §3's pile pass and the boundaries are unchanged.
 - **0.1.0 (2026-08-29, LIAB-1024)** — first version. The bench's bug shape and filing seat: symptom
   title, numbered steps-to-repeat with concrete inputs, expected against actual, evidence and the
   build's version and stage, filed as `Bug` on the feature epic so it lands in the lane that built

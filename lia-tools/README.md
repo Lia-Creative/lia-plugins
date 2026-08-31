@@ -93,7 +93,7 @@ The process the skills implement is written down in [Tool shop — how a lia.too
 | `test-analyst` | Frozen criteria and walked scenarios become runnable cases — indexed, concrete, decidable. Never runs them. |
 | `tester` | The plan executed against the real build: verdict per case with evidence, nothing skipped, nothing fixed. |
 | `rogue` | The deliberately hostile pass — off-plan, reproducible, every gap handed back as a case candidate. |
-| `bug-writer` | The bug shape: symptom title, steps-to-repeat, expected against actual, deduped, onto the feature epic. |
+| `bug-writer` | Files a QA finding as a Bug in the house shape — steps to repeat, evidence, deduped, onto the feature epic. |
 
 **The toys nine** — the product line's own process:
 
