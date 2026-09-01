@@ -2,7 +2,7 @@
 name: pickup
 slug: pickup
 description: "How anyone takes on a Linear ticket — the dispatch rule (a prompt is a pointer), the reading order (ticket, parents, blockers, context doc), what each status means, and the hand-back path for rejected work. Use when picking up or handing back a single ticket; a whole epic loads build instead."
-version: 0.11.0
+version: 0.12.0
 created: 2026-08-12
 updated: 2026-09-02
 status: active
@@ -84,6 +84,8 @@ If a ticket is assigned and in progress, it's in progress — that's what the bo
 The corollary is the price of it: **a board is only the source of truth if people move things.** So when you learn something the board doesn't know — a ticket is actually underway, a blocker cleared, work finished — **move it**. That isn't editing someone else's ticket, it's maintaining the shared instrument. The one exception stays: **never close your own work** — if you built or reviewed it, Review is the ceiling and the approver closes it.
 
 If the status looks wrong and you can't tell what's true, that's a comment on the ticket, not a question in a chat window.
+
+**The newest comment is the live instruction.** A park, a plan or a dispatch is overtaken by the comment after it — on 1 Sep 2026 one ticket carried a park-for-beta comment and a rebase hand-back eleven minutes apart, and two sessions acted on different ones (LIAB-1087). Read the comments to the end before acting. And when you take a ticket, **say so on it** — the tree you are in and the branch — because that line is the only thing the PM's collision check can find (`project-manager` §2b).
 
 
 ## 2. Check the context doc
@@ -203,6 +205,7 @@ Comment on the ticket, then move to another one. A blocked ticket said out loud 
 
 ## Changelog
 
+- **0.12.0 (2026-09-02, LIAB-1165)** — §1 gains *the newest comment is the live instruction* — a park or a plan is overtaken by the comment after it (LIAB-1087: two sessions acted on comments eleven minutes apart) — and the mirror duty: a session that takes a ticket says so on it, naming its tree and branch, so the PM's collision check has something to find (LIAB-1165).
 - **0.11.0 (2026-09-02, LIAB-1162)** — the retro entry is the After Action Report: one per session, as a comment on the dispatch ticket per `wrap-up` 2.0.0, the vault copy in `00 handover/` when mounted; retro-logs are archives. §3's table, §4's closing step and the seam table repointed; `product-retro` (now a pointer) leaves `companions:`.
 - **0.10.1 (2026-09-02, LIAB-1161)** — `lead-engineer` is `engineering-lead` — reference only: the seat's name now follows its discipline, like the other four leads. No rule changed.
 - **0.10.0 (2026-08-28, LIAB-1025)** — who lands a standalone ticket is now *the lead whose lane the work sits in*, pointing at `review-and-merge` §5.6 rather than at the orchestrator (a seat split up on 26 Aug) and a closed `LIAB-861`. **Never you** is unchanged. This skill was outside the ticket's list of seats and stated the merge rule anyway — the exact drift `LIAB-861` existed to kill.

@@ -2,7 +2,7 @@
 name: acceptance-criteria
 slug: acceptance-criteria
 description: "Review discovery and write the final goal-oriented acceptance criteria — numbered Given/When/Then frozen as the contract, [Graded at Review] for judgement calls, Delivery checks split out, 3–7 per story held loudly. Use when scenarios and design are ready and the criteria need freezing before build."
-version: 0.1.1
+version: 0.2.0
 created: 2026-08-26
 updated: 2026-09-02
 status: active
@@ -33,7 +33,7 @@ maintainer: cq
 
 1. **Read in order:** the story's narrative (the goal every criterion serves) → `scenario-builder`'s walked scenarios (the raw material) → the design artefact (which may have changed what a scenario means — reconcile, don't duplicate) → the schema map entries the story touches.
 2. **Write each behavioural criterion as one numbered Given/When/Then scenario.** Givens: all of, and no more than, the required context. When: one event. Thens: every material outcome — the state written back, the side effect, the thing everyone forgets. **Goal-oriented means the Then is the user's observable outcome**, not the mechanism — *"the chart follows the transposed key everywhere it's shown"*, never *"the store's debounced write fires"*.
-3. **Run the two probes before freezing:** the **missing Given** (could two different outcomes both be true under this context?) and the **forgotten Then** (is every material outcome verified?). One event per scenario — an "and" chaining three behaviours is three scenarios.
+3. **Run the two probes before freezing:** the **missing Given** (could two different outcomes both be true under this context?) and the **forgotten Then** (is every material outcome verified?). One event per scenario — an "and" chaining three behaviours is three scenarios. **And a flag, command form, path or setting a criterion names is verified against the binary or the disk before it is frozen** — `notarytool` has no `@env:` form (LIAB-1022), and a vault home that does not exist is not a home (LIAB-1078). A criterion that asserts a fact about a tool asserts it wrongly often enough that the builder builds to the wrong fact and review catches it last; a minute at the terminal here saves a round trip there.
 4. **Mark the judgement calls.** A criterion a test agent can't decide carries **"[Graded at Review]"** — allowed, rare, honest. Everything unmarked is machine-verifiable: quantified thresholds, explicit behaviours, testable conditions.
 5. **Split out the Delivery checks.** Process attestations, ops requirements, understanding-notes are real obligations and are **not** acceptance criteria — their own numbered list, so the AC list is purely behaviour.
 6. **Hold the size line.** 3–7 behavioural criteria per story; more means it's two stories — hand it back to `story-writer` split along user value, and *say so* rather than absorbing the bloat (the rule that sat unenforced while a bundle grew 6→9).
@@ -47,5 +47,6 @@ maintainer: cq
 
 ## Changelog
 
+- **0.2.0 (2026-09-02, LIAB-1165)** — step 3 gains the fact check: a flag, command form, path or setting a criterion names is verified against the binary or the disk before the freeze — LIAB-1022's `@env:` was not a `notarytool` form and the builder built to it; LIAB-1078 named a vault home that did not exist (LIAB-1165).
 - **0.1.1 (2026-09-02, LIAB-1161)** — `lead-engineer` is `engineering-lead` — reference only: the seat's name now follows its discipline, like the other four leads. No rule changed.
 - **0.1.0 (2026-08-26, CQ voice memos + Fable 5)** — first version. The freeze pass: scenarios → numbered G/W/T, the two probes, [Graded at Review], the Delivery-checks split, the 3–7 line held loudly.
