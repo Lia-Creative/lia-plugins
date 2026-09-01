@@ -37,6 +37,10 @@ import { fileURLToPath } from "node:url";
 
 const REPO_ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 const SKIP_DIRS = new Set([".git", "node_modules"]);
+// `.cursor/skills` (and `.agents/skills`) are a byte mirror of lia-tools/skills
+// for Cursor discovery — see scripts/sync-cursor-skills.mjs. Walking them
+// would double-count every SKILL.md without catching a second defect class.
+const SKIP_SKILL_MIRROR_DIRS = new Set([".cursor/skills", ".agents/skills"]);
 const MANIFESTS = new Set(["plugin.json", "marketplace.json"]);
 const PLUGIN_DIRS = new Set([".claude-plugin", ".cursor-plugin"]);
 
@@ -54,8 +58,10 @@ function findFiles(root) {
   const walk = (dir, inCommands) => {
     for (const entry of readdirSync(dir, { withFileTypes: true })) {
       const path = join(dir, entry.name);
+      const rel = relative(root, path);
       if (entry.isDirectory()) {
-        if (!SKIP_DIRS.has(entry.name)) walk(path, inCommands || entry.name === "commands");
+        if (SKIP_DIRS.has(entry.name) || SKIP_SKILL_MIRROR_DIRS.has(rel)) continue;
+        walk(path, inCommands || entry.name === "commands");
       } else if (entry.name === "SKILL.md") {
         skills.push(path);
       } else if (inCommands && entry.name.endsWith(".md")) {

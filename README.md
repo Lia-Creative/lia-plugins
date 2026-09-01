@@ -21,11 +21,11 @@ That's it. New tools added here later show up with a `/plugin marketplace update
 
 ## Cursor
 
-Same skills, same files — Cursor reads `lia-tools/` as a plugin instead of going through Claude Code's `/plugin`. This is not a second artifact.
+Same skills as Claude Code — Cursor discovers them as project skills under [`.cursor/skills/`](.cursor/skills/), which is a **real-file mirror** of `lia-tools/skills/` (not a symlink). Cursor's skill walker does not follow a skills-root symlink: measured on this PR's Cloud Agent verification, and reported upstream ([forum](https://forum.cursor.com/t/cursor-doesnt-follow-symlinks-to-discover-skills/149693)).
 
-**This repo.** A Cursor session that opens `lia-plugins` loads `lia-tools` from the checkout: [`.cursor/skills`](.cursor/skills) is a symlink onto `lia-tools/skills`, and `lia-tools/.cursor-plugin/plugin.json` is the Cursor plugin manifest. Cloud Agents included — they never fire `workspaceOpen`, so the symlink is the install, not a hook.
+**This repo.** Edit skills only under `lia-tools/skills/`, then run `node scripts/sync-cursor-skills.mjs` so `.cursor/skills/` stays in lockstep. CI runs `sync-cursor-skills --check`. `lia-tools/.cursor-plugin/plugin.json` is the Cursor plugin manifest for marketplace import. A fresh Cloud Agent session on this checkout is still required to prove `agent_skills` injection after the mirror lands — packaging alone is not that proof.
 
-**Other repos, and everyone on the team.** Import this repository as a Cursor team marketplace (Dashboard → Plugins → Add Marketplace → Import from Repo → `https://github.com/Lia-Creative/lia-plugins`). Cursor reads [`.cursor-plugin/marketplace.json`](.cursor-plugin/marketplace.json), which lists `lia-tools`. Mark it Required if every Cloud Agent should arrive with the roster. Auto-refresh tracks the branch the marketplace is pointed at; point it at `release` so Cursor follows the same promotion as Claude Code.
+**Other repos, and everyone on the team.** Import this repository as a Cursor team marketplace (Dashboard → Plugins → Add Marketplace → Import from Repo → `https://github.com/Lia-Creative/lia-plugins`). Cursor reads [`.cursor-plugin/marketplace.json`](.cursor-plugin/marketplace.json), which lists `lia-tools`. Mark it Required if every Cloud Agent on every repo should arrive with the roster. Auto-refresh tracks the branch the marketplace is pointed at; point it at `release` so Cursor follows the same promotion as Claude Code. That path is separate from this repo's `.cursor/skills/` mirror.
 
 `design-and-refine` is not in this tree (it is a pin on `Lia-Creative/design-plugin`). It stays a Claude Code install until that repo carries a Cursor manifest of its own.
 

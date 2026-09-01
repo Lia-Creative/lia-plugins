@@ -263,7 +263,7 @@ machine runs** — the marketplace serves `lia-tools` from the `release` ref
 (LIAB-986). The stop between a bad merge and the whole team is the promotion
 step below, and the way back out is the rollback next to it.
 
-1. Edit the skill **here**, bump the skill's `version:` frontmatter with a changelog line, and bump this plugin's version in `.claude-plugin/plugin.json`. The plugin bump is not bookkeeping: **machines only receive an update when the version field changes**, so a promotion without a bump delivers to nobody. CI fails any PR touching `lia-tools/**` without one (`scripts/check-version-bump.mjs` — the version-vs-SHA call went to keeping the explicit version, enforced, 26 Aug 2026).
+1. Edit the skill **here**, bump the skill's `version:` frontmatter with a changelog line, and bump this plugin's version in `.claude-plugin/plugin.json`. The plugin bump is not bookkeeping: **machines only receive an update when the version field changes**, so a promotion without a bump delivers to nobody. CI fails any PR touching `lia-tools/**` without one (`scripts/check-version-bump.mjs` — the version-vs-SHA call went to keeping the explicit version, enforced, 26 Aug 2026). If the change touches `skills/`, also run `node scripts/sync-cursor-skills.mjs` so the Cursor mirror under `.cursor/skills/` matches — CI fails the PR when that mirror drifts.
 2. PR, review, merge. CI runs four guards on the PR — frontmatter, roster, version-bump, and the freshness detector's self-test. The merge lands on `main` and reaches nobody yet.
 
    *(The fourth guard is the odd one out: `scripts/check-plugin-freshness.mjs` gates nothing. It answers a question an **agent** has — which copy of these skills am I holding? — by comparing the install on this machine against what `release` serves, and it reports `unchecked` (exit 2) rather than a pass when it cannot tell, because "I could not find your install" must never read as "you are fine". It needs a clone; `scripts/` sits outside the shipped plugin. What to do with each answer is in `execution-discipline` §Which copy am I holding? — [LIAB-1052](https://linear.app/lia-creative/issue/LIAB-1052).)*
@@ -333,18 +333,25 @@ a repo before retiring anything that repo's sessions currently rely on.**
 
 ### Cursor sessions
 
-Cursor is not a second publish. It loads the same `skills/` directory this
-plugin already is. Two ways, depending on which repo the session opened:
+Cursor is not a second publish. It loads the same skill *content* this plugin
+already is, via a discovery layout Cursor understands:
 
-- **This repo.** [`.cursor/skills`](../.cursor/skills) is a symlink onto
-  `lia-tools/skills`, and this directory carries a
-  [`.cursor-plugin/plugin.json`](.cursor-plugin/plugin.json). A Cloud Agent
-  that opens `lia-plugins` gets the roster from the checkout. (`workspaceOpen`
-  does not run on Cloud Agents; the symlink is the mechanism that does.)
+- **This repo.** [`.cursor/skills/`](../.cursor/skills/) is a **real-file mirror**
+  of `lia-tools/skills/` (kept in sync by
+  [`scripts/sync-cursor-skills.mjs`](../scripts/sync-cursor-skills.mjs)), plus
+  this directory's [`.cursor-plugin/plugin.json`](.cursor-plugin/plugin.json).
+  A skills-root symlink is not enough: Cursor does not inject symlinked skill
+  trees into Cloud Agent `agent_skills` (measured on PR #41; see also the
+  [upstream report](https://forum.cursor.com/t/cursor-doesnt-follow-symlinks-to-discover-skills/149693)).
+  Edit here under `skills/`, then re-run the sync script before you push.
+  `workspaceOpen` does not run on Cloud Agents; the committed mirror is what
+  those sessions can see. **Injection still needs a fresh session to re-prove**
+  after the mirror lands — do not treat packaging green as load green.
 - **Any other repo.** Import `Lia-Creative/lia-plugins` as a Cursor team
   marketplace and enable `lia-tools` — the listing is
   [`.cursor-plugin/marketplace.json`](../.cursor-plugin/marketplace.json) at
-  the repo root. Point the marketplace at `release`. Copying
+  the repo root. Point the marketplace at `release`. Mark it Required if every
+  Cloud Agent on every repo should arrive with the roster. Copying
   `.claude/settings.json` does nothing for Cursor.
 
 The copy that ships is still this directory on `release`. Edit a skill here.

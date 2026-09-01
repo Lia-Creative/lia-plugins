@@ -1,4 +1,4 @@
 {
   "name": "lia-plugins",
-  "install": "node --version && node scripts/check-skill-frontmatter.mjs --self-test && node scripts/check-version-bump.mjs --self-test && node scripts/check-skill-roster.mjs --self-test && node scripts/check-plugin-freshness.mjs --self-test"
+  "install": "node --version && node scripts/check-skill-frontmatter.mjs --self-test && node scripts/check-version-bump.mjs --self-test && node scripts/check-skill-roster.mjs --self-test && node scripts/check-plugin-freshness.mjs --self-test && node scripts/sync-cursor-skills.mjs --self-test && node scripts/sync-cursor-skills.mjs --check"
 }

@@ -56,12 +56,17 @@
 //   node scripts/check-skill-roster.mjs --self-test  # prove it goes red
 
 import { readFileSync, readdirSync, existsSync, mkdtempSync, mkdirSync, writeFileSync, rmSync } from "node:fs";
-import { join, relative, dirname } from "node:path";
+import { join, relative, dirname, basename } from "node:path";
 import { tmpdir } from "node:os";
 import { fileURLToPath } from "node:url";
 
 const REPO_ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 const SKIP_DIRS = new Set([".git", "node_modules"]);
+// Cursor / Agents skill roots are a discovery mirror of lia-tools/skills, not
+// a second Claude Code plugin. Counting them here would demand a phantom
+// plugin README under `.cursor/` and double the roster. Sync ownership lives
+// in scripts/sync-cursor-skills.mjs.
+const SKIP_SKILLS_PARENTS = new Set([".cursor", ".agents"]);
 
 // Every `skills/` directory in the tree. Written as a walk rather than a
 // hardcoded `lia-tools/skills` because the marketplace holds more than one
@@ -72,8 +77,9 @@ function findSkillsDirs(root) {
     for (const entry of readdirSync(dir, { withFileTypes: true })) {
       if (!entry.isDirectory() || entry.name.startsWith(".") || SKIP_DIRS.has(entry.name)) continue;
       const path = join(dir, entry.name);
-      if (entry.name === "skills") found.push(path);
-      else walk(path);
+      if (entry.name === "skills") {
+        if (!SKIP_SKILLS_PARENTS.has(basename(dir))) found.push(path);
+      } else walk(path);
     }
   };
   walk(root);

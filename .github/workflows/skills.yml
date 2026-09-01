@@ -69,6 +69,19 @@ jobs:
       - run: node scripts/check-skill-roster.mjs --self-test
       - run: node scripts/check-skill-roster.mjs
 
+  # Cursor discovers `.cursor/skills/<name>/SKILL.md` and does not follow a
+  # skills-root symlink (measured on PR #41). The mirror must stay byte-equal
+  # to lia-tools/skills, which remains the only edit surface.
+  cursor-skills-mirror:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - run: node scripts/sync-cursor-skills.mjs --self-test
+      - run: node scripts/sync-cursor-skills.mjs --check
+
   freshness:
     # LIAB-1052: an agent cannot tell which version of a skill it is holding.
     # The real check runs on a machine with an install; here we prove the
