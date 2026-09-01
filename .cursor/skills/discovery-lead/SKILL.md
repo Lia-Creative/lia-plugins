@@ -2,7 +2,7 @@
 name: discovery-lead
 slug: discovery-lead
 description: "The discovery bench's own lead — holds the thread from problem to ready story, never writes; routes across problem-definition, insight-extraction, jtbd, feature-definition, scenario-builder, epic-builder, story-writer, task-writer, schema-manager and synthetic-users, and requests ready-review as the exit gate. Use when taking ownership of a discovery stage or deciding which discovery skill a moment needs."
-version: 0.4.1
+version: 0.5.0
 created: 2026-08-27
 updated: 2026-09-02
 status: active
@@ -26,6 +26,7 @@ companions:
   - ready-review
   - research-lead
   - project-manager
+  - plugin-manager
   - execution-discipline
 maintainer: cq
 ---
@@ -48,6 +49,7 @@ maintainer: cq
 | Named work that isn't a story | `task-writer` |
 | Entities and variables need mapping centrally | `schema-manager` |
 | The epic and stories are written and believe themselves ready | `ready-review` — the exit gate, spawned into a fresh context (rule 4) |
+| A seat's After Action Report proposes a skill or template change | This lead raises the improvement PR to the skill or its templates; `plugin-manager` lands it (`wrap-up` §1.5) |
 
 **Why it exists.** CQ, 26 Aug 2026: *"effectively the same model we have for engineering but the other roles."* The writer seats existed; nobody owned the stage. Work went to the gate piecemeal, and the thread from problem to story was every seat's job, which made it no seat's job.
 
@@ -79,6 +81,7 @@ Rule 2 above has one edge worth naming, because two seats on this bench produce 
 
 ## Changelog
 
+- **0.5.0 (2026-09-02, LIAB-1163)** — the improvement loop reaches this lead: a seat's After Action Report ends with `Skill change proposed:` (`wrap-up` §1.5), and the row here says this lead raises that PR and `plugin-manager` lands it. CQ, 2 Sep 2026: *"make sure the sub agents are suggesting changes to the leads across all of the agents"* — measured, only `research-lead` and `testing-lead` carried the row. `plugin-manager` joins `companions:`.
 - **0.4.1 (2026-09-02, LIAB-1161)** — `lead-engineer` is `engineering-lead` — reference only: the seat's name now follows its discipline, like the other four leads. No rule changed.
 - **0.4.0 (2026-08-29, LIAB-1023)** — the research bench becomes routable: a question this bench cannot answer from what it holds is commissioned through `research-lead` rather than answered thinly inside a writer seat. The evidence rule gains its third edge — a merged corpus entry is citable, a `research-insights` story is ranked interpretation, so epics cite the corpus finding and never promote a `DEVELOPING` one to firm on the way in. *(Landed on top of 0.3.1 in the rebase of PR #35; rule 4's "fire it, don't sit in it" wording is untouched.)*
 - **0.3.1 (2026-08-29, LIAB-1044)** — rule 4 said *"the gate is not yours to run"*, which was true about the context and false about the seat, and the two readings had already been confused in practice. It now reads **fire it, don't sit in it**: freshness is a context boundary, satisfied by spawning a subagent, so this lead runs `ready-review` itself by spawning it rather than routing a founder a command — and, symmetrically, the gate is not this bench's property, so another lead may spawn it too. Rules 8 and the two pointer lines follow the same wording change. No authority added or removed: a context that wrote the tickets still never grades them.

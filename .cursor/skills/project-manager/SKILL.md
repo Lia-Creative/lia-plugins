@@ -2,7 +2,7 @@
 name: project-manager
 slug: project-manager
 description: "Run tickets front to end — passing work between the stage leads so tickets move discovery to design to build to review to QA on gate verdicts, spawning each seat itself rather than handing a person a command, checking nobody already holds a ticket, statuses kept true, traffic-light updates written for a person. Use when running the board, handing out work, moving a ticket between stages, or writing a milestone update."
-version: 0.7.2
+version: 0.8.0
 created: 2026-08-26
 updated: 2026-09-02
 status: active
@@ -124,6 +124,7 @@ The pipeline is discovery → design → build → review → QA, each stage own
 - **A parent never sits ahead of an open child. A merged ticket doesn't sit in Todo.** When the board and the code disagree, the code wins and the board gets corrected — immediately, backwards if that's what's true.
 - **`human:chris` goes on the moment work stops for him**, not at the next groom.
 - **A founder-set status the PM disagrees with gets asked about once**, never moved unilaterally.
+- **A `Skill change proposed:` line in any AAR is a ticket, not a note.** Every seat's After Action Report ends with one (`wrap-up` §1.5). The PM checks the seat's lead has filed it and raised the PR — or files the ticket and routes it to that lead — and `plugin-manager` lands it. A proposal that stays a line in a comment is how the same friction gets reported four times.
 
 ## 5. The updates — written for a person
 
@@ -143,6 +144,7 @@ Traffic-light, on every check-in and whenever asked:
 
 ## Changelog
 
+- **0.8.0 (2026-09-02, LIAB-1163)** — the improvement loop reaches this lead: a seat's After Action Report ends with `Skill change proposed:` (`wrap-up` §1.5), and the row here says this lead raises that PR and `plugin-manager` lands it. CQ, 2 Sep 2026: *"make sure the sub agents are suggesting changes to the leads across all of the agents"* — measured, only `research-lead` and `testing-lead` carried the row. For this seat, which has no Moment table, the duty lands in §4's standing sweep: a proposal is a ticket routed to the seat's lead.
 - **0.7.2 (2026-09-02, LIAB-1162)** — the run's close-out is the After Action Report on the dispatch ticket (`wrap-up` 2.0.0) — reference only.
 - **0.7.1 (2026-09-02, LIAB-1161)** — `lead-engineer` is `engineering-lead` — reference only: the seat's name now follows its discipline, like the other four leads. No rule changed.
 - **0.7.0 (2026-08-29, LIAB-1053)** — 0.6.0's third bullet **contradicted the rule it sits under**, caught in review and reproduced with a probe: *"dispatch the replacement into a fresh worktree, or do not dispatch it"* reads as permission to proceed in exactly the unprovable case bullet 1 and the parent §2b forbid, and a session tested against it took that reading. A fresh tree answers the tree collision and not the one this section exists for — two sessions, two branches, two PRs. The bullet is now scoped to the tree: **cannot establish the first is gone means it does not dispatch**, and a warranted replacement never inherits the first agent's tree. `lead-engineer` §The chain cites §2b as its authority for *"quiet is not dead"*, so the pointer now lands somewhere that agrees with it.
