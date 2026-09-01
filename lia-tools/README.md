@@ -57,11 +57,11 @@ The process the skills implement is written down in [Tool shop — how a lia.too
 |---|---|
 | `plugin-manager` | `lia-plugins` run like a product: skill-change review, the merges, promotion and rollback, roster hygiene. |
 
-**The lead engineer's bench**
+**The engineering lead's bench**
 
 | Skill | The seat |
 |---|---|
-| `lead-engineer` | The seat itself — the standing rules, the six-beat chain it fires without returning between beats, and the routing across this bench. |
+| `engineering-lead` | The seat itself — the standing rules, the six-beat chain it fires without returning between beats, and the routing across this bench. |
 | `architecture` | Docs follow code, patterns stay singular, standards hold, and a standard everything inherits is filed as the line's. |
 | `acceptance-criteria` | The freeze pass: scenarios → the final numbered Given/When/Then + Delivery checks. |
 | `build-prep` | How to build it — real paths, patterns, traps, resolvable paths — under the criteria. |
@@ -134,7 +134,7 @@ The process the skills implement is written down in [Tool shop — how a lia.too
 | `decision-check` | The slow-brain pass on one call — the incentive named, the hidden trade surfaced, reversibility tested. |
 | `execution-discipline` | Load first, every run — ground truth, stop conditions, done-means-evidence. |
 
-*(`orchestrate` remains as a pointer — the seat split into `project-manager` + `lead-engineer` on 26 Aug 2026.)*
+*(Two pointers remain: `orchestrate` — the seat split into `project-manager` + `engineering-lead` on 26 Aug 2026 — and `lead-engineer`, the engineering lead's name until 2 Sep 2026 (LIAB-1161), kept for one release so older tickets and handovers still resolve.)*
 
 ## What doesn't belong here
 

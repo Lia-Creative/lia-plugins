@@ -2,9 +2,9 @@
 name: ticket-review
 slug: ticket-review
 description: "The pre-dispatch pickability check — one question, quickly: could an agent start from this ticket alone, without asking anything? Context, resolvable paths, vault-dependence. Use just before dispatching a ticket to a builder. (Reassigned 26 Aug 2026 — built-work review is review-and-merge.)"
-version: 0.3.1
+version: 0.3.2
 created: 2026-08-13
-updated: 2026-08-29
+updated: 2026-09-02
 status: active
 triggers:
   - "/ticket-review"
@@ -21,9 +21,9 @@ maintainer: cq
 
 # Ticket review — could an agent start from this, without asking anything?
 
-> [!important] **This name was reassigned on 26 Aug 2026** (CQ's lead-engineer bench; decisions register). Until then, `ticket-review` meant verifying **built work** sitting in Review — that discipline moved whole, unchanged, into **`review-and-merge`**. If you were sent here to "review LIAB-XXX" meaning *check the finished work*, load `review-and-merge`. This skill is the **pre-dispatch check**.
+> [!important] **This name was reassigned on 26 Aug 2026** (CQ's engineering-lead bench; decisions register). Until then, `ticket-review` meant verifying **built work** sitting in Review — that discipline moved whole, unchanged, into **`review-and-merge`**. If you were sent here to "review LIAB-XXX" meaning *check the finished work*, load `review-and-merge`. This skill is the **pre-dispatch check**.
 
-**What this is.** The lead engineer's quick last look before a ticket is dispatched: one question — **could an agent start from this ticket alone, without asking anything?** Minutes, not an hour. It is the dev-ready gate's one question, applied at the moment of dispatch, after `acceptance-criteria` and `build-prep` have done their work.
+**What this is.** The engineering lead's quick last look before a ticket is dispatched: one question — **could an agent start from this ticket alone, without asking anything?** Minutes, not an hour. It is the dev-ready gate's one question, applied at the moment of dispatch, after `acceptance-criteria` and `build-prep` have done their work.
 
 ---
 
@@ -49,6 +49,7 @@ Read the ticket cold, pretending you hold only Linear and this plugin. Then:
 
 ## Changelog
 
+- **0.3.2 (2026-09-02, LIAB-1161)** — `lead-engineer` is `engineering-lead` — reference only: the seat's name now follows its discipline, like the other four leads. No rule changed.
 - **0.3.1 (2026-08-29, LIAB-1044)** — LIAB-1044's delivery check 3 expects the freshness wording fixed in every skill carrying it and names this one; **it carried none** — the reassignment took the built-work discipline to `review-and-merge` and the freshness rule went with it. Rather than record that as a no-op, the rule is stated for the case where it does bite here: a session running this check on prep notes or criteria **it wrote itself** spawns a subagent to run it, handing down ticket ids and the questions only. Same wording as `review-and-merge` §1 and `ready-review` §0.1.
 - **0.3.0 (2026-08-26, CQ voice memos + Fable 5)** — **the reassignment.** This name now means the lead engineer's pre-dispatch pickability check; the built-work verification discipline (0.1.0–0.2.1's content) moved verbatim into `review-and-merge`, where its changelog continues. Recorded in the decisions register with reasons.
 - **0.2.1 (2026-08-21, CQ + Cowork)** — *(as built-work review)* §5 no longer says the founder merges; the orchestrator merges per CQ's 21 Aug call.

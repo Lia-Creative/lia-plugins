@@ -2,9 +2,9 @@
 name: polish
 slug: polish
 description: "Hold the built interface to the design spec (the HTML artefact, which wins over prose) in design-system terms — and where Toys DS can't yet express the spec, name the acceptable gap and leave the note, never silently approximate. Use before calling any story with a design spec done."
-version: 0.1.1
+version: 0.1.2
 created: 2026-08-26
-updated: 2026-08-28
+updated: 2026-09-02
 status: active
 triggers:
   - "/polish"
@@ -39,7 +39,7 @@ Where the spec shows something the DS can't yet express:
 1. **Decide it's genuinely a gap** — not a token you missed. Search the DS first; the commonest "gap" is an unfamiliar token.
 2. **Build the nearest system-true expression** — the closest existing token/component, *not* a hand-rolled approximation of the spec. A one-off `#hex` "just for now" is exactly how a design system dies.
 3. **Leave the note, twice:** a short comment in code only if a constraint needs stating; and **the gap on the ticket** — what the spec shows, what was built instead, which token/component is missing. Gaps route by owner: **Toys DS gaps → Chris** (he draws Toys DS); **`@lia/design-system` gaps → Dan** (`design-system` label). Never fork or patch either system in the repo.
-4. **The gap list rides the story's Review** — the lead engineer sees conformance *and* the named gaps in one place; "matches except these three named gaps, tickets left" is a pass; "roughly matches" is not.
+4. **The gap list rides the story's Review** — the engineering lead sees conformance *and* the named gaps in one place; "matches except these three named gaps, tickets left" is a pass; "roughly matches" is not.
 
 ## What this seat is not
 
@@ -49,5 +49,6 @@ Where the spec shows something the DS can't yet express:
 
 ## Changelog
 
+- **0.1.2 (2026-09-02, LIAB-1161)** — `lead-engineer` is `engineering-lead` — reference only: the seat's name now follows its discipline, like the other four leads. No rule changed.
 - **0.1.1 (2026-08-28, LIAB-1004)** — names `ux-writing` back. That seat lists this one as a companion; the link was one-way, which is the finding L2 from the LIAB-1000 review. The two halves of the same gate: this holds the screen to the spec, `ux-writing` writes what it says.
 - **0.1.0 (2026-08-26, CQ voice memos + Fable 5)** — first version. The conformance walk, system-terms rule, and the named-gap discipline with owner routing (Toys DS → Chris, DS → Dan).
