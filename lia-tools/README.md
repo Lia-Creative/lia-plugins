@@ -283,6 +283,8 @@ step below, and the way back out is the rollback next to it.
    ```
 
    The downgrade delivers for the same reason the upgrade does: the served version changes. `release` is the one ref where a force-push is legitimate, and promotion history is the record of what was live when.
+
+   **`release` is left unprotected on purpose** ([LIAB-994](https://linear.app/lia-creative/issue/LIAB-994), CQ, 1 Sep 2026). Rollback is a `--force-with-lease` of this ref, so classic "no force pushes" protection would break the mechanism. Anyone with push access can move it — that is also what makes rollback one command. `main` is the opposite: a ruleset requires a pull request, and blocks force-pushes and deletions.
 5. **Prove it.** Open a fresh session and invoke a changed skill — don't just read it. `claude --plugin-dir <path-to-lia-tools> -p` verifies a branch before merge; a real install after promotion verifies the release.
 
 ### The one gap worth knowing about
