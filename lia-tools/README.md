@@ -82,8 +82,8 @@ The process the skills implement is written down in [Tool shop — how a lia.too
 | `build` | The builder's seat: plan mode first, batching, progress, self-check, one PR, the loop. |
 | `polish` | The interface held to the design spec; Toys DS gaps named and routed, never fudged. |
 | `pickup` | The front door for single tickets, and the hand-back path. |
-| `wrap-up` | Landing a session: handover, retro, housekeeping. |
-| `product-retro` | The mandatory per-session entry `wrap-up` and `pickup` both call. |
+| `wrap-up` | Landing a session: one After Action Report on the ticket — intended, actual, the gap, sustain, improve with owners — and the pickup that reads it. |
+| `product-retro` | Superseded pointer (2 Sep 2026) — the mandatory per-session entry is `wrap-up`'s After Action Report. |
 
 **The QA bench** — the stage between a merge and a person:
 

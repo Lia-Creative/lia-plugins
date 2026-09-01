@@ -13,9 +13,9 @@ description: >-
   feedback, bugs, feature feedback, process feedback. Toys mentioned
   generally files at the line level; a specific toy files into that toy's
   folder.
-version: 0.4.0
+version: 0.5.0
 created: 2026-08-16
-updated: 2026-08-30
+updated: 2026-09-02
 status: active
 maintainer: cq
 author: cq
@@ -113,7 +113,7 @@ Substantial scenario-mapping content additionally becomes (or updates) a doc in 
 1. Row in `_meta/internal-videos.md` §Log.
 2. `_meta/index.md` — the meeting note + each feedback summary.
 3. `_meta/log.md` — one `ingest` entry, **appended at the bottom of the file** (corrected 2026-08-19, Dan-directed; was "newest-at-top" — top-inserting rewrites the whole file and loses whatever a concurrent session added since it loaded): what landed where, tickets created by ID, what was proposed.
-4. Retro entry in the `00 handover/retro-log.md` of each toy that got a feedback summary (`### YYYY-MM-DD · feedback round · <video url>`). Shell feedback → toy box's log.
+4. The session's After Action Report per `wrap-up` — on the ticket the ingest was dispatched at (or the toy's epic), its orientation line naming the video and each feedback summary written; the vault copy in that toy's `00 handover/` when mounted. Shell feedback → the toolbox's.
 
 ## Step 8 — Report back
 
@@ -128,6 +128,7 @@ Short: the meeting note path, the summaries written, tickets created (IDs), the 
 
 ## Changelog
 
+- **0.5.0 (2026-09-02, LIAB-1162)** — the retro entry is the After Action Report: one per session, as a comment on the dispatch ticket per `wrap-up` 2.0.0, the vault copy in `00 handover/` when mounted; retro-logs are archives.
 - **0.4.0 (2026-08-30, LIAB-967)** — Step 6 points at
   [What a reported bug carries](https://linear.app/lia-creative/document/what-a-reported-bug-carries-ff781e0d6b8a) for what a bug
   ticket contains, instead of describing it here, and names this skill's **walkthrough** intake and

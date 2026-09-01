@@ -1,153 +1,126 @@
 ---
 name: wrap-up
 slug: wrap-up
-description: "Land a working session — finish or deliberately park loose ends, write the pick-up-here handover (one ACTIVE per thread), append the retro, do the housekeeping; the pickup side reads the ACTIVE handover before any work resumes. Use at end of day, on 'wrap up', or when closing out a session with work carrying forward."
-version: 1.3.0
+description: "Close a working session with one After Action Report on the ticket it worked — intended against actual, the gap and why, what to sustain, what to improve with an owner per action, the watch-outs and the trail; the vault copy, when mounted, supersedes the thread's previous report so pickup reads exactly one. Use at the end of any session, on 'wrap up', 'AAR' or 'after action report', or when closing out work that carries forward."
+version: 2.0.0
 created: 2026-07-25
-updated: 2026-08-28
+updated: 2026-09-02
 status: active
 triggers:
   - "/wrap-up"
   - "wrap up"
   - "wrap it up"
+  - "after action report"
+  - "write the AAR"
   - "finish up for the day"
   - "that's a wrap"
   - "done for today"
   - "close out the session"
   - "handover"
-  - "write the handover"
   - "pick up [project]"
   - "where did we leave off"
   - "what's the latest on [project]"
   - "continue the work on [project]"
 companions:
-  - product-retro
   - execution-discipline
+  - pickup
+  - toy-pickup
+  - project-manager
+  - plugin-manager
   - ticket-builder
-  - prototype-feedback-loop
 maintainer: cq
 ---
 
-# Wrap up — finish the day properly, and the first read of the next one
+# Wrap up — the After Action Report, one artefact at the full stop
 
-**What this is.** One consistent way to wrap up the work and finish for the day — and to pick it back up — decided by CQ 2026-07-25 (via widget; renamed from `handover` to `wrap-up` the same day: **the ritual is the wrap-up, the doc it writes is still a handover**). `/wrap-up` is the close-out command: it lands the session — quick loose ends finished, half-done work parked deliberately — then writes the pick-up-here handover doc, appends the product retro entry, and does the housekeeping. One command, full stop on the day, nothing lingering. The pickup side is the mirror rule: **before non-trivial work on a product or area, read its active handover first.** Together they mean no session starts from memory and no session ends without a trail.
+**What this is.** Every session ends by writing one **After Action Report (AAR)** as a comment on the ticket it was dispatched at, and — when the vault is mounted — the same text as a dated file in the scope's `00 handover/`, superseding the thread's previous report. The AAR answers the four questions the format has answered since the US Army wrote it down: *what was intended · what actually happened · why they differed · what to sustain and what to improve*, with every improvement carried as an action with an owner. The pickup side is the mirror: **before resuming a thread, read its latest AAR first.** Nothing starts from memory and nothing ends without a record.
 
-**Why it exists.** By July 2026 the vault held 25+ handover docs in four naming patterns (`handover-<date>-<slug>`, `session-handover-<date>`, `<slug>-handover-<date>`, bare `HANDOVER.md`), scattered across product roots, Context folders, `_meta/ops/`, and an Inbox pile that had to be swept to `_archive/2026-06-21-inbox-handovers/`. Several were marked "ACTIVE PICKUP POINT" and then went stale because nothing ever superseded them. The format that worked — orientation line, decisions with their why, open questions marked as open, next steps in order, watch-outs — emerged organically in File Runner's 2026-07-13 handover. This skill codifies that shape and kills the drift.
+**Why it changed — CQ, 2 Sep 2026: *"i want to turn wrap up into after action reports."*** Measured that day across 27 tickets and four days of agent work (LIAB-1162): the close-out came in five shapes — a four-field retro, an embedded handover, prose paragraphs, a builder's own field names, or nothing at all on eight tickets; seats signed as model names; vault handovers went stale within hours (*"Yesterday's handover said next was design-lead. That already ran"*); the template this skill cited was never shipped in the plugin; and one `/wrap-up` died on `resource_exhausted` under the weight of index rows, log entries, a supersede sweep, a retro append and a handover write. The 1.x design carried two artefacts — a handover for *where to pick up* and a retro entry for *what it taught* — and the two drifted apart because they were written separately. One artefact answers both, and the ticket is where the next reader looks.
+
+**Why the AAR fits this shop exactly.** A session here is dispatched at a ticket with numbered criteria and a posted plan, so *intended* is already written down before the work starts — the first question costs nothing, and the gap is measurable by criterion index. Retrospectives run on a cadence and review habits; post-mortems review failures; the AAR is per event, blameless (the system is under review, never the operator), written soon after, specific (what failed, when, with what consequence), and records what worked as carefully as what did not. Sources: [AlertMedia](https://www.alertmedia.com/blog/after-action-report/) · [Asana](https://asana.com/resources/after-action-review-template) · [LogRocket](https://blog.logrocket.com/product-management/after-action-review-aar/) · [Wikipedia](https://en.wikipedia.org/wiki/After-action_review).
 
 ---
 
-## The rules at a glance
+## 1. The rules at a glance
 
-1. **Location:** every work home gets one `handovers/` subfolder, sitting **next to that home's retro-log**.
-2. **Naming:** `handover-YYYY-MM-DD-<thread-slug>.md` — lowercase-with-hyphens, date = day written, slug names the thread of work. (The doc keeps the handover name — it's written for the next agent; `wrap-up` names the ritual that produces it.)
-3. **One dated doc per close-out** — never one growing file. The retro-log is the growing chronicle; a handover is a snapshot of *current state*, and old state is noise there.
-4. **Status vocabulary: `active` · `superseded` · `complete` (`complete` added 2026-08-19, Dan's call).** `active` = the pickup point for its thread. `superseded` = replaced by a named successor, and it **must** carry `superseded_by:`. **`complete` = the thread finished rather than being replaced** — the work is done and nothing succeeds it, so there is no `superseded_by:` to give. Before `complete` existed, a finished thread had no honest value and got left `active`, which advertised dead work as a live pickup point; the 2026-08-19 sweep found ~50 files in that state. **Never mark something `superseded` without a successor just to get it out of `active` — that is what `complete` is for.** Preserve any prose the old status carried in `state_note:`.
-5. **One ACTIVE handover per thread.** The `thread:` frontmatter field is the match key. A new handover flips the previous one on its thread to `status: superseded` with a pointer forward, so pickup always reads exactly one doc per thread.
-6. **Same day, same thread: extend** the existing handover instead of opening a second file — bump `updated:`, rewrite the orientation line.
+1. **One AAR per session, on the dispatch ticket.** A comment, in the template's shape — `templates/aar-template.md` in this skill, headings verbatim. Linear is the record (LIAB-820; the register). A session that touched two genuinely separate threads writes one per thread.
+2. **Every seat writes one.** Builder, reviewer, gate, lead, PM, writer — the rule that used to be `product-retro`'s is this skill's now, and it has no judgement call: *when in doubt, write it*. A routine session's AAR is six lines with honest "none"s. **Padding is the failure, not brevity.**
+3. **Signed by seat and dispatch id, never a model name.** *`engineering-lead` · dispatch `f875e891`*, not *GPT-5.6 Sol* or *cq-cursor-agent*. The seat is what the next reader routes on.
+4. **The gap is systemic, never personal.** The cause is the ticket, the skill, the environment or the sequencing. A report that blames a session has stopped learning.
+5. **Every improvement has an owner and a home.** A ticket id · a skill or template change proposed to a named lead · a founder call. An improvement with neither is a wish. The report always ends its actions with `Skill change proposed: [skill — one line | none]` — that line is how the plugin improves (LIAB-1163).
+6. **Versions and freshness are stated once, here.** Held skill versions from changelog tops, and whether freshness was checked — in **Watch-outs**, not on every comment of the session (`execution-discipline` §Which copy am I holding?).
+7. **Decisions go to the [Decisions register](https://linear.app/lia-creative/document/decisions-register-lia-toys-34348df61a5f), never into the AAR.** A decision has one home and it is not a session's own account (LIAB-862). The Trail points at the entry.
+8. **The vault copy, when mounted:** the same text saved as `00 handover/aar-YYYY-MM-DD-[thread].md` with the template's frontmatter; **one ACTIVE per thread** — the previous ACTIVE on the thread flips to `superseded` with `superseded_by:`. No separate `handover-*.md` and no `retro-log.md` append: both are archives as of 2 Sep 2026. Same day, same thread: extend the file.
 
-### Where the `handovers/` folder lives
+## 2. CLOSE — running `/wrap-up`
+
+Unattended runs load `execution-discipline` first, per its own rule; an interactive founder-driven close does not need to.
+
+1. **Land the session.** Finish any loose end that takes a few minutes; park everything bigger deliberately in the report. Leave no surface broken — nothing mid-edit, nothing half-saved. **List your worktrees** (`git worktree list`) — every tree this session made goes in Watch-outs with its branch and state, or gets removed now if its PR is merged or closed.
+2. **Write the AAR from the template**, section by section:
+   - **Orientation** — write it last. Where things stand + the next session's first unblocked action.
+   - **Intended** — the ticket ids, the criteria by index, the plan comment. Copy, don't paraphrase.
+   - **Actual** — PR and head, statuses as they stand now (read the board, don't recall it), what was verified and at what tier (*ran it · read the code path · read a report*), what was not.
+   - **The gap, and why** — per criterion where actual differs. Systemic cause only. "None" is a real answer.
+   - **Sustain** — the gate that caught something, the check watched going red, the rule that saved an hour. This is where the good news stops being lost.
+   - **Improve → actions** — one line each, owner and home. The `Skill change proposed:` line is addressed to the lead of the seat you sat in: discovery seats → `discovery-lead`, design seats → `design-lead`, engineering and build seats → `engineering-lead`, research seats → `research-lead`, QA seats → `testing-lead`, board and process → `project-manager`, the plugin itself → `plugin-manager`.
+   - **Watch-outs** — worktrees left, stale SHAs, blocked writes and what was posted on whose behalf, transcribed founder answers, versions held, freshness once.
+   - **Trail** — links, not prose: PRs, comment ids, artefact paths, register entries.
+3. **Post it on the dispatch ticket.** If the seat cannot write to Linear, hand the verbatim text to the parent session to post *on behalf*, attributed to the seat and its dispatch id (`ready-review` §on-behalf).
+4. **The vault copy, if mounted.** Resolve the scope's folder (§4), save `aar-YYYY-MM-DD-[thread].md` with the frontmatter, then the **supersede sweep**: any still-`active` `aar-*.md` **or legacy `handover-*.md`** on the same `thread:` flips to `status: superseded`, gains `superseded_by: <this filename>`, and a banner under its H1: `> Superseded by [[<this file>]] — read that instead.` The new file records `supersedes:`. Nothing else in the vault is touched by this ritual.
+5. **Board truth.** Statuses reflect reality — the newest comment on a ticket is the live instruction, so say plainly if an earlier one is overtaken. Never Done for your own work (Review is the ceiling; `pickup` §3.5). Linear unreachable → the AAR is the file, and the next pickup posts it.
+6. **Close out loud.** One line to the founder: the ticket, the next action, the open-thread count. That is the full stop.
+
+## 3. PICKUP — before working on anything
+
+1. **Trigger:** about to do non-trivial work on a product or thread, or the founder says *pick up X*, *continue X*, *where did we leave off*.
+2. **Read the latest AAR on the ticket first** — the newest comment is the live instruction; an older AAR, plan or park is overtaken by it. Then, with the vault mounted, the ACTIVE `aar-*.md` in the scope's `00 handover/` (follow `superseded_by` pointers to the newest). A legacy `handover-*.md` that no AAR has superseded is still a valid pickup point and is read the same way. `retro-log.md` files are archives — read for history, never for the next step.
+3. **Verify before acting.** Ticket ids, statuses, paths and SHAs drift between sessions; the AAR's Watch-outs say which. Read the tickets its Trail names; existence-check the rest. Board unreachable → proceed with stated caveats and verify before any ticket write.
+4. **Open out loud:** *"Picking up from the AAR on LIAB-xxx (date) — next step is …"*, then the caveats and verification results in the same reply. Surface the report's open questions as still open — pickup is exactly where an open question gets mistaken for a decision.
+5. **Drift repair.** Two ACTIVE reports on one thread means a past close-out missed the sweep: the newer wins, flip the other, say so in your own AAR.
+
+## 4. Where the vault copy lives
 
 | Work home | Folder |
 |---|---|
+| Anything under `Products/Lia Tools/` — the line, the toolbox, a tool | that scope's `00 handover/` |
 | Standard-shape product (`Context/Outputs/Resources`) | `Products/<Product>/Context/handovers/` |
-| Shape-deviant product (retro-log at root, e.g. Musician OS) | `Products/<Product>/handovers/` |
+| Shape-deviant product (loose docs at root) | `Products/<Product>/handovers/` |
 | An Operations initiative | `Operations/<Area>/handovers/` |
 | Company strategy work | `Company/Strategy/handovers/` |
-| A vault skill or pipeline | `_meta/skills/<skill-slug>/handovers/` |
 | Vault infra / cross-cutting ops | `_meta/ops/handovers/` |
 
-Rule of thumb: the folder you'd file the work's *outputs* in gets the subfolder. One subfolder per work home — never a central vault-wide pile, and a handover's final home is never an Inbox.
+The folder names outside Lia Tools keep their `handovers/` name — the files inside are `aar-*.md` from 2 Sep 2026. Torn between two homes? The folder you would file the work's outputs in. Still unsure? Ask, with two candidates and a recommendation; don't guess.
 
----
+## 5. Guardrails
 
-## Offering it (decided 2026-07-25)
+- **Sensitivity.** The vault is a shared surface. No personal Tier-3+ material, no Endava client content, no secret values — in an AAR, ever. A credential that reached a transcript is a Bug ticket, not a Watch-out line.
+- **Propose-first zones.** Founder-driven sessions write `Company/` and `Operations/Processes/` folders directly; unattended runs stage to their queues or `Inbox/`.
+- **Not a doc dump.** Durable knowledge goes to a Wiki page or the canonical doc and is linked from the Trail.
 
-When the founder signals wrap-up ("that's a wrap", "done for today") and meaningful state carries forward — a decision in flight, an open thread, a next step — offer `/wrap-up` **once**, in one line. Don't run it unbidden, don't nag. If declined, the retro entry still happens. A session where nothing carries forward (trivial lookups, pure Q&A) doesn't need one.
+## What this seat is not
 
-## CLOSE — running `/wrap-up`
+- **Not the decisions register.** Decisions have one home (LIAB-862); the AAR links to it.
+- **Not a status report.** Statuses live on the board (`project-manager` §4); the AAR reads them, it does not replace them.
+- **Not optional because the session was small.** Small sessions are cheap to report, and the reports are what make a pattern visible across ten of them — which is how LIAB-1162's fourteen patterns were found.
+- **Not a handover plus a retro.** That was 1.x. Two artefacts written separately drift; one answers both questions.
 
-Run this when the founder invokes `/wrap-up` or asks to wrap the session / finish for the day. Unattended runs (scheduled tasks, pipelines) load `execution-discipline` first, per its own rule; an interactive founder-driven close doesn't need it.
+## Legacy — the 1.x handovers and retro-logs
 
-1. **Land the session.** Name the thread(s) this session actually ran — usually one. Finish any loose end that takes a few minutes (a half-saved file, an unsent deliverable, a comment half-written); everything bigger gets parked *deliberately* in the handover rather than left dangling. Leave no surface broken — vault consistent, files saved, nothing mid-edit. A session that touched two genuinely separate homes writes one handover per home.
-2. **Resolve the home** from the table above. Torn between two homes? Pick where the work's outputs live. Still unsure? Ask the founder — short widget where the surface supports it, plain question otherwise, with 2–3 candidates and your recommendation. Don't guess.
-3. **Draft from the template** (`templates/handover-template.md`). Hold the bar the File Runner 2026-07-13 doc set:
-   - The orientation line carries the whole doc: where things stand + the next session's job. Write it last.
-   - **Decisions carry their why.** A call without its reason gets re-litigated next session. If a call's why never got captured, write "rationale not captured in-session" — never invent one.
-   - **The trail is links, not prose** — file paths, ticket IDs, URLs (ticket-builder ethos).
-   - **Open threads run in dependency order** — item 1 is the first unblocked action; name the gate on anything blocked. Open questions are marked **"not decided — don't treat as settled."**
-   - **Watch-outs are the gift to the next agent** — drifted ticket IDs, sync races, superseded framings, auth quirks. If this session got bitten, say where. An item lives once: actionable → open thread, hazard → watch-out (the retro's Friction field may echo it — different audience, that's fine).
-   - Reads in ~2 minutes. Overflow is usually durable knowledge that belongs in a Wiki page or canonical doc — write it there and link it from the trail.
-4. **Supersede sweep.** In the target `handovers/` folder, find any still-`active` handover with the same `thread:`. Set `status: superseded`, add `superseded_by: <new filename>` (bare filename), and drop a banner directly under its H1, above its old orientation line (which stays): `> Superseded by [[<new file>]] — read that instead.` The new file records `supersedes: <old filename>`. Threads this handover absorbs get the same flip. **This is also when legacy migration happens:** loose `handover-*.md` files in this home (pre-2026-07-25 patterns) move into `handovers/` now — update their index rows, log the moves.
-5. **Retro entries** per `product-retro` — mandatory for any product-touching session regardless of the handover; append at the file's end. The retro entry is the lessons chronicle; the handover's Lessons section can simply point at it.
-6. **Housekeeping.** Add the new file to `_meta/index.md` with an "ACTIVE handover — pickup here" description; re-point the superseded file's row so the index never advertises a stale pickup point; sweep in anything else this session created or materially changed that the index doesn't reflect. Append to `_meta/log.md`. If the state affects Dan's or Luke's lane, say so in the log entry — courtesy flag, not gate.
-7. **Board truth.** If the session touched Linear, leave statuses and comments reflecting reality (ticket-builder wrap-up rules); never invent statuses. Linear unreachable? Record the intended updates as a watch-out in the handover plus a line in the log — the next pickup verifies.
-8. **Close out loud.** Give the founder the file path, a few-line summary, and the open-thread count (the numbered list's length). That's the full stop — the day is finished.
-
-## PICKUP — before working on anything
-
-1. **Trigger:** about to do non-trivial work on a product or area — or the founder says "pick up X", "continue X", "where did we leave off".
-2. **Read the active handover** in that home's `handovers/` folder (resolve the home the same way CLOSE does; `_meta/index.md` knows the paths) — fully, not skimmed, trusting file frontmatter over index labels. A home can hold several actives (parallel threads): read the newest first, and when the founder's ask spans more than one, say which threads exist and confirm the target. Then skim the retro-log tail (last 2–3 entries) — retro entries may postdate the handover; on contradiction the newer artefact wins, and fixing the stale one joins your session's work. No `handovers/` folder, or only superseded files? Follow `superseded_by` pointers to the newest doc, check for loose legacy `handover-*.md` in the home, then the README and retro-log — and say you're working from partial context.
-3. **Verify before acting.** Ticket IDs, statuses, and paths drift between sessions (the 2026-07-13 File Runner handover had to warn that LIA-xxx ids had become LIAB-xxx). Read the `relates:` docs the open threads depend on; existence-check the rest. Board unreachable? Proceed with stated caveats and verify before any ticket writes.
-4. **Open out loud:** start your reply with "Picking up from `handover-<date>-<slug>` — next step is <the first unblocked action>", then caveats and verification results in the same reply. Surface the handover's open questions as still-open — pickup is exactly where an open question gets mistaken for a decision.
-5. **Drift repair.** Two actives on one thread means a past close-out missed the sweep: newest wins — flip the others, fix their index rows, note it in the log.
-
----
-
-## The template
-
-Canonical: `templates/handover-template.md` — the file wins if this summary drifts. The shape:
-
-```markdown
----
-title: "Handover — <thread>: <one-phrase state>"
-type: handover
-status: active
-created: YYYY-MM-DD
-updated: YYYY-MM-DD
-author: <cq | dan | luke>
-captured_by: <e.g. cq-cowork, dan-code, luke-claude-code>
-thread: <thread-slug>
-supersedes: <previous filename, or "none — first on this thread">
-relates: ["[[key-doc]]", "LIAB-000"]
-tags: [handover, <project-slug>]
----
-
-# Handover YYYY-MM-DD — <thread>: <one-phrase state>
-
-> <One line: where things stand + the next session's job. Write it last.>
-
-## What happened
-## Decisions            (| Decision | Call | Why |)
-## The trail            (paths · ticket IDs · URLs)
-## Open threads — next agent, in order   (+ open questions flagged not-settled)
-## Watch-outs
-## Lessons & observations   (or delete and let the retro entry carry it)
-```
-
-`relates:` carries the 2–4 key anchors (for graph and search); The trail carries the full human-readable list. Sections with nothing real in them get deleted, not padded. `author`/`captured_by` follow the vault's attribution convention.
-
----
-
-## Guardrails
-
-- **Sensitivity.** Lia Vault is a shared surface. No personal Tier-3+/healing material, no Endava client content (the firewall is one-way), no secret values — in any handover here, ever.
-- **Propose-first zones.** Founder-driven sessions may write `handovers/` folders in `Company/` and `Operations/Processes/` directly (founders agree by pushing). Unattended runs stage to their rolling queues or `Inbox/` instead.
-- **Not a doc dump.** Durable knowledge goes to `Wiki/` or the canonical doc and gets linked; the handover stays a snapshot.
-
-## Legacy
-
-**Migration complete 2026-08-19 — there are no loose handovers left.** All 67 legacy files (every pre-2026-07-25 naming pattern: `handover-<date>-<slug>`, `<slug>-handover-<date>`, `session-handover-<date>`, bare `HANDOVER.md`) were swept into their work home's `handovers/` folder, and all 93 now carry a `thread:`. The opportunistic "migrate when next touched" rule below is therefore spent — kept as the record of how it worked. **Two exceptions that are correctly filed and must not be swept:** anything under `Products/Lia Tools/**/00 handover/` (the toy line's own numbered-lifecycle shape) and `_meta/cowork-history/` (append-only session archive). Original wording: handovers written before 2026-07-25 sat loose in Context folders, product roots and `_meta/ops/`; they stayed valid where they were until their thread was next touched — then they migrated into the home's `handovers/` subfolder as part of the supersede sweep (CLOSE step 4), with index rows updated and moves logged. `Products/File Runner/Context/handovers/` is the worked example — migrated and status-normalised 2026-07-25. (This skill itself shipped as `handover` and was renamed `wrap-up` the same day; older log entries reference `_meta/skills/handover/`, which is this folder.)
+Every `handover-*.md` and `retro-log.md` written before 2 Sep 2026 stays exactly as written: dated records are never rewritten. A legacy ACTIVE handover remains the pickup point for its thread until an AAR supersedes it (§2.4 flips it). Retro-logs stop growing and are read as archives. No migration — the next session on each thread supersedes the old record by writing its AAR, which is also how the 25 Jul 2026 naming clean-up worked. The toolbox's own retro-log was already frozen on 20 Aug 2026 (LIAB-820); the per-tool logs freeze with this version.
 
 ## Related
 
-- `product-retro` — in this plugin — the per-session chronicle this composes with (retro = what we learned over time; handover = where things stand now)
-- `execution-discipline` — in this plugin — load first for unattended runs
-- `ticket-builder` — in this plugin (canonical since 26 Aug 2026) — wrap-up rules; board truth
-- `Products/File Runner/Context/handovers/` — the worked example, including the supersede chain
-- Chris's Cowork account carries a synced copy of this skill (`/wrap-up`) so it triggers outside vault-mounted sessions. **This file — in the lia-tools plugin — is canonical since 26 Aug 2026** ([LIAB-919](https://linear.app/lia-creative/issue/LIAB-919)); if you change it, refresh the account copy (the vault copy is frozen pending [LIAB-924](https://linear.app/lia-creative/issue/LIAB-924)).
+- `templates/aar-template.md` — in this skill — the shape; the file wins if this summary drifts.
+- `pickup` / `toy-pickup` — in this plugin — the reading order that starts with the AAR.
+- `execution-discipline` §6 — every run ends by naming what the skill got wrong, in the AAR.
+- `project-manager` §4 — the board the AAR reads; §2b — the worktree hygiene the Watch-outs feed.
+- `plugin-manager` — where a `Skill change proposed:` line becomes a PR.
+- `product-retro` — superseded pointer; its mandatory rule lives in §1.2 here.
 
 ## Changelog
 
+- **2.0.0 (2026-09-02, LIAB-1162)** — **the close-out is one After Action Report, on the ticket.** CQ, 2 Sep 2026: *"i want to turn wrap up into after action reports."* Replaces the 1.x pair (a `handover-*.md` for where to pick up, a `product-retro` entry for what it taught) with one artefact in the AAR's shape — intended · actual · the gap and why · sustain · improve → actions with owners · watch-outs · trail — posted as a comment on the dispatch ticket, signed by seat, and saved to the vault as `aar-YYYY-MM-DD-[thread].md` when mounted, keeping one-ACTIVE-per-thread and the supersede sweep. The template ships (`templates/aar-template.md` — 1.x cited a `handover-template.md` that was never in the plugin). Versions and freshness are said once, in Watch-outs. Decisions go to the register, never the report. `_meta/index.md` / `_meta/log.md` housekeeping is no longer part of the ritual. Retro-logs and handovers become archives; no migration. Measured cause on LIAB-1162: five close-out shapes across 27 tickets, eight with none, vault handovers stale within hours, one `/wrap-up` dead on `resource_exhausted`.
 - **1.3.0 (2026-08-28, LIAB-1020)** — the line is **Lia Tools**: `Products/Lia Toys/` → `Products/Lia Tools/`, `toy box/` → `toolbox/`, `toys/` → `tools/`, and the shape is six numbered stages (`02 analysis` replaced `03 strategy`; research left tool folders; requirements live in Linear) plus the line's unnumbered `standards/` · `research/` · `design/`. Paths only — no behaviour changed.
 - **1.2.3 (2026-08-27, LIAB-997)** — `product-retro` and `execution-discipline` stop being named as absent: both are in the plugin now, and §Related says so.
 - **1.2.2 (2026-08-26, LIAB-959)** — the three `<project>` placeholders in `triggers:` become `[project]`, per the frontmatter rule that came out of the Cowork install failure. First entry here: this skill reached the plugin without a changelog, so earlier versions are unrecorded.

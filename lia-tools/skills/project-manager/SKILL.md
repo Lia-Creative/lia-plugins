@@ -2,7 +2,7 @@
 name: project-manager
 slug: project-manager
 description: "Run tickets front to end — passing work between the stage leads so tickets move discovery to design to build to review to QA on gate verdicts, spawning each seat itself rather than handing a person a command, checking nobody already holds a ticket, statuses kept true, traffic-light updates written for a person. Use when running the board, handing out work, moving a ticket between stages, or writing a milestone update."
-version: 0.7.1
+version: 0.7.2
 created: 2026-08-26
 updated: 2026-09-02
 status: active
@@ -139,10 +139,11 @@ Traffic-light, on every check-in and whenever asked:
 
 - **Not a builder — and not the reviewer of another lane's work.** The PM produces none of the work it moves: not code, not design, not discovery artefacts. That is not a leftover from before this seat could merge; it is exactly what qualifies it to judge its own lane and to move tickets honestly, and it is not suspended by the landing authority (`review-and-merge`, the callout). The PM owns movement; each lane's lead owns the judgment and the merge inside its own lane — this seat included, for the board's and the process's own changes. What the PM never does is grade the build, the design or the discovery.
 - **Not a context courier.** The PM doesn't relay answers between agents — answers land on tickets, and the PM points at them.
-- **Not permanent.** When the milestone closes, the run ends; retro on the dispatch ticket, then stop.
+- **Not permanent.** When the milestone closes, the run ends; the After Action Report on the dispatch ticket (`wrap-up`), then stop.
 
 ## Changelog
 
+- **0.7.2 (2026-09-02, LIAB-1162)** — the run's close-out is the After Action Report on the dispatch ticket (`wrap-up` 2.0.0) — reference only.
 - **0.7.1 (2026-09-02, LIAB-1161)** — `lead-engineer` is `engineering-lead` — reference only: the seat's name now follows its discipline, like the other four leads. No rule changed.
 - **0.7.0 (2026-08-29, LIAB-1053)** — 0.6.0's third bullet **contradicted the rule it sits under**, caught in review and reproduced with a probe: *"dispatch the replacement into a fresh worktree, or do not dispatch it"* reads as permission to proceed in exactly the unprovable case bullet 1 and the parent §2b forbid, and a session tested against it took that reading. A fresh tree answers the tree collision and not the one this section exists for — two sessions, two branches, two PRs. The bullet is now scoped to the tree: **cannot establish the first is gone means it does not dispatch**, and a warranted replacement never inherits the first agent's tree. `lead-engineer` §The chain cites §2b as its authority for *"quiet is not dead"*, so the pointer now lands somewhere that agrees with it.
 - **0.6.0 (2026-08-29, LIAB-1053)** — **§2b covers re-dispatch, which is the case it was written for and did not reach.** It shipped as a duty on *first* dispatch and, within the hour, missed the exact collision it exists to prevent: a lead read an empty diff as "produced nothing", re-dispatched, and put two sessions in one worktree on one branch while the first agent was still alive. New subsection: prove **finished or dead, never merely silent**, before spawning a replacement; **an empty diff proves nothing** — a build that has read for ten minutes and written nothing is byte-identical to one that died on arrival, and the snapshot is taken at the moment you have already decided which; **two sessions never share a tree**, so an unprovable case gets a fresh worktree or no dispatch; and when in doubt, wait, because the quiet is usually `lead-engineer` §The chain working correctly. The check list also now names **the worktree** rather than "the tree" — the collision happened inside one while the board and the PR list both looked clean.
