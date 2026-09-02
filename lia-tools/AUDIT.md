@@ -325,6 +325,26 @@ re-checking should mount it and confirm before relying on the path. LIAB-996 had
 been parked on the premise that a claude.ai upload cannot be read from a
 filesystem, which is true of the upload and false of this artifact.
 
+## Not a skill, but the same question — `MANUAL.md` (PR for LIAB-1181, 2 Sep 2026)
+
+**Where it came from:** new writing, 2 Sep 2026. **What it superseded:** nothing
+— there has never been a document in this repo addressed to a person. **How that
+was established:** every existing file was checked for who it speaks to.
+`CLAUDE.md` opens *"Agent rules"*; `README.md` (this directory) is a roster plus
+the publish runbook; this file is a provenance record; the root `README.md` is
+four install commands. None of them explains what gets installed, and no fifth
+document existed. The manual restates what those four already own, for a reader
+who is not an agent.
+
+**Why the row is here at all.** `CLAUDE.md` rule 9 covers skills, and this is not
+one, so nothing owed it. It is written because the question rule 9 exists to
+answer — *which copy won, and how do we know* — is exactly the question a second
+document describing the same process will raise the moment someone finds it. The
+answer is that it describes and never owns: where the manual and the skills
+disagree, the skills win and the manual gets fixed. `plugin-manager` rule 9 is
+where that is enforced, and this is the record that it was decided rather than
+drifted into.
+
 ## When a row is owed
 
 **Every PR that adds a skill owes its row here, in that PR.** Not afterwards, and

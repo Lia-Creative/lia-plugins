@@ -2,6 +2,11 @@
 
 The one plugin for building lia.tools products — the toys, the toy box and the site — and the process that goes with them.
 
+**Reading this as a person, not as an agent? Start with [MANUAL.md](MANUAL.md).**
+This file is the roster and the runbook; the manual is the onboarding — what the
+plugin is, how the stages and benches hand work on, how to install and update it
+on each surface, where feedback goes, and the changelog in plain language.
+
 **This directory is the source of truth for the skills it carries.** Canonical moved here from the Lia Vault's `_meta/skills/` on 26 Aug 2026 ([LIAB-919](https://linear.app/lia-creative/issue/LIAB-919)): a vault that build machines cannot mount is a poor distribution channel, and every packaged copy taken from it is a copy that drifts. Edit a skill here, or don't edit it.
 
 The process the skills implement is written down in [Tool shop — how a lia.tools product gets built](https://linear.app/lia-creative/document/tool-shop-how-a-liatools-product-gets-built-4a9cfacc41c8). The ticket shapes are [How a Lia Toys ticket is shaped](https://linear.app/lia-creative/document/how-a-lia-toys-ticket-is-shaped-a5d28e39709b). Both live in Linear, deliberately — a build agent has Linear and this plugin, and needs nothing else.
