@@ -2,6 +2,12 @@
 
 Lia Creative's Claude Code marketplace — the one place the team installs Lia tooling from.
 
+**New here? Read [the Lia Tools manual](lia-tools/MANUAL.md) first.** It is the
+one document written for a person rather than for an agent: what Lia Tools is,
+how the process and the agent teams work, how to install it on your surface,
+where to send feedback, and every version that has shipped. The rest of this
+file is the commands.
+
 ## Setup (once per person)
 
 ```
