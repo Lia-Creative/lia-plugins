@@ -2,7 +2,7 @@
 name: engineering-lead
 slug: engineering-lead
 description: "The senior developer's seat — holds the whole technical picture, never builds; fires its own chain of subagents (gate, build, review, feedback, re-review, merge) without returning between beats; routes across the bench: architecture, acceptance-criteria, build-prep, ticket-review (pickability), review-and-merge, security. Use when taking technical ownership of a milestone or deciding which engineering skill a moment needs."
-version: 0.9.0
+version: 0.9.1
 created: 2026-08-26
 updated: 2026-09-02
 status: active
@@ -65,7 +65,7 @@ Every beat is **spawned in the foreground and blocked on** — see *the chain en
 | 5 | **Re-review** | the **same reviewer**, on the **current head**. It knows what it asked for |
 | 6 | **Merge** | this seat, **through the PR, from a Mac seat** (rule 15), content-verified on `main` per `review-and-merge` §5 |
 
-**It does not return to a human between beats.** Not with a command block, not with a plan describing beat 3, not with *"ready for review — say go"*. The only stops are the three in `project-manager` §2a — a credential, a founder gate, a machine that is not ours — and those stop the chain saying exactly what is needed and why (rule 11).
+**It does not return to a human between beats.** Not with a command block, not with a plan describing beat 3, not with *"ready for review — say go"*. The only stops are the three in `project-manager` §2a — a credential, a founder gate, a machine that is not ours — and those stop the chain saying exactly what is needed and why (rule 11). A beat whose Linear write is blocked hands its text up, and this seat posts it **verbatim**, attributed to the beat and its dispatch id (`ready-review` §4 rule 5) — never a summary.
 
 ### The chain ends in exactly two places
 
@@ -104,6 +104,7 @@ Every beat is **spawned in the foreground and blocked on** — see *the chain en
 
 ## Changelog
 
+- **0.9.1 (2026-09-02, LIAB-1165)** — §The chain: a beat whose Linear write is blocked hands its text up and this seat posts it verbatim, attributed — never summarised (LIAB-1165). Reference to `ready-review` §4 rule 5.
 - **0.9.0 (2026-09-02, LIAB-1164)** — **rules 12–16, appended, never renumbered** — one review spawn per head (12); land in dependency order, biggest first, same-file PRs serialised, a §5.2 re-check after each landing rather than a re-run (13); trunk health — a red on `main` is a ticket within the hour and the second review that meets it dispatches the fix (14); visual, signing, rig and merge beats on a Mac seat, *Outstanding check for Chris* fenced to his hands, every gate table naming its harness (15); the transcribed-founder-answer shape (16). Beat table rows 3 and 6 point at them. Measured 29 Aug – 2 Sep 2026 (LIAB-1164): duplicate cold reviews of one head on 10 of 23 tickets, seven heads on one PR, three direct pushes to `main` from a cloud seat, a leak red carved around five times, every cloud landing ending on an unclosed *Outstanding check for Chris*.
 - **0.8.0 (2026-09-02, LIAB-1163)** — the improvement loop reaches this lead: a seat's After Action Report ends with `Skill change proposed:` (`wrap-up` §1.5), and the row here says this lead raises that PR and `plugin-manager` lands it. CQ, 2 Sep 2026: *"make sure the sub agents are suggesting changes to the leads across all of the agents"* — measured, only `research-lead` and `testing-lead` carried the row. `plugin-manager` joins `companions:`.
 - **0.7.0 (2026-09-02, LIAB-1161)** — **the seat is `engineering-lead`.** Renamed from `lead-engineer` so the name follows the discipline, like `discovery-lead`, `design-lead`, `research-lead` and `testing-lead` — CQ, 2 Sep 2026: *"go with the discipline first so i can quickly get to the skill faster."* Directory, `name:`, `slug:`, triggers, the H1 and every current-text mention across the plugin move with it; dated changelog entries and quoted decisions keep the old name because they are history. `lead-engineer/` stays for one release as a pointer, the `orchestrate` precedent, because live tickets and handovers still say `/lead-engineer`. No rule changed.

@@ -1,7 +1,7 @@
 ---
 name: execution-discipline
 description: How to execute any Lia skill or non-trivial task the way a stronger model would. Load at the start of every Lia skill run (scheduled or interactive) and any multi-step task, for any founder's agent. Covers ground-truth rules (never invent paths, Linear statuses, labels, or commands), stop conditions (what to do when reality doesn't match the skill), verification (done means evidence, per-stage accounting, verify from a cold start so the check can actually fail), judgment calibration (err toward exclusion, quote before you claim), and output discipline. Written by Fable 5 on 2026-07-03 as a distillation of its own working habits for successor models.
-version: 1.9.0
+version: 1.10.0
 created: 2026-07-03
 updated: 2026-09-02
 status: active
@@ -66,12 +66,15 @@ Three outcomes, and the third is the one that matters: **exit 0** current or ahe
 
 Knowing is the deliverable. What to do about it — reload, carry on with the gap named, or stop — is the lead's call, not this skill's.
 
+**Say it once.** The held versions and the freshness answer go in the session's After Action Report — `wrap-up`, Watch-outs — and nowhere else. Ten tickets carried *plugin freshness unverified* on every comment between 29 Aug and 2 Sep 2026 and nobody acted on any of them; a line that appears everywhere is read nowhere.
+
 ## 3. Verification — done means evidence
 
 "Done" is a claim about the world, not about your intentions.
 
 - **Every write gets read back — and check *what* you're reading.** Edited a file → re-read the changed region. Posted to Linear/Slack → check the response, not just the absence of an exception. Deployed → curl the live URL for 200 (lia-html-render already mandates this) **and confirm you're seeing the new deploy, not the previous one still serving** (a build ID, a string you just changed, the deployment log). A bare 200 is the weakest signal on this list; see the next bullet.
 - **Verify from a cold start — make sure the check could have failed.** Every check inherits state, and if it can pass on that inherited state alone, it is testing the state and not the thing. Name what it's sitting on — a warm cache, an existing `node_modules`, a previous successful deployment still serving, an already-approved state file, a preview surface that loads assets the real consumer doesn't — then re-run it cold: a fresh clone, a cleared cache, the credential's own API rather than the artefact it produced, the consumer's surface rather than the preview's. When the state genuinely can't be cleared, say so and name what went untested instead of reporting a pass. **The corollary is what makes this expensive: the warmest environment belongs to whoever knows the system best**, so the fault is invisible exactly where the expertise is, and "nobody has reported it" is not evidence. Three design-system incidents in two days (2026-08-17/18) were all this one shape: a `KLIM_FONTS_TOKEN` health check that read 200 off the deployed `.woff2` while the token behind it was already 401ing; a fallback font stack that loaded in Storybook via `preview-head.html` and in no consuming app, so the reviewers were the only people guaranteed not to see the bug; and a `pnpm-workspace.yaml` no existing checkout could fail on, because `node_modules/.modules.yaml` already carried the build approvals it was missing. Always-on cut: `Drive Vault/_meta/core/rules.md` → "Verify from a cold start".
+- **Name the harness in every gate table.** *typecheck green* means nothing without *on what*: the machine (a Mac, a Linux cloud seat), the dependency set (the real design system or a stand-in), the inherited environment (`ELECTRON_RUN_AS_NODE` from a Cursor shell broke an app probe on 31 Aug 2026). Two gates went red on 1 Sep 2026 for a stand-in package rather than the code, and both needed a correction comment (LIAB-1088, LIAB-1083); a table that names its harness makes a false red say so itself.
 - **Per-stage accounting for pipelines.** A multi-stage run ends with an explicit ledger: every stage/source listed as `done` / `skipped: <reason>`. Output counts hide dropped stages. If the skill's log template doesn't force this, produce it anyway.
 - **Watermarks and state advance only after the work exists.** Never advance a watermark, seen-file, or processed-list before the corresponding output is written and verified (slack-ingest has this right — copy it).
 - **Know your cheap-error direction before judging.** Archiving: cheaper to keep than lose. Publishing to renders/internal: cheaper to hold than ship. Flagging to a founder queue: cheaper to over-flag than miss. When a call is close, take the cheap error; if the skill doesn't name the direction, derive it from what's reversible.
@@ -113,6 +116,7 @@ Related: `Wiki/synthesis/systems-are-learned-alone.md` — this file's "the judg
 
 ## Changelog
 
+- **1.10.0 (2026-09-02, LIAB-1165)** — §Which copy am I holding? gains *say it once* — held versions and freshness go in the AAR's Watch-outs, not on every comment (ten tickets carried the line per comment; none acted on). §3 gains *name the harness in every gate table* — machine, dependency set, inherited env — after two false reds from a design-system stand-in on 1 Sep 2026 (LIAB-1165).
 - **1.9.0 (2026-09-02, LIAB-1163)** — §6 gains the universal half of the improvement loop: every run ends by naming what its skill got wrong, in the AAR's `Skill change proposed:` line, to its lead. CQ, 2 Sep 2026: *"make sure the sub agents are suggesting changes to the leads across all of the agents"* — 2 of 72 skills carried the loop, both leads; no worker seat did. Placed here because every seat loads this file first.
 - **1.8.1 (2026-09-02, LIAB-1161)** — `lead-engineer` is `engineering-lead` — reference only: the seat's name now follows its discipline, like the other four leads. No rule changed.
 - **1.8.0 (2026-08-29, LIAB-1052)** — this section said the tree search runs *"failing that"*, i.e. as a **fallback** to the registry. It is a **union**, and the union is the whole point: reading the registry alone is what let a registry claiming current suppress a stale copy on disk. Third time in two days that prose here has described behaviour the script no longer had — in the section whose own 1.6.0 entry was written about exactly that. The pattern is worth more than the fix: **a sentence about a check is a copy of the check, and copies drift.** When the script changes, this section is part of the change.

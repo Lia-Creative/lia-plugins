@@ -2,7 +2,7 @@
 name: build-prep
 slug: build-prep
 description: "Write the how-to-build notes onto a designed story — real paths verified against the repo, patterns to follow, traps, the full resolvable-path rule (files, services, accounts/connectors with identities) — under the criteria, never instead of them. Use when prepping an epic or story for a build dispatch."
-version: 0.1.1
+version: 0.2.0
 created: 2026-08-26
 updated: 2026-09-02
 status: active
@@ -31,7 +31,7 @@ maintainer: cq
 
 ## What goes on the tickets, per story where it differs
 
-1. **Real paths.** Every file referenced exists or is marked *Create* — verify against the repo, don't recall. A note pointing at a path that isn't there is worse than none.
+1. **Real paths.** Every file referenced exists or is marked *Create* — verify against the repo, don't recall. A note pointing at a path that isn't there is worse than none. **The notes name the `origin/main` SHA they were verified at** — paths drift within hours (`ae5e7db` in the notes, `960af77` at dispatch, 1 Sep 2026), so the builder re-verifies against the current head and both SHAs go on the ticket. A **flag, command form or setting** a note names is verified against the binary or the disk, never against the documentation you remember (`notarytool` had no `@env:` form — LIAB-1022).
 2. **The pattern to follow** — the existing code that does the nearest thing, named by file, so the builder extends instead of inventing. Where `architecture` has ruled a pattern canonical, cite the ruling.
 3. **What to reuse and what not to touch** — including the settled decisions fenced: *"two things NOT to re-open"*. Agents are agreeable and will reverse a settled call if a ticket sounds unsure.
 4. **The traps** — what's in flight nearby, which files another branch holds, what burned the last session, and the known classes: a feature rendering from client-only persisted state needs its **hydration strategy named** before build; the first stateful feature in a bundle surfaces SSR gaps that were cosmetic elsewhere.
@@ -52,5 +52,6 @@ maintainer: cq
 
 ## Changelog
 
+- **0.2.0 (2026-09-02, LIAB-1165)** — point 1: the notes carry the `origin/main` SHA they were verified at and the builder re-verifies against the current head; a named flag, command form or setting is checked against the binary or the disk (LIAB-1022, LIAB-1165).
 - **0.1.1 (2026-09-02, LIAB-1161)** — `lead-engineer` is `engineering-lead` — reference only: the seat's name now follows its discipline, like the other four leads. No rule changed.
 - **0.1.0 (2026-08-26, CQ voice memos + Fable 5)** — first version. `orchestrate` §4.5 promoted to a seat, plus atom 14's earned rules: resolvable paths (files/services/accounts), hydration precondition, hints-are-advisory.

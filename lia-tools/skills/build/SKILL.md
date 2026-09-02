@@ -2,7 +2,7 @@
 name: build
 slug: build
 description: "The builder's seat for a whole epic — context from tickets/design/prep-notes/schema-map (never the vault), plan mode first with the plan posted to tickets, story-by-story on one branch, questions batched, progress in user terms, indexed self-check, one PR, hold for the review loop. Use when dispatched at an epic to build."
-version: 0.1.1
+version: 0.2.0
 created: 2026-08-26
 updated: 2026-09-02
 status: active
@@ -31,7 +31,7 @@ maintainer: cq
 
 ## 1. Plan first, and the plan lands on the tickets
 
-1. **Read everything before planning** — the epic, every story in dependency order, the prep notes, the design artefacts, the schema entries. Verify the done-when list before doing work it describes: some of it may already be true, and re-doing it is the expensive mistake.
+1. **Read everything before planning** — the epic, every story in dependency order, the prep notes, the design artefacts, the schema entries. Verify the done-when list before doing work it describes: some of it may already be true, and re-doing it is the expensive mistake. **A ticket with no numbered criteria is not buildable** — it goes back through `pickup` §5 to `acceptance-criteria`, never built to a title (LIAB-1087 was built three times from one). The prep notes name the `origin/main` SHA they were verified at; verify every path they name against the **current** head, and put both SHAs in your plan comment.
 2. **Plan in plan mode.** This is where task-grain thinking happens — Linear deliberately doesn't hold it as tickets.
 3. **Post the plan to the tickets it plans** — a comment per story, the epic-wide shape on the epic. The plan is what the review loop and any future session reads; a plan that lives only in your session dies with it.
 
@@ -62,7 +62,7 @@ Before marking the epic Review:
 
 1. **Self-check every criterion and Delivery check, by index** — run what can be run, state the result. Anything you can't verify is **named as unverified with why** — never passed on intention.
 2. **Read back what you wrote.** Files, migrations, docs — opened, not assumed.
-3. **The gates you'd fail anyway:** lint, typecheck, tests, the repo's own checks — green before Review, or the red explained on the ticket.
+3. **The gates you'd fail anyway:** lint, typecheck, tests, the repo's own checks — green before Review, or the red explained on the ticket. Run them on the **combined tree** — your head merged onto current `origin/main` in a throwaway — because that is the tree the reviewer grades (`review-and-merge` §5.2), and **name the harness** they ran on (Mac or Linux cloud · the real design system or a stand-in · inherited env) so a red says where it came from (`execution-discipline` §3).
 4. **One PR up, epic to Review, and hold in-session for the loop** — the engineering lead reviews and feeds back *to you*; fix, recommit, answer with evidence on the new head. **You never merge, and you never move anything to Done.**
 
 ## What this seat is not
@@ -73,5 +73,6 @@ Before marking the epic Review:
 
 ## Changelog
 
+- **0.2.0 (2026-09-02, LIAB-1165)** — §1: a ticket with no numbered criteria is handed back, never built (LIAB-1087 was built three times from a title); prep-note SHAs are re-verified against the current head and both named. §5.3: the gates run on the combined tree and name their harness — two false reds on 1 Sep 2026 came from a design-system stand-in, not the code (LIAB-1165).
 - **0.1.1 (2026-09-02, LIAB-1161)** — `lead-engineer` is `engineering-lead` — reference only: the seat's name now follows its discipline, like the other four leads. No rule changed.
 - **0.1.0 (2026-08-26, CQ voice memos + Fable 5)** — first version. `pickup` §0.5 epic mode promoted and extended: the four-part context map, question batching with best-guess-and-default, progress comments in user terms, the indexed self-check, and the hold-for-the-loop.
