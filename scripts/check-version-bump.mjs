@@ -54,6 +54,16 @@
 //      not a claim. The two jumps in this file's own history (1.3.0 -> 1.3.3,
 //      1.19.0 -> 1.21.0) are what it looks like when nobody is reading.
 //
+//   6. THE NUMBER IS STILL FREE (LIAB-1184, review D2). The head's version, and
+//      each changed skill's, is strictly above what the *base ref* serves — not
+//      merely above the merge-base. Rules 1-5 all ask "did this branch move the
+//      number", which stops being the same question the moment someone else
+//      lands: two branches that pick the same version merge without a conflict,
+//      because both wrote the same string, and the result delivers nothing. The
+//      first cut of rule 5 read the base ref only *after* the step check had
+//      already failed, so the one case it could not see was the exact
+//      collision — and that is the case it met, on its own branch, twice.
+//
 // Deliberately not checked: whether a changelog line is any *good*, and whether
 // the size of a bump is the *right* size — a guard cannot read what a change
 // means. Presence of a line naming the new version is the bar, and one step is
@@ -177,6 +187,23 @@ function nextVersions(base) {
 // The skills touched by this diff, by directory name. A change anywhere under
 // a skill — its references/, its scripts/, its templates/ — is a content
 // change to that skill, which is what rule 3 governs.
+// The version the base ref is actually serving right now — which is not the
+// merge-base's version the moment anyone else lands. Read unconditionally
+// (LIAB-1184, review D2): the first cut consulted this only when the step check
+// had already failed, so the one shape it could not see was the base taking
+// your *exact* number. Then stepFrom succeeds against the stale merge-base, the
+// guard returns ok, and the merge delivers a zero net bump — a success that
+// proves nothing, in the check written to stop exactly that. Found on the very
+// branch that introduced it: main released 1.25.0 while the branch sat at
+// 1.25.0, and `ok` is what it printed.
+function refVersion(root, ref) {
+  try {
+    return JSON.parse(git(root, "show", `${ref}:${MANIFEST}`)).version ?? null;
+  } catch {
+    return null;
+  }
+}
+
 function touchedSkills(changed) {
   const names = new Set();
   for (const path of changed) {
@@ -188,7 +215,7 @@ function touchedSkills(changed) {
   return [...names].sort();
 }
 
-function checkSkills(root, mergeBase, changed) {
+function checkSkills(root, mergeBase, changed, baseRef) {
   const offences = [];
   for (const name of touchedSkills(changed)) {
     const rel = `${SKILLS_DIR}${name}/SKILL.md`;
@@ -251,6 +278,18 @@ function checkSkills(root, mergeBase, changed) {
       }
     }
 
+    // Same question as the manifest's rule 6, asked of a skill (LIAB-1184,
+    // review D2). A skill has less protection, not more: two branches bumping
+    // it to the same number merge cleanly and only one changelog entry
+    // survives, with no ref anywhere recording that the other existed.
+    if (!isNew && baseRef != null) {
+      const tip = frontmatterVersion(gitShow(root, baseRef, rel));
+      if (tip != null && compareVersions(headVersion, tip) !== 1) {
+        offences.push({ kind: "skill-taken", file: rel, detail: `version: ${headVersion} is not above what ${baseRef} serves (${tip}) — the base moved and this number is spoken for.` });
+        continue;
+      }
+    }
+
     const body = changelogBody(head);
     if (body == null) {
       offences.push({ kind: "skill-no-changelog", file: rel, detail: `version: is "${headVersion}" but the file has no "## Changelog" section — the line is what makes the number mean something.` });
@@ -280,7 +319,7 @@ function check(root, base) {
     return { ok: true, kind: "untouched", detail: `no lia-tools/ change against ${base}`, skills: [] };
   }
 
-  const skills = checkSkills(root, mergeBase, changed);
+  const skills = checkSkills(root, mergeBase, changed, base);
 
   let baseVersion;
   try {
@@ -313,6 +352,17 @@ function check(root, base) {
   if (direction !== 1) {
     return { ok: false, kind: "unconfirmed", detail: `cannot confirm the version moved forward, ${baseVersion} -> ${headVersion}`, touched, skills, baseVersion, headVersion };
   }
+  // 6. AHEAD OF WHAT THE BASE SERVES. Rules 1 and 2 ask whether this branch
+  // moved the number; this asks whether the number is still free. They are
+  // different questions the moment someone else lands, and only this one
+  // survives a race: a head equal to the base ref's version merges without a
+  // conflict (both sides wrote the same string), passes every other rule, and
+  // delivers nothing. A head *below* it lands a downgrade the same way.
+  const tipVersion = refVersion(root, base);
+  if (tipVersion != null && compareVersions(headVersion, tipVersion) !== 1) {
+    return { ok: false, kind: "taken", detail: `version ${headVersion} is not above what ${base} serves (${tipVersion})`, touched, skills, baseVersion, headVersion, tipVersion };
+  }
+
   // LIAB-1184, and the last of the four to be added because it is the only one
   // that is not about a broken delivery — a skipped version delivers perfectly
   // well. What it breaks is the reading: the size of a bump is a claim about
@@ -328,18 +378,23 @@ function check(root, base) {
     // "use 1.22.0", which was gone. Handing someone a taken number is how
     // 1.19.0 -> 1.21.0 happens, so the guard would have been teaching the
     // defect it exists to catch.
-    let tipVersion = null;
-    try {
-      tipVersion = JSON.parse(git(root, "show", `${base}:${MANIFEST}`)).version;
-    } catch {
-      // No readable manifest on the base ref: nothing to say about staleness,
-      // and the plain message below is still true.
-    }
-    if (tipVersion === baseVersion) tipVersion = null;
-    return { ok: false, kind: "skipped", detail: `version skips a step, ${baseVersion} -> ${headVersion}`, touched, skills, baseVersion, headVersion, tipVersion };
+    return { ok: false, kind: "skipped", detail: `version skips a step, ${baseVersion} -> ${headVersion}`, touched, skills, baseVersion, headVersion, tipVersion: tipVersion === baseVersion ? null : tipVersion };
   }
-  const bumped = touchedSkills(changed).length;
-  return { ok: skills.length === 0, kind: "bumped", step, detail: `lia-tools ${baseVersion} -> ${headVersion} (${step}), ${touched.length} file(s), ${bumped} skill(s)`, touched, skills };
+  // The size is a claim, so print the claim — for every artifact the guard can
+  // see, not just the manifest (review D5). A reviewer reading CI should not
+  // have to diff two frontmatter blocks to learn what a skill claimed.
+  const names = touchedSkills(changed);
+  const sizes = names
+    .map((name) => {
+      const rel = `${SKILLS_DIR}${name}/SKILL.md`;
+      const from = frontmatterVersion(gitShow(root, mergeBase, rel));
+      let to = null;
+      try { to = frontmatterVersion(readFileSync(join(root, rel), "utf8")); } catch { /* deleted; the roster guard owns it */ }
+      const kind = from && to ? stepFrom(from, to) : null;
+      return kind ? `${name} ${kind}` : name;
+    })
+    .join(", ");
+  return { ok: skills.length === 0, kind: "bumped", step, detail: `lia-tools ${baseVersion} -> ${headVersion} (${step}), ${touched.length} file(s)${sizes ? ` — ${sizes}` : ""}`, touched, skills };
 }
 
 const list = (offences) => offences.map(({ file, detail }) => `  ${file}\n    ${detail}\n`).join("");
@@ -361,6 +416,15 @@ function report(outcome) {
     console.error(`  A decrease delivers exactly the way an increase does — the served version changed — so every\n  install would silently roll back to an older build with nothing anywhere saying so. This is what a\n  bad conflict resolution looks like, and the guard cannot tell it from a deliberate one.\n`);
     console.error(`  → Set "version" in ${MANIFEST} above ${outcome.baseVersion}.\n`);
     console.error(`  → A genuine rollback is the release force-push in lia-tools/README.md §Roll back, not a lower number on main.\n`);
+  } else if (outcome.kind === "taken") {
+    const next = nextVersions(outcome.tipVersion);
+    console.error(`lia-tools version ${outcome.headVersion} is ALREADY SERVED by ${outcome.tipVersion === outcome.headVersion ? "the base" : "a newer base"}: ${MANIFEST} is ${outcome.tipVersion} on the base ref\n`);
+    console.error(`  Rules 1 and 2 ask whether this branch moved the number. They pass — against the base you forked\n  from. Someone landed since, and this number is spoken for, so merging changes nothing a machine can\n  see: same served version, no fetch, and the repo saying a release happened.\n`);
+    console.error(`  → Merge the base branch in, then take one step from ${outcome.tipVersion}:\n`);
+    if (next) {
+      console.error(`    ${next.patch} (patch: it got better) · ${next.minor} (minor: it does something new) · ${next.major} (major:\n    something that worked stops working)\n`);
+    }
+    console.error(`  → The policy is lia-tools/README.md §Versioning (CLAUDE.md rule 10).\n`);
   } else if (outcome.kind === "skipped") {
     const stale = outcome.tipVersion;
     const from = stale ?? outcome.baseVersion;
@@ -389,7 +453,7 @@ function report(outcome) {
 
   if (skills.length) {
     const of = (kind) => skills.filter((s) => s.kind === kind);
-    const nobump = [...of("skill-no-bump"), ...of("skill-no-version"), ...of("skill-regressed"), ...of("skill-unconfirmed")];
+    const nobump = [...of("skill-no-bump"), ...of("skill-no-version"), ...of("skill-regressed"), ...of("skill-unconfirmed"), ...of("skill-taken")];
     const nolog = [...of("skill-no-changelog"), ...of("skill-no-changelog-line")];
     const skipped = of("skill-skipped");
     if (nobump.length) {
@@ -574,6 +638,80 @@ function selfTest() {
       // its own history: 1.19.0 -> 1.21.0 left 1.20.0 unused, and 1.3.0 -> 1.3.3
       // skipped two patches. Both were green.
       {
+        // Review D2, shape 1 — the one the first cut could not see, and the one
+        // this branch was sitting in when it printed `ok`. main released the
+        // exact number the branch had chosen. There is no merge conflict to
+        // warn anyone: both sides wrote the same string.
+        name: "the base already released this exact version",
+        mutate: () => {
+          git(dir, "checkout", "-q", "-b", "collide");
+          git(dir, "checkout", "-q", "main");
+          write("lia-tools/skills/demo/SKILL.md", skill("0.2.0"));
+          bump("1.1.0");
+          git(dir, "add", "-A");
+          git(dir, "-c", "user.email=guard@self.test", "-c", "user.name=guard", "commit", "-qm", "main releases 1.1.0");
+          git(dir, "checkout", "-q", "collide");
+          write("lia-tools/skills/demo/SKILL.md", skill("1.0.0"));
+          bump("1.1.0");
+        },
+        expect: { ok: false, kind: "taken", skills: [] },
+        restore: () => {
+          git(dir, "reset", "-q", "--hard"); git(dir, "clean", "-qfd");
+          git(dir, "checkout", "-q", "main");
+          git(dir, "reset", "-q", "--hard", baseCommit);
+          git(dir, "branch", "-qD", "collide"); git(dir, "clean", "-qfd");
+        },
+      },
+      {
+        // Review D2, shape 2. Landing this puts a LOWER version on the base
+        // than the one it serves — a downgrade delivered to every machine,
+        // arrived at by standing still rather than by typing a smaller number.
+        name: "the base has moved past this version",
+        mutate: () => {
+          git(dir, "checkout", "-q", "-b", "behind");
+          git(dir, "checkout", "-q", "main");
+          write("lia-tools/skills/demo/SKILL.md", skill("0.2.0"));
+          bump("1.2.0");
+          git(dir, "add", "-A");
+          git(dir, "-c", "user.email=guard@self.test", "-c", "user.name=guard", "commit", "-qm", "main releases 1.2.0");
+          git(dir, "checkout", "-q", "behind");
+          write("lia-tools/skills/demo/SKILL.md", skill("1.0.0"));
+          bump("1.1.0");
+        },
+        expect: { ok: false, kind: "taken", skills: [] },
+        restore: () => {
+          git(dir, "reset", "-q", "--hard"); git(dir, "clean", "-qfd");
+          git(dir, "checkout", "-q", "main");
+          git(dir, "reset", "-q", "--hard", baseCommit);
+          git(dir, "branch", "-qD", "behind"); git(dir, "clean", "-qfd");
+        },
+      },
+      {
+        // Review D2, shape 3 — a skill collides while the manifest is entirely
+        // legal (2.0.0 is one major step from the fork point and above what the
+        // base serves). Nothing about two branches picking the same skill
+        // version conflicts; one changelog entry simply disappears.
+        name: "a skill's number was taken while the branch sat",
+        mutate: () => {
+          git(dir, "checkout", "-q", "-b", "skillcollide");
+          git(dir, "checkout", "-q", "main");
+          write("lia-tools/skills/demo/SKILL.md", skill("0.2.0"));
+          bump("1.1.0");
+          git(dir, "add", "-A");
+          git(dir, "-c", "user.email=guard@self.test", "-c", "user.name=guard", "commit", "-qm", "main takes demo 0.2.0");
+          git(dir, "checkout", "-q", "skillcollide");
+          write("lia-tools/skills/demo/SKILL.md", skill("0.2.0"));
+          bump("2.0.0");
+        },
+        expect: { ok: false, kind: "bumped", skills: ["skill-taken"] },
+        restore: () => {
+          git(dir, "reset", "-q", "--hard"); git(dir, "clean", "-qfd");
+          git(dir, "checkout", "-q", "main");
+          git(dir, "reset", "-q", "--hard", baseCommit);
+          git(dir, "branch", "-qD", "skillcollide"); git(dir, "clean", "-qfd");
+        },
+      },
+      {
         // The stale-base path, measured live on this rule's own PR within
         // twenty minutes of opening it. main moved 1.0.0 -> 1.2.0 while the
         // branch sat; the branch, having noticed, set 1.3.0 — one step above
@@ -589,7 +727,7 @@ function selfTest() {
           git(dir, "add", "-A");
           git(dir, "-c", "user.email=guard@self.test", "-c", "user.name=guard", "commit", "-qm", "main moves to 1.2.0");
           git(dir, "checkout", "-q", "sidebranch");
-          write("lia-tools/skills/demo/SKILL.md", skill("0.2.0"));
+          write("lia-tools/skills/demo/SKILL.md", skill("1.0.0"));
           bump("1.3.0");
         },
         // `tip` is asserted, not just the kind: without it this fixture is red
@@ -701,7 +839,7 @@ function selfTest() {
       for (const line of failures) console.error(line);
       return 1;
     }
-    console.log(`self-test ok — ${scenarios.length} scenarios: no-bump caught, backwards-bump CAUGHT (manifest and skill), not-provably-forward caught on BOTH (unparseable, and a changed string with an unchanged core), skill-version-left-behind and a removed version: caught, a changelog line that only heads an entry accepted (prose mentions rejected), 1.9.0 -> 1.10.0 confirmed forward, SKIPPED STEPS CAUGHT on both (a skipped minor, skipped patches, a minor-and-patch at once, a skipped major, a skill jumping, and a base that moved under the branch) while a major, a 0.x -> 1.0.0 and 0.9.0 -> 0.10.0 stay green, bump-and-changelog and root-only and new-skill left green, unreadable manifest reported as unchecked`);
+    console.log(`self-test ok — ${scenarios.length} scenarios: no-bump caught, backwards-bump CAUGHT (manifest and skill), not-provably-forward caught on BOTH (unparseable, and a changed string with an unchanged core), skill-version-left-behind and a removed version: caught, a changelog line that only heads an entry accepted (prose mentions rejected), 1.9.0 -> 1.10.0 confirmed forward, SKIPPED STEPS CAUGHT on both (a skipped minor, skipped patches, a minor-and-patch at once, a skipped major, a skill jumping, and a base that moved under the branch), A TAKEN NUMBER CAUGHT on all three shapes (an exact collision, a base moved past, and a skill's number gone) while a major, a 0.x -> 1.0.0 and 0.9.0 -> 0.10.0 stay green, bump-and-changelog and root-only and new-skill left green, unreadable manifest reported as unchecked`);
     return 0;
   } finally {
     rmSync(dir, { recursive: true, force: true });

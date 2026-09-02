@@ -180,20 +180,30 @@ someone asked.
     `X.Y.(Z+1)`, `X.(Y+1).0`, `(X+1).0.0`.
 
     This is rule 3 finishing its own sentence. Rule 3 makes a version *move*;
-    nothing said how far, so habit answered: `1.0.0 → 1.21.0` in 26 releases, 21
-    of them minors, never a major, a wording fix costing the same digit as a new
-    bench of skills. A bump free to land anywhere above the last one claims only
-    that a release happened. **The size is a claim about the change** — which is
-    why the one-step half matters as much as the table: `1.19.0 → 1.21.0` and
-    `1.3.0 → 1.3.3` are both in this repo's history, and neither can be read.
+    nothing said how far, so habit answered — and **the size is a claim about
+    the change**, which is why the one-step half matters as much as the table.
+    The README carries the measurements and the two unreadable jumps that paid
+    for it; they are not restated here.
 
-    The guard (`scripts/check-version-bump.mjs`) enforces the step for the
-    plugin and its skills. **It cannot enforce the table** — no check can read
-    what a change *means* — so that half is a review question, and it is
-    outside the guard entirely for tools and the toolbox, whose versions live in
-    `lia-toy-box` ([LIAB-1188](https://linear.app/lia-creative/issue/LIAB-1188)).
-    A promotion never picks the digit; a stage lives in the release register.
-    The one exception: `0.x` is not-yet-production, and production is `1.0.0`.
+    **A number is not yours until it lands.** The guard also refuses a version
+    the base ref already serves: two branches picking the same one merge with no
+    conflict, because both wrote the same string, and deliver nothing. That is
+    not a hypothetical — it happened five times on the branch that added this
+    rule, in one afternoon.
+
+    The guard (`scripts/check-version-bump.mjs`) enforces the step and the
+    collision for the plugin and its skills. **It cannot enforce the table** —
+    no check can read what a change *means* — so that half is a review question,
+    and it is outside the guard entirely for tools and the toolbox, whose
+    versions live in `lia-toy-box`
+    ([LIAB-1188](https://linear.app/lia-creative/issue/LIAB-1188)).
+
+    **Two clauses that are about tools only**, and mean nothing for the plugin
+    or a skill: a promotion never picks the digit, because a tool's stage lives
+    in its release register; and `0.x` is not-yet-production, with production
+    being `1.0.0` and a breaking change below it taking the minor. A skill at
+    `0.3.1` is not a draft — 69 of the 73 in this plugin are `0.x` and every one
+    of them is live.
 
 Roster and what belongs: [lia-tools/README.md](lia-tools/README.md). The
 audit trail of which copy won, why, and what was retired:
