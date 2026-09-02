@@ -28,7 +28,7 @@ Every rule is written as something a builder can act on. Where a rule has a know
 | Sky | `#BAE6FD` | same | `bg-lia-sky` | Accent — content only |
 | Pale | `#FEF08A` | same | `bg-lia-pale` | Accent — content only |
 
-The hex values are for recognising a colour, not for typing one — see §2. Brand Blue has a light and a dark value because `--primary` is declared once per theme (§2); the accents resolve to their fixed `-600` step in both themes, so they are mode-independent and need no dark override.
+The hex values are for recognising a colour, not for typing one — see §2. Brand Blue has a light and a dark value because `--primary` is declared once per theme (§2); the accents resolve to the same primitive step in both themes (the DS's `CLAUDE.md` accent-pairing note: *"the accents resolve to their fixed `-600` step in both themes, so the pairing is mode-independent"*), so an accent fill needs no dark override.
 
 ### Neutrals — the workhorses
 
@@ -45,7 +45,7 @@ The hex values are for recognising a colour, not for typing one — see §2. Bra
 
 ### Text on an accent — only through the Badge variants
 
-**Never hand-pair an accent with a foreground** (`bg-lia-sky text-white` is a defect). Use the Badge accent variants — `sky`, `pale`, `gold`, `pink`, `orange`, `magenta`, `brick` — each pairs its accent with a `--lia-[accent]-foreground` chosen by measured contrast; all fourteen combinations (seven accents × two themes) verified at ≥ 5.24:1.
+**Never hand-pair an accent with a foreground** (`bg-lia-sky text-white` is a defect). Use the Badge accent variants — `sky`, `pale`, `gold`, `pink`, `orange`, `magenta`, `brick` — each pairs its accent with a `--lia-[accent]-foreground` chosen by measured contrast. Seven pairings; each is the same in both themes and was verified on both grounds — the vault guide's *"all 14 combinations (7 accents × light/dark) verified at ≥ 5.24:1"* is fourteen checks of seven pairings, not fourteen pairings.
 
 ```tsx
 <Badge variant="sky">Draft</Badge>
