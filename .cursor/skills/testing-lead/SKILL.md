@@ -21,6 +21,7 @@ companions:
   - security
   - engineering-lead
   - project-manager
+  - plugin-manager
   - toy-release
   - review-and-merge
   - execution-discipline
@@ -100,7 +101,7 @@ verdict are comments on the epic — that is where the PM and the founder read t
 
 ## Changelog
 
-- **0.2.0 (2026-09-02, LIAB-1163)** — the improvement loop reaches this lead: a seat's After Action Report ends with `Skill change proposed:` (`wrap-up` §1.5), and the row here says this lead raises that PR and `plugin-manager` lands it. CQ, 2 Sep 2026: *"make sure the sub agents are suggesting changes to the leads across all of the agents"* — measured, only `research-lead` and `testing-lead` carried the row. The row is now the standard wording every lead carries.
+- **0.2.0 (2026-09-02, LIAB-1163)** — the improvement loop reaches this lead: a seat's After Action Report ends with `Skill change proposed:` (`wrap-up` §1.5), and the row here says this lead raises that PR and `plugin-manager` lands it. CQ, 2 Sep 2026: *"make sure the sub agents are suggesting changes to the leads across all of the agents"* — measured, only `research-lead` and `testing-lead` carried the row. The row is now the standard wording every lead carries, and `plugin-manager` joins `companions:` (caught at review of PR #46 — the first cut added it to three leads and assumed this one).
 - **0.1.2 (2026-09-02, LIAB-1162)** — the trigger for a skill-change PR is a seat's After Action Report, not a retro (`wrap-up` 2.0.0) — reference only.
 - **0.1.1 (2026-09-02, LIAB-1161)** — `lead-engineer` is `engineering-lead` — reference only: the seat's name now follows its discipline, like the other four leads. No rule changed.
 - **0.1.0 (2026-08-29, LIAB-1024)** — first version. The QA stage's lead: the bench routing table,
