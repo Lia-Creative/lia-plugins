@@ -2,7 +2,7 @@
 name: ready-review
 slug: ready-review
 description: "Gate epics and stories before design or build spend work on them — a context that did not write them (a spawned subagent counts) grades every story on the five checks (Title/Narrative/Scenarios/Completeness/Scope) with quoted evidence, plus the vault-dependence test; verdict as one comment. Use when asked if an epic or its stories are ready."
-version: 0.3.1
+version: 0.4.0
 created: 2026-08-26
 updated: 2026-09-02
 status: active
@@ -88,6 +88,7 @@ Four rules for it:
 2. **A gap names its fix and its seat.** "Not ready" with no named fix blocks silently, which is worse than passing it.
 3. **Not-ready goes back, labelled.** `defect:discovery` on the tickets that failed, per the round-trip convention — that's the data the pipeline learns from.
 4. **Don't grow the scope.** You're checking readiness against the standard, not redesigning the epic. A better idea you had is a comment marked as such, not a failure.
+5. **When this seat's own post is blocked, the parent posts it on your behalf — verbatim.** The comment opens *Posted by [parent seat] on behalf of ready-review · dispatch [id] — the text is the gate's verbatim* and changes nothing inside. A summarised verdict is the parent's reading, which is exactly what rule 0.1 forbids (LIAB-1089, 1 Sep 2026: the gate's post was policy-blocked and the lead relayed it — the right move, now written down).
 
 ---
 
@@ -99,6 +100,7 @@ Four rules for it:
 
 ## Changelog
 
+- **0.4.0 (2026-09-02, LIAB-1165)** — §4 rule 5: when the gate's own Linear write is blocked, the parent posts the verdict verbatim, attributed to the gate and its dispatch id — never summarised (LIAB-1089's relay, LIAB-1165).
 - **0.3.1 (2026-09-02, LIAB-1161)** — `lead-engineer` is `engineering-lead` — reference only: the seat's name now follows its discipline, like the other four leads. No rule changed.
 - **0.3.0 (2026-08-29, LIAB-1044)** — rule 0.1 said *"a fresh session only"*, and *session* was being read as *a terminal a human opens* and, worse, as *a seat that is not yours*. It is neither: the rule is **did not produce the work being graded** — a context boundary that names no bench. **A spawned subagent satisfies it**, so any seat holding the work runs this gate by spawning it rather than handing a founder a command; and **the parent hands down ticket ids and this rubric only, never its own reading of them**, since a conclusion passed downward arrives pre-formed. The verdict block gains a clause naming what makes the grading context fresh — the one thing a later reader cannot reconstruct. The §What this is line said *"a fresh agent"* and is corrected to the same wording, so the file does not define the rule one way and describe itself another.
 - **0.2.0 (2026-08-26, LIAB-949 + Fable 5)** — stories graded on the five-check rubric with quoted evidence per check; the verdict line carries the five marks. The rubric stays a vault document run by hand at real gates (the brief's own rule — no story-eval skill yet); this seat is where it runs.
