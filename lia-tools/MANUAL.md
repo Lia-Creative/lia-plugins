@@ -650,6 +650,10 @@ one of those is editing a copy that goes nowhere.
    node scripts/check-version-bump.mjs
    ```
 
+   These three, plus step 6's sync, are the four CI jobs that can block your
+   pull request. The fifth, `freshness`, runs only its own self-test and cannot
+   block you.
+
 8. **Open a pull request.** A lead reviews it and lands it. Never land your own.
 9. **Ask for a promotion** once it is merged, or it stays on `main` and reaches
    nobody.
@@ -693,7 +697,7 @@ ticket number in each row is where the reasoning lives.
 | Version | Date | What changed |
 |---|---|---|
 | **1.22.0** | 2 Sep 2026 | This manual. The plugin got a document written for a person rather than for an agent, and `plugin-manager` got the rule that keeps it true. (LIAB-1181) |
-| **1.21.0** | 1 Sep 2026 | Cursor can load the roster. `.cursor/skills/` became a real-file copy of the skills, because Cursor does not follow symlinks into a skills tree. |
+| **1.21.0** | 1 Sep 2026 | Cursor can load the roster. `.cursor/skills/` became a real-file copy of the skills, because Cursor does not follow symlinks into a skills tree. **No ticket** — landed as [PR #41](https://github.com/Lia-Creative/lia-plugins/pull/41) with no LIAB number, the only released version without one. |
 | **1.19.0** | 1 Sep 2026 | Recorded that the `release` branch stays unprotected on purpose, so rollback stays one command. (LIAB-994) |
 | **1.18.0** | 31 Aug 2026 | What the orchestration chain's first real run taught: a lead must block on each beat rather than backgrounding it, an agent must be able to tell which version of a skill it holds, and re-dispatching a quiet agent is how two sessions end up in one worktree. (LIAB-1051, LIAB-1052, LIAB-1053) |
 | **1.17.0** | 30 Aug 2026 | The bug shape got one home — a Linear document every intake points at, instead of each skill carrying its own version. (LIAB-967) |
@@ -722,8 +726,10 @@ ticket number in each row is where the reasoning lives.
 | **1.0.0** | 26 Aug 2026 | The plugin exists, and this repository became the source of truth for its skills — canonical moved out of the vault, because a vault build machines cannot mount is a poor distribution channel. (LIAB-919, LIAB-920) |
 
 > **Note:** Version numbers 1.3.1, 1.3.2 and 1.20.0 were never served — each was
-> superseded on its own branch before the promotion. The rows above are the
-> versions that actually reached machines.
+> superseded on its own branch before it could be promoted. 1.20.0 says so in its
+> own commit: *"PR #43 took 1.19.0. Rebase + re-bump so version-bump CI can
+> pass."* None of the three appears anywhere in the history of either `main` or
+> `release`. The rows above are the versions that actually reached machines.
 
 ### Two Things That Were Retired
 
@@ -748,7 +754,7 @@ Five terms appear above that are worth ten seconds each.
 | **Frontmatter** | The block at the very top of a skill file, between two `---` lines, holding its name, description, version and triggers. It is what the skill *listing* shows and what auto-triggering matches on — which is why an error there breaks a skill that reads perfectly well below it. |
 | **Squash merge** | Merging a pull request by collapsing all its commits into one on the target branch. Because the content is rewritten rather than replayed, GitHub reporting "merged" does not prove your changes arrived — hence the content check in section 7. |
 | **Given / When / Then** | The shape every acceptance criterion is written in. *Given* the starting state, *when* someone does a thing, *then* this is true. It forces a criterion to be decidable — you can tell whether it passed. |
-| **CI** | Continuous integration: the checks GitHub runs automatically on every pull request. For this plugin that is four guards — frontmatter, roster, version bump, and the Cursor copy. You see them on the pull request page. |
+| **CI** | Continuous integration: the checks GitHub runs automatically on every pull request. For this plugin that is **five** jobs — `frontmatter`, `version-bump`, `roster`, `cursor-skills-mirror` and `freshness`. You see all five on the pull request page. Four of them can block your PR; `freshness` only runs its own self-test, because what it actually answers is an agent's question — *which copy of these skills am I holding?* |
 
 ---
 
