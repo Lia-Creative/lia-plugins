@@ -35,7 +35,7 @@ maintainer: cq
 ## 0. Two hard rules
 
 1. **A context that did not produce the work being graded.** That is the whole rule, and it is a **context** boundary, not a **bench** boundary — it names no seat. A session that shaped the frame will defend it, so the session that wrote the tickets, or led the writing, never grades them. Every other context may, whatever bench it sits on.
-   - **A spawned subagent satisfies it.** Its context window is its own. So any seat holding the work — the discovery lead, the engineering lead, the PM — runs this gate by **spawning** it, and nobody opens a terminal to achieve freshness (LIAB-1044: this gate was refused to a engineering lead on the grounds that `ready-review` sits with the discovery bench; that reading was wrong and it cost a round trip).
+   - **A spawned subagent satisfies it.** Its context window is its own. So any seat holding the work — the discovery lead, the engineering lead, the PM — runs this gate by **spawning** it, and nobody opens a terminal to achieve freshness (LIAB-1044: this gate was refused to an engineering lead on the grounds that `ready-review` sits with the discovery bench; that reading was wrong and it cost a round trip).
    - **The parent hands down ticket ids and this rubric — only.** Never its own reading of the tickets, never a summary, never "I think 3 and 5 are the weak ones". A conclusion passed downward arrives pre-formed, which is precisely what freshness exists to prevent. The parent may compare afterwards; a disagreement is worth more than an agreement it manufactured.
 2. **Evidence, never vibes.** Every verdict line quotes the ticket or names the absence. "Looks good" is not a verdict.
 
