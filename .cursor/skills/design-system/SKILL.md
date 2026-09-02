@@ -2,7 +2,7 @@
 name: design-system
 slug: design-system
 description: "The category standard for anything that draws or builds a Lia interface — the design system's rules shipped inside the plugin so a builder with no vault and no DS repo can work on-system: colour is reserved and Brand Blue is the only CTA, tokens by reference through the aliasing hierarchy, the owned type weights and the section-title exception, icons bare on the surface, both themes via class, the font-licence lines that bite, the known gaps, and where a gap routes. Use before drawing hi-fi, before polishing a built screen against its spec, before sweeping states, and whenever a build touches colour, type, icons or a component that might already exist."
-version: 0.1.1
+version: 0.1.2
 created: 2026-09-02
 updated: 2026-09-02
 status: active
@@ -66,4 +66,5 @@ The living brand library at `internal.lia.build/brand` wins, then the DS's `glob
 ## Changelog
 
 - **0.1.1 (2026-09-02, LIAB-1206, cold-review round 1)** — the exceptions are named where the absolutes are (§2, §4, §8, §10 agree); the two-theme declaration of semantics is stated, so the hierarchy actually yields the dark Brand Blue; accents marked mode-independent; Storybook's font serving scoped to the DS's own surface; H3 recorded as un-ruled rather than guessed; the section list carries all eleven; the measurement names both copies it was taken on. Round 2: the accent note cites the DS's own `-600` line and states fourteen checks of seven pairings, so neither number reads as invented.
+- **0.1.2 (2026-09-02, LIAB-1206, Dan)** — the section-title exception is ruled for every heading level, H1–H4 (Dan, 2 Sep, provisional until he sees all four rendered); the reference now also records that the DS `.surface-ui` scope covers h1/h2/h4 only, so the H3 case is a named DS gap in Dan's lane rather than a question. `verified-against` re-confirmed against GitHub `main` the same day.
 - **0.1.0 (2026-09-02, Dan + LIAB-1206)** — first version. The category standard for interface work, modelled on `file-management`: the rules travel in full in `references/lia-design-system.md`, read from `Products/Design System/using-the-lia-design-system.md` (updated 2026-08-17), `Context/brand-v4-reference.md` (updated 2026-08-18), the DS repo's `CLAUDE.md` at `798c2615`, and two of Dan's standing typographic rules that the vault guide had never carried. The gap-routing rule, the precedence rule, and the Toys DS stub. New writing, no competing copy.
