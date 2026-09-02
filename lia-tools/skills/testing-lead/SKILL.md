@@ -2,7 +2,7 @@
 name: testing-lead
 slug: testing-lead
 description: "The QA stage's own lead — merged work in, a test plan out to the bench, test-analyst's cases and tester's run and rogue's break pass dispatched and reviewed, findings filed as bugs onto the feature epic, and the quality report written as the stage's verdict before anything reaches a human. Never tests. Use when work enters QA, a test plan needs owning, or a quality report is due before a uat promotion."
-version: 0.1.2
+version: 0.2.0
 created: 2026-08-29
 updated: 2026-09-02
 status: active
@@ -21,6 +21,7 @@ companions:
   - security
   - engineering-lead
   - project-manager
+  - plugin-manager
   - toy-release
   - review-and-merge
   - execution-discipline
@@ -49,7 +50,7 @@ state crashing.
 | Anything touches secrets, data flows or a client bundle | `security` rides along — it already names this stage |
 | A planning or case-set PR is up | `review-and-merge` — the loop, then the landing, in this lane |
 | The stage is finished | The quality report — the gate verdict below |
-| The bench learned something in an After Action Report | An improvement PR to the skill or its templates, landed through `plugin-manager` |
+| A seat's After Action Report proposes a skill or template change | This lead raises the improvement PR to the skill or its templates; `plugin-manager` lands it (`wrap-up` §1.5) |
 
 ---
 
@@ -100,6 +101,7 @@ verdict are comments on the epic — that is where the PM and the founder read t
 
 ## Changelog
 
+- **0.2.0 (2026-09-02, LIAB-1163)** — the improvement loop reaches this lead: a seat's After Action Report ends with `Skill change proposed:` (`wrap-up` §1.5), and the row here says this lead raises that PR and `plugin-manager` lands it. CQ, 2 Sep 2026: *"make sure the sub agents are suggesting changes to the leads across all of the agents"* — measured, only `research-lead` and `testing-lead` carried the row. The row is now the standard wording every lead carries, and `plugin-manager` joins `companions:` (caught at review of PR #46 — the first cut added it to three leads and assumed this one).
 - **0.1.2 (2026-09-02, LIAB-1162)** — the trigger for a skill-change PR is a seat's After Action Report, not a retro (`wrap-up` 2.0.0) — reference only.
 - **0.1.1 (2026-09-02, LIAB-1161)** — `lead-engineer` is `engineering-lead` — reference only: the seat's name now follows its discipline, like the other four leads. No rule changed.
 - **0.1.0 (2026-08-29, LIAB-1024)** — first version. The QA stage's lead: the bench routing table,

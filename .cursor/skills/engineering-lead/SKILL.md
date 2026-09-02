@@ -2,7 +2,7 @@
 name: engineering-lead
 slug: engineering-lead
 description: "The senior developer's seat — holds the whole technical picture, never builds; fires its own chain of subagents (gate, build, review, feedback, re-review, merge) without returning between beats; routes across the bench: architecture, acceptance-criteria, build-prep, ticket-review (pickability), review-and-merge, security. Use when taking technical ownership of a milestone or deciding which engineering skill a moment needs."
-version: 0.7.0
+version: 0.8.0
 created: 2026-08-26
 updated: 2026-09-02
 status: active
@@ -21,6 +21,7 @@ companions:
   - security
   - testing-lead
   - project-manager
+  - plugin-manager
   - execution-discipline
 maintainer: cq
 ---
@@ -37,6 +38,7 @@ maintainer: cq
 | A ticket is about to be dispatched | `ticket-review` — the one-question pickability check |
 | A PR is up | `review-and-merge` — the loop, then the merge |
 | Anything touches secrets, data flows, or a client bundle | `security` |
+| A seat's After Action Report proposes a skill or template change | This lead raises the improvement PR to the skill or its templates; `plugin-manager` lands it (`wrap-up` §1.5) |
 
 **Where this lane ends.** At the content-verified merge. What follows is the QA stage —
 `testing-lead`'s bench, dispatched by the PM — which tests the merged build as a person will meet it
@@ -96,6 +98,7 @@ Every beat is **spawned in the foreground and blocked on** — see *the chain en
 
 ## Changelog
 
+- **0.8.0 (2026-09-02, LIAB-1163)** — the improvement loop reaches this lead: a seat's After Action Report ends with `Skill change proposed:` (`wrap-up` §1.5), and the row here says this lead raises that PR and `plugin-manager` lands it. CQ, 2 Sep 2026: *"make sure the sub agents are suggesting changes to the leads across all of the agents"* — measured, only `research-lead` and `testing-lead` carried the row. `plugin-manager` joins `companions:`.
 - **0.7.0 (2026-09-02, LIAB-1161)** — **the seat is `engineering-lead`.** Renamed from `lead-engineer` so the name follows the discipline, like `discovery-lead`, `design-lead`, `research-lead` and `testing-lead` — CQ, 2 Sep 2026: *"go with the discipline first so i can quickly get to the skill faster."* Directory, `name:`, `slug:`, triggers, the H1 and every current-text mention across the plugin move with it; dated changelog entries and quoted decisions keep the old name because they are history. `lead-engineer/` stays for one release as a pointer, the `orchestrate` precedent, because live tickets and handovers still say `/lead-engineer`. No rule changed.
 - **0.6.0 (2026-08-29, LIAB-1051)** — two corrections from review, both text. 0.5.0's changelog justified itself with *"six files cite these rules by number"*; the action was right but the figure was borrowed from `review-and-merge` §5 — **grep finds nothing outside this file citing them by number**, and under repo rule 3 a changelog line is what makes a version mean something, so it should not carry a fact that is not its own. And §The chain's closing line cited **rule 10** for stopping at a wall, which is rule 11 — pre-existing, but newly adjacent to the correct citation two lines below.
 - **0.5.0 (2026-08-29, LIAB-1051)** — **§The chain gains an ending, because it had one failure mode it could not name.** 0.3.0 forbade three *active* returns — a command block, a plan describing beat 3, *"ready for review — say go"*. On the chain's first real run a lead did none of them: it backgrounded beat 2 and **ended its turn**, one beat of five in. Every rule stayed silent because **going quiet is not asking**, and nothing would have resumed it. New subsection: the chain ends in exactly two places, the final report or a rule 11 wall; the passive return is named as the same failure as the verbal ones; beats are **spawned in the foreground and blocked on**, said in the beat table too. A callout takes on the tooling directly — the spawn tool's and the monitor's *"you'll be notified"* are true only **within a turn** and cannot restart one that has ended, which is exactly what made the failing lead feel doubly covered. And, per LIAB-1053's delivery check 2, the skill now says what to do **while waiting**: waiting is the instruction, not a gap to fill — with the three wrong ways to fill it named, including re-dispatching on silence. Appended, nothing renumbered — verified by grep that nothing outside this file cites these rules by number.

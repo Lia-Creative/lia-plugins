@@ -2,7 +2,7 @@
 name: design-lead
 slug: design-lead
 description: "The design stage owned end to end — ready stories in, then exploration, flows, hi-fi, error states, and the handover out, each step its own seat; the lead checks every step is covered before tickets reach the engineering lead for build prep. Use when taking ownership of a design stage or deciding which design skill a moment needs."
-version: 0.3.1
+version: 0.4.0
 created: 2026-08-27
 updated: 2026-09-02
 status: active
@@ -21,8 +21,10 @@ companions:
   - design-handoff
   - ui-capture
   - ui-teardown
+  - ux-writing
   - engineering-lead
   - project-manager
+  - plugin-manager
   - execution-discipline
 maintainer: cq
 ---
@@ -40,6 +42,8 @@ maintainer: cq
 | The happy path is drawn and believes itself finished | `error-states` — the sweep |
 | The design needs to reach the ticket and the builder | `design-handoff` — notes + the artefact, HTML onto the ticket or into the repo |
 | The stage needs eyes on an existing product or competitor | `ui-capture` / `ui-teardown` |
+| The screens need their words — action labels, alerts, errors, empty states — written to the lexicon and linted | `ux-writing` |
+| A seat's After Action Report proposes a skill or template change | This lead raises the improvement PR to the skill or its templates; `plugin-manager` lands it (`wrap-up` §1.5) |
 
 ---
 
@@ -78,6 +82,7 @@ A step not covered is a dispatch, not a footnote. **Skipping a step is deliberat
 
 ## Changelog
 
+- **0.4.0 (2026-09-02, LIAB-1163)** — the improvement loop reaches this lead: a seat's After Action Report ends with `Skill change proposed:` (`wrap-up` §1.5), and the row here says this lead raises that PR and `plugin-manager` lands it. CQ, 2 Sep 2026: *"make sure the sub agents are suggesting changes to the leads across all of the agents"* — measured, only `research-lead` and `testing-lead` carried the row. Also fixes a routing gap found in the audit: `ux-writing` sits on the design bench in the README and this table never routed to it — a design lead following its own table would never dispatch the seat that writes the interface copy. `ux-writing` and `plugin-manager` join `companions:`.
 - **0.3.1 (2026-09-02, LIAB-1161)** — `lead-engineer` is `engineering-lead` — reference only: the seat's name now follows its discipline, like the other four leads. No rule changed.
 - **0.1.0 (2026-08-27, CQ + LIAB-995)** — first version. The design stage as an owned bench: CQ's step list (reqs, exploration, flows, hi-fi, error states, handover, HTML back) each a seat, with the coverage verdict as the stage's exit gate.
 - **0.2.0 (2026-08-27, CQ + LIAB-1000)** — `design-reference` added to the bench and to the **Direction** row of the coverage gate: reference that informed a direction is cited, not remembered.
