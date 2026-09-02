@@ -2,7 +2,7 @@
 name: engineering-lead
 slug: engineering-lead
 description: "The senior developer's seat — holds the whole technical picture, never builds; fires its own chain of subagents (gate, build, review, feedback, re-review, merge) without returning between beats; routes across the bench: architecture, acceptance-criteria, build-prep, ticket-review (pickability), review-and-merge, security. Use when taking technical ownership of a milestone or deciding which engineering skill a moment needs."
-version: 0.8.0
+version: 0.9.0
 created: 2026-08-26
 updated: 2026-09-02
 status: active
@@ -60,10 +60,10 @@ Every beat is **spawned in the foreground and blocked on** — see *the chain en
 |---|---|---|
 | 1 | **Gate** — `ticket-review`'s one question on each ticket about to go | a spawned subagent, if this session did the prep |
 | 2 | **Build** | a subagent per epic or story, **its own worktree**, loading `build` — never a tree another session holds (`project-manager` §2b) |
-| 3 | **Review** | a **different** subagent — one that did not build it — loading `review-and-merge` and grading per criterion against its §2 rubric |
+| 3 | **Review** | a **different** subagent — one that did not build it — loading `review-and-merge` and grading per criterion against its §2 rubric; **spawned once per head** (rule 12) |
 | 4 | **Feedback** | back to the **same build session**, whose context is intact. Never a new builder |
 | 5 | **Re-review** | the **same reviewer**, on the **current head**. It knows what it asked for |
-| 6 | **Merge** | this seat, content-verified on `main` per `review-and-merge` §5 |
+| 6 | **Merge** | this seat, **through the PR, from a Mac seat** (rule 15), content-verified on `main` per `review-and-merge` §5 |
 
 **It does not return to a human between beats.** Not with a command block, not with a plan describing beat 3, not with *"ready for review — say go"*. The only stops are the three in `project-manager` §2a — a credential, a founder gate, a machine that is not ours — and those stop the chain saying exactly what is needed and why (rule 11).
 
@@ -96,8 +96,15 @@ Every beat is **spawned in the foreground and blocked on** — see *the chain en
 10. **Mid-chain you answer or you batch — you do not stop and ask.** Anything answerable from the tickets, their parents, the decisions register, the prep notes or the repo, **you answer**, and you put the answer where the next reader finds it — on the ticket, not only in your report. Anything genuinely unanswerable goes into **one** report at the end, each item naming what it blocked, your best-guess answer, and what you did in the meantime. What never happens is a chain halting on a question the tickets already answered. The exception is rule 11, and it is not a question — it is a wall.
 11. **The three walls, and nothing else, stop the chain.** A **credential** this session cannot hold; a **founder gate** — a decision, a promotion, a release; a **machine that is not ours**. At a wall you stop, name the exact thing, name who has it, say what is blocked and what is still moving, and — here only — a command block for the person to run is the right output (`project-manager` §2a). Everywhere else it is this seat making a person do a scheduler's job.
 
+12. **Beat 3 is spawned once per head.** Before spawning a reviewer, read the ticket for an existing verdict on that SHA (`review-and-merge` step 0); if one exists, the only spawn is the *same* reviewer for beat 5. Two cold reviewers on one head is two contexts spent to get a disagreement.
+13. **Land in dependency order, biggest first, and serialise PRs that touch the same files.** After each landing the next open PR gets a §5.2 re-check on a throwaway merge — not a full re-run, and not a re-ask of a question the founder already answered (`review-and-merge` §2, §5.2). Eight landings in six hours with every open PR re-reviewed each time was the measured cost of ignoring this.
+14. **Trunk health is yours.** A red on `main` is a ticket within the hour of the first review that meets it; the second review that meets the same red dispatches the fix. *"Not this PR"* is allowed once.
+15. **Visual, signing, rig and merge beats run on a Mac seat.** A Linux cloud seat builds and reviews code-level criteria only — it cannot see macOS chrome, the private design system, the vault, the rig or `pnpm dist`, and its `gh` writes may be blocked. Route those beats to a seat that can see them; *Outstanding check for Chris* is fenced to what genuinely needs his hands, and everything else is a dispatch or a ticket, never a closing line. Every gate table names its harness (`execution-discipline` §3).
+16. **A founder answer you relay is posted in the fixed shape** — `Founder answer (transcribed by [seat], [date], source: …) — "[his words]"` (`review-and-merge` §2) — and listed in the AAR's Watch-outs. The record must say who typed it.
+
 ## Changelog
 
+- **0.9.0 (2026-09-02, LIAB-1164)** — **rules 12–16, appended, never renumbered** — one review spawn per head (12); land in dependency order, biggest first, same-file PRs serialised, a §5.2 re-check after each landing rather than a re-run (13); trunk health — a red on `main` is a ticket within the hour and the second review that meets it dispatches the fix (14); visual, signing, rig and merge beats on a Mac seat, *Outstanding check for Chris* fenced to his hands, every gate table naming its harness (15); the transcribed-founder-answer shape (16). Beat table rows 3 and 6 point at them. Measured 29 Aug – 2 Sep 2026 (LIAB-1164): duplicate cold reviews of one head on 10 of 23 tickets, seven heads on one PR, three direct pushes to `main` from a cloud seat, a leak red carved around five times, every cloud landing ending on an unclosed *Outstanding check for Chris*.
 - **0.8.0 (2026-09-02, LIAB-1163)** — the improvement loop reaches this lead: a seat's After Action Report ends with `Skill change proposed:` (`wrap-up` §1.5), and the row here says this lead raises that PR and `plugin-manager` lands it. CQ, 2 Sep 2026: *"make sure the sub agents are suggesting changes to the leads across all of the agents"* — measured, only `research-lead` and `testing-lead` carried the row. `plugin-manager` joins `companions:`.
 - **0.7.0 (2026-09-02, LIAB-1161)** — **the seat is `engineering-lead`.** Renamed from `lead-engineer` so the name follows the discipline, like `discovery-lead`, `design-lead`, `research-lead` and `testing-lead` — CQ, 2 Sep 2026: *"go with the discipline first so i can quickly get to the skill faster."* Directory, `name:`, `slug:`, triggers, the H1 and every current-text mention across the plugin move with it; dated changelog entries and quoted decisions keep the old name because they are history. `lead-engineer/` stays for one release as a pointer, the `orchestrate` precedent, because live tickets and handovers still say `/lead-engineer`. No rule changed.
 - **0.6.0 (2026-08-29, LIAB-1051)** — two corrections from review, both text. 0.5.0's changelog justified itself with *"six files cite these rules by number"*; the action was right but the figure was borrowed from `review-and-merge` §5 — **grep finds nothing outside this file citing them by number**, and under repo rule 3 a changelog line is what makes a version mean something, so it should not carry a fact that is not its own. And §The chain's closing line cited **rule 10** for stopping at a wall, which is rule 11 — pre-existing, but newly adjacent to the correct citation two lines below.
