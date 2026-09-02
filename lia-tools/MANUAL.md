@@ -721,7 +721,7 @@ ticket number in each row is where the reasoning lives.
 
 | Version | Date | What changed |
 |---|---|---|
-| **1.29.0** | 2 Sep 2026 | The freshness detector looks under `~/.cursor/plugins` as well as Claude Code's tree, so a machine with a real Cursor install is no longer reported as having none. (LIAB-1168) |
+| **1.28.1** | 2 Sep 2026 | The freshness detector looks under `~/.cursor/plugins` as well as Claude Code's tree, so a machine with a real Cursor install is no longer reported as having none. (LIAB-1168) |
 | **1.28.0** | 2 Sep 2026 | One versioning policy for the plugin, the tools and the toolbox: take the smallest bump that is true, move exactly one step, and never let a promotion pick the digit. Before this, nothing said how *big* a bump should be, so habit answered — 21 minors in 26 releases, a wording fix priced like a new bench of skills. CI now also refuses a number the base already serves, which it caught it repeatedly on its own branch. (LIAB-1184) |
 | **1.27.0** | 2 Sep 2026 | This manual. The plugin got a document written for a person rather than for an agent, and `plugin-manager` got the rule that keeps it true. (LIAB-1181) |
 | **1.26.0** | 2 Sep 2026 | Dispatch and hygiene: a dead session's work is salvaged by rule rather than abandoned, every worktree is accounted for, and a red that is not yours gets named as one. Plus the Cursor mirror's self-test now actually exercises the sync, so it can go red. (LIAB-1165, LIAB-1169) |
