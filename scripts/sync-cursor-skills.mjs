@@ -14,6 +14,13 @@
 //   node scripts/sync-cursor-skills.mjs           # write the mirror
 //   node scripts/sync-cursor-skills.mjs --check   # fail if out of date
 //   node scripts/sync-cursor-skills.mjs --self-test
+//
+// `--self-test` runs the real `syncWrite` and `syncCheck` against a temp tree and
+// watches each go red (LIAB-1169). The first version asserted on its own copy of
+// the rules and never called either function, so a neutered sync still printed
+// `self-test ok` and CI trusted it — the exact shape CLAUDE.md §Make the check
+// fail on purpose is about. `syncWrite` and `syncCheck` take `{ source, dest }`
+// for that reason; the CLI passes nothing and gets the repo paths.
 
 import {
   cpSync,
@@ -85,95 +92,158 @@ function diffMaps(source, dest) {
   return { missing, extra, changed };
 }
 
-function syncWrite() {
-  if (!existsSync(SOURCE)) {
-    console.error(`missing source: ${relative(REPO_ROOT, SOURCE)}`);
+function syncWrite({ source = SOURCE, dest = DEST, quiet = false } = {}) {
+  const log = quiet ? () => {} : console.log;
+  const fail = quiet ? () => {} : console.error;
+  if (!existsSync(source)) {
+    fail(`missing source: ${relative(REPO_ROOT, source)}`);
     return 1;
   }
-  mkdirSync(dirname(DEST), { recursive: true });
+  mkdirSync(dirname(dest), { recursive: true });
   // Replace whatever is there (symlink or stale tree) with a clean copy.
-  rmSync(DEST, { recursive: true, force: true });
-  cpSync(SOURCE, DEST, { recursive: true, dereference: true });
+  rmSync(dest, { recursive: true, force: true });
+  cpSync(source, dest, { recursive: true, dereference: true });
   // Drop junk macOS sometimes leaves; Cursor only needs skill folders.
   for (const name of SKIP_NAMES) {
-    const p = join(DEST, name);
+    const p = join(dest, name);
     if (existsSync(p)) rmSync(p, { force: true });
   }
-  const n = listFiles(DEST).length;
-  console.log(`ok — mirrored ${n} file(s) from lia-tools/skills → .cursor/skills`);
+  const n = listFiles(dest).length;
+  log(`ok — mirrored ${n} file(s) from lia-tools/skills → .cursor/skills`);
   return 0;
 }
 
-function syncCheck() {
-  if (!existsSync(SOURCE)) {
-    console.error(`missing source: ${relative(REPO_ROOT, SOURCE)}`);
+function syncCheck({ source = SOURCE, dest = DEST, quiet = false } = {}) {
+  const log = quiet ? () => {} : console.log;
+  const fail = quiet ? () => {} : console.error;
+  if (!existsSync(source)) {
+    fail(`missing source: ${relative(REPO_ROOT, source)}`);
     return 1;
   }
-  if (!existsSync(DEST)) {
-    console.error(`.cursor/skills is missing — run: node scripts/sync-cursor-skills.mjs`);
+  if (!existsSync(dest)) {
+    fail(`.cursor/skills is missing — run: node scripts/sync-cursor-skills.mjs`);
     return 1;
   }
-  if (lstatSync(DEST).isSymbolicLink()) {
-    console.error(
+  if (lstatSync(dest).isSymbolicLink()) {
+    fail(
       `.cursor/skills is a symlink — Cursor does not discover skills through a skills-root symlink. Replace it with a real mirror: node scripts/sync-cursor-skills.mjs`,
     );
     return 1;
   }
-  const { missing, extra, changed } = diffMaps(mirrorMap(SOURCE), mirrorMap(DEST));
+  const { missing, extra, changed } = diffMaps(mirrorMap(source), mirrorMap(dest));
   if (!missing.length && !extra.length && !changed.length) {
-    console.log(`ok — .cursor/skills matches lia-tools/skills (${mirrorMap(SOURCE).size} file(s))`);
+    log(`ok — .cursor/skills matches lia-tools/skills (${mirrorMap(source).size} file(s))`);
     return 0;
   }
-  console.error(`.cursor/skills is out of sync with lia-tools/skills:\n`);
-  for (const rel of missing) console.error(`  missing in mirror: ${rel}`);
-  for (const rel of changed) console.error(`  content differs:   ${rel}`);
-  for (const rel of extra) console.error(`  extra in mirror:   ${rel}`);
-  console.error(`\n  → Edit skills only under lia-tools/skills/, then run: node scripts/sync-cursor-skills.mjs\n`);
+  fail(`.cursor/skills is out of sync with lia-tools/skills:\n`);
+  for (const rel of missing) fail(`  missing in mirror: ${rel}`);
+  for (const rel of changed) fail(`  content differs:   ${rel}`);
+  for (const rel of extra) fail(`  extra in mirror:   ${rel}`);
+  fail(`\n  → Edit skills only under lia-tools/skills/, then run: node scripts/sync-cursor-skills.mjs\n`);
   return 1;
 }
 
+// Every assertion below goes through the real `syncWrite` / `syncCheck`, pointed at a
+// temp tree. Nothing here re-implements a rule: if a rule stops holding in the code
+// the CLI runs, the same call stops holding here. Failures are collected rather than
+// stopping at the first, so a broken function shows every assertion it takes down and
+// the message names it. Watched red under both of LIAB-1169's mutations before it was
+// trusted green — the transcripts are on the PR.
 function selfTest() {
   const dir = mkdtempSync(join(tmpdir(), "sync-cursor-skills-"));
   const source = join(dir, "lia-tools", "skills");
   const dest = join(dir, ".cursor", "skills");
-  mkdirSync(join(source, "demo"), { recursive: true });
-  writeFileSync(join(source, "demo", "SKILL.md"), "---\nname: demo\ndescription: fixture\n---\n# demo\n");
+  const real = { source, dest, quiet: true };
 
-  // 1. Symlink root must fail --check.
-  mkdirSync(dirname(dest), { recursive: true });
-  symlinkSync(source, dest);
-  const symlinkCheck = (() => {
-    // Inline the same rules against this fixture root.
-    if (lstatSync(dest).isSymbolicLink()) return 1;
-    return 0;
-  })();
-  if (symlinkCheck !== 1) {
+  const failures = [];
+  let assertions = 0;
+  const expect = (broken, ok) => {
+    assertions += 1;
+    if (!ok) failures.push(broken);
+  };
+  const put = (root, rel, body) => {
+    mkdirSync(dirname(join(root, rel)), { recursive: true });
+    writeFileSync(join(root, rel), body);
+  };
+  const sameBytes = (a, b) => existsSync(a) && existsSync(b) && readFileSync(a).equals(readFileSync(b));
+  const reads = (path, body) => existsSync(path) && readFileSync(path, "utf8") === body;
+
+  const fixtures = {
+    "demo/SKILL.md": "---\nname: demo\ndescription: fixture\n---\n# demo\n",
+    "demo/templates/note.md": "# a nested file — the mirror is recursive\n",
+    "other/SKILL.md": "---\nname: other\ndescription: second skill\n---\n# other\n",
+  };
+  const rels = Object.keys(fixtures);
+
+  try {
+    for (const rel of rels) put(source, rel, fixtures[rel]);
+
+    // 1. A symlink skills root. The real check refuses it; the real write replaces it
+    //    with a real tree — and must not reach through the link and delete the source.
+    mkdirSync(dirname(dest), { recursive: true });
+    symlinkSync(source, dest);
+    expect("syncCheck accepted a symlink skills root", syncCheck(real) === 1);
+    expect("syncWrite over a symlink root did not return ok", syncWrite(real) === 0);
+    expect("syncWrite left the skills root a symlink", existsSync(dest) && !lstatSync(dest).isSymbolicLink());
+    expect(
+      "syncWrite over a symlink root deleted the source through the link",
+      rels.every((rel) => existsSync(join(source, rel))),
+    );
+
+    // 2. A fresh mirror. The real write, then every file byte-equal — read back here,
+    //    not hashed by the code under test — then the real check green.
+    rmSync(dest, { recursive: true, force: true });
+    expect("syncWrite did not return ok on a fresh mirror", syncWrite(real) === 0);
+    for (const rel of rels) {
+      expect(`syncWrite did not mirror ${rel} byte-for-byte`, sameBytes(join(source, rel), join(dest, rel)));
+    }
+    expect("syncCheck reported a matching mirror red", syncCheck(real) === 0);
+
+    // 3. A drifted mirror, three ways. Each must be red to the real check, and green
+    //    again once the real write has repaired it.
+    const drifts = [
+      ["a changed byte", () => put(dest, "demo/SKILL.md", fixtures["demo/SKILL.md"].replace("fixture", "fixturE"))],
+      ["an extra file", () => put(dest, "stray/SKILL.md", "# not in the source\n")],
+      ["a removed file", () => rmSync(join(dest, "demo/templates/note.md"), { force: true })],
+    ];
+    for (const [what, drift] of drifts) {
+      drift();
+      expect(`syncCheck passed a mirror with ${what}`, syncCheck(real) === 1);
+      expect(`syncWrite did not return ok repairing ${what}`, syncWrite(real) === 0);
+      expect(`syncCheck was still red after syncWrite repaired ${what}`, syncCheck(real) === 0);
+    }
+    expect("syncWrite left the stray file in the mirror", !existsSync(join(dest, "stray/SKILL.md")));
+    expect(
+      "syncWrite did not restore the removed file",
+      sameBytes(join(source, "demo/templates/note.md"), join(dest, "demo/templates/note.md")),
+    );
+
+    // 4. The source moves — the CI case. An edit under lia-tools/skills with no re-sync
+    //    is red; the re-sync carries the edit across and is green.
+    const edited = fixtures["demo/SKILL.md"].replace("description: fixture", "description: changed");
+    put(source, "demo/SKILL.md", edited);
+    expect("syncCheck passed a mirror behind an edited source", syncCheck(real) === 1);
+    expect("syncWrite did not return ok after a source edit", syncWrite(real) === 0);
+    expect("syncWrite did not carry the source edit into the mirror", reads(join(dest, "demo/SKILL.md"), edited));
+    expect("syncCheck was still red after the re-sync", syncCheck(real) === 0);
+
+    // 5. No mirror at all is red, not "nothing to compare".
+    rmSync(dest, { recursive: true, force: true });
+    expect("syncCheck passed a missing mirror", syncCheck(real) === 1);
+  } catch (err) {
+    failures.push(`threw: ${err?.stack ?? err}`);
+  } finally {
     rmSync(dir, { recursive: true, force: true });
-    console.error("self-test failed — symlink root was not treated as a defect");
+  }
+
+  if (failures.length) {
+    console.error(`self-test failed — ${failures.length} of ${assertions} assertion(s) red:`);
+    for (const f of failures) console.error(`  ✗ ${f}`);
     return 1;
   }
-  rmSync(dest, { force: true });
-
-  // 2. Fresh sync then check must be green.
-  cpSync(source, dest, { recursive: true });
-  const green = diffMaps(mirrorMap(source), mirrorMap(dest));
-  if (green.missing.length || green.extra.length || green.changed.length) {
-    rmSync(dir, { recursive: true, force: true });
-    console.error("self-test failed — identical trees reported a diff");
-    return 1;
-  }
-
-  // 3. Drift must be red.
-  writeFileSync(join(source, "demo", "SKILL.md"), "---\nname: demo\ndescription: changed\n---\n# demo\n");
-  const red = diffMaps(mirrorMap(source), mirrorMap(dest));
-  if (!red.changed.length) {
-    rmSync(dir, { recursive: true, force: true });
-    console.error("self-test failed — content drift was not detected");
-    return 1;
-  }
-
-  rmSync(dir, { recursive: true, force: true });
-  console.log("self-test ok — symlink root refused, matching mirror green, drifted mirror red");
+  console.log(
+    `self-test ok — ${assertions} assertions against the real syncWrite and syncCheck: symlink root refused and replaced, fresh mirror byte-equal and green, drift red by changed byte / extra file / removed file / edited source, missing mirror red`,
+  );
   return 0;
 }
 

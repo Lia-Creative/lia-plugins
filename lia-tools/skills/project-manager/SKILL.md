@@ -2,7 +2,7 @@
 name: project-manager
 slug: project-manager
 description: "Run tickets front to end — passing work between the stage leads so tickets move discovery to design to build to review to QA on gate verdicts, spawning each seat itself rather than handing a person a command, checking nobody already holds a ticket, statuses kept true, traffic-light updates written for a person. Use when running the board, handing out work, moving a ticket between stages, or writing a milestone update."
-version: 0.8.0
+version: 0.9.0
 created: 2026-08-26
 updated: 2026-09-02
 status: active
@@ -34,7 +34,7 @@ maintainer: cq
 
 **Lineage.** This is the board half of `orchestrate` 0.2.0, split out 26 Aug (the technical half went to `engineering-lead`). The disciplines below were earned in the 20 Aug internal-testing run and carry over intact.
 
-**One PM at a time.** Two sessions both believing they run the board is worse than none.
+**One PM at a time.** Two sessions both believing they run the board is worse than none. When a founder drives one session across two seats — the PM and a lead, as on LIAB-1089 on 1 Sep 2026 — the session's AAR says which seat made each move, and **the PM half still moves statuses on every gate verdict**: *this seat does not move tickets* is a lead's line, not the session's, and stories sat stale in Backlog while their epic was in Design because nobody in the room was being the PM.
 
 ---
 
@@ -43,7 +43,7 @@ maintainer: cq
 1. **`git fetch origin` and read the tip of `main` yourself.** Not the board's opinion of it.
 2. **Pull the milestone from Linear and diff it against whatever brief you were given.** Founders dispatch things without telling anyone; check the board and the open PRs before assuming any job is unstarted.
 3. **List the open PRs and where each sits in its loop.** That's the in-flight queue.
-4. **Check for worktrees and branches someone else may own** before dispatching anyone near them.
+4. **Check for worktrees and branches someone else may own** before dispatching anyone near them — and **sweep the dead ones**: `git worktree list` against the open PRs; a tree whose branch's PR is merged or closed is removed (`git worktree remove`), a tree holding uncommitted work is named on its ticket and left alone. 53 registered trees on one repo, six for one PR, was the 2 Sep 2026 measurement.
 5. **Hand out the first dispatches in one message**, not a plan describing them.
 
 ## 2. Dispatch — the PM spawns the seat itself
@@ -56,9 +56,13 @@ Three things go into the child, and nothing else:
 2. **Its own worktree** — every agent gets one; two sessions in one checkout has burned us.
 3. **The seat skill to load.** Short. No reading of the tickets, no summary of what you think is going on.
 
+Every dispatch **names its worktree on the ticket** — path and branch — so the next PM's sweep and the seat's own AAR can find it. And a spawned seat whose Linear write is blocked hands its text up: the PM posts it **verbatim**, opening *Posted by [parent seat] on behalf of [seat] · dispatch [id] — the text is the seat's verbatim*; a summary is the parent's reading, and for a gate that breaks the freshness it was spawned for (`ready-review` §4 rule 5).
+
 **Context lives on the ticket, never in the prompt — and the PM enforces it at every handoff.** If a seat needs something the prompt doesn't carry, **fix the ticket**, then dispatch. A prompt is read once; a ticket is read by every seat after it. Before a build dispatch specifically: the engineering lead's `ticket-review` has answered its one question, or the dispatch waits.
 
 **Which seat gets what:** discovery work → `discovery-lead`'s bench · the design stage → `design-lead`'s bench · prep and review → `engineering-lead`'s bench · epics → one `build` session · standalone tickets → `pickup` · the QA stage → `testing-lead`'s bench · research commissions → `research-lead`'s bench · marketplace and skill changes → `plugin-manager`. **Never change a dispatch after its first action**; if you must, the first words are *"stop — new order"*.
+
+**Which machine gets what.** A Linux cloud seat builds and reviews code-level criteria. Anything that has to *see the product* — a capture, a signed build, the rig, a `.dc.html` walk, the design system rather than a stand-in, and **the merge itself** — goes to a Mac seat, and the dispatch says which it is. An *Outstanding check for Chris* left behind by a cloud seat is a dispatch to a Mac seat or a ticket, never the end of the line: between 29 Aug and 2 Sep 2026 every cloud landing ended on one and none was closed (`engineering-lead` rule 15).
 
 **Gates stay fresh, and the PM spawns them like anything else.** The rule is **did not produce the work being graded** — a *context* boundary, not a bench boundary and not a seat's private property. A spawned subagent has its own context window, so it satisfies freshness on its own; the PM (or any lead) runs `ready-review` by spawning it, and hands the child **ticket ids and the rubric only, never its own reading of them**. What a gate may never be is the session that wrote the tickets, grading itself.
 
@@ -94,6 +98,7 @@ The rule above reads as a duty on **first** dispatch. Re-dispatch is where colli
 - **An empty diff proves nothing.** A build that has read for ten minutes and written nothing is byte-identical to a build that died on arrival. The snapshot cannot tell them apart — and you are taking it at the exact moment you have already decided which one it is.
 - **Two sessions never share a tree — and a fresh tree is not permission to dispatch.** If you cannot establish the first is gone, **you do not dispatch**: the rule above stands, and the ticket is not dispatchable. A second tree solves the *tree* collision — the lost uncommitted hour — and solves nothing about the collision this section exists for: two sessions on one ticket, two branches, two PRs, one of them thrown away. So when a replacement is genuinely warranted, on evidence rather than silence, it never goes into the first agent's tree. A tree is cheap; a lost hour of someone else's uncommitted work is not, and neither is a second PR nobody asked for.
 - **When in doubt, wait.** The quiet you are worried about is usually `engineering-lead` §The chain working correctly — a beat spawned in the foreground and blocked on looks exactly like nothing happening.
+- **When a replacement is warranted, salvage by rule.** The replacement **never adopts the dead session's tree**. It branches fresh from `origin/main`, cherry-picks the dead branch's committed work, copies uncommitted work over by hand, and says on the ticket exactly what was carried and what was not (LIAB-1066, 1 Sep 2026: *"commit cherry-picked; uncommitted work copied"* — the right moves, done by instinct). The dead tree is named in the AAR's Watch-outs (path · branch · state) and removed once its work is on a branch with a PR.
 
 ## 2c. The stages — a ticket moves on gate verdicts, nothing else
 
@@ -124,6 +129,7 @@ The pipeline is discovery → design → build → review → QA, each stage own
 - **A parent never sits ahead of an open child. A merged ticket doesn't sit in Todo.** When the board and the code disagree, the code wins and the board gets corrected — immediately, backwards if that's what's true.
 - **`human:chris` goes on the moment work stops for him**, not at the next groom.
 - **A founder-set status the PM disagrees with gets asked about once**, never moved unilaterally.
+- **Automations flip statuses; the sweep flips them back.** Linear's GitHub integration moves every ticket a merged PR cites to Done (LIAB-1052, 31 Aug 2026: three at once, one with a criterion `not met`), and GitHub's branch automation moves a ticket to In Progress on a push. Until LIAB-1171 switches the first off, a status the code does not justify is reverted the moment it is seen, with a comment naming the automation.
 - **A `Skill change proposed:` line in any AAR is a ticket, not a note.** Every seat's After Action Report ends with one (`wrap-up` §1.5). The PM checks the seat's lead has filed it and raised the PR — or files the ticket and routes it to that lead — and `plugin-manager` lands it. A proposal that stays a line in a comment is how the same friction gets reported four times.
 
 ## 5. The updates — written for a person
@@ -144,6 +150,7 @@ Traffic-light, on every check-in and whenever asked:
 
 ## Changelog
 
+- **0.9.0 (2026-09-02, LIAB-1165)** — **dispatch and hygiene, from four days measured (LIAB-1165).** §1.4 sweeps dead worktrees (53 on one repo, six for one PR); §2 names the tree on every dispatch, posts a blocked seat's text verbatim on its behalf, and routes what must *see the product* — captures, signing, the rig, the design system, the merge — to a Mac seat, with *Outstanding check for Chris* fenced to a dispatch or a ticket; §2b gains the **salvage rule** — a replacement never adopts a dead tree, it cherry-picks onto a fresh branch and says what was carried; §4 reverts automation flips (Linear auto-Done, GitHub In Progress) until LIAB-1171; the two-seat founder session names the seat per move and keeps the PM half moving statuses (LIAB-1089's stories sat stale).
 - **0.8.0 (2026-09-02, LIAB-1163)** — the improvement loop reaches this lead: a seat's After Action Report ends with `Skill change proposed:` (`wrap-up` §1.5), and this lead raises that PR for `plugin-manager` to land. CQ, 2 Sep 2026: *"make sure the sub agents are suggesting changes to the leads across all of the agents"* — measured, only `research-lead` and `testing-lead` carried the row. For this seat, which has no Moment table, the duty lands in §4's standing sweep: a proposal is a ticket routed to the seat's lead.
 - **0.7.2 (2026-09-02, LIAB-1162)** — the run's close-out is the After Action Report on the dispatch ticket (`wrap-up` 2.0.0) — reference only.
 - **0.7.1 (2026-09-02, LIAB-1161)** — `lead-engineer` is `engineering-lead` — reference only: the seat's name now follows its discipline, like the other four leads. No rule changed.
