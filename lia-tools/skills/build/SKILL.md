@@ -2,7 +2,7 @@
 name: build
 slug: build
 description: "The builder's seat for a whole epic — context from tickets/design/prep-notes/schema-map (never the vault), plan mode first with the plan posted to tickets, story-by-story on one branch, questions batched, progress in user terms, indexed self-check, one PR, hold for the review loop. Use when dispatched at an epic to build."
-version: 0.2.0
+version: 0.2.1
 created: 2026-08-26
 updated: 2026-09-02
 status: active
@@ -16,6 +16,7 @@ companions:
   - polish
   - review-and-merge
   - execution-discipline
+  - design-system
 maintainer: cq
 ---
 
@@ -40,7 +41,7 @@ maintainer: cq
 - **One branch — the epic's Linear branch name — one PR at the end.** Conventional commits scoped per ticket.
 - **In dependency order**, hint-checking as you go: build-prep's named components and methods are advisory — verify against the repo, implement the correct one, log the drift.
 - **The criteria are the contract, by index.** Build to the numbered scenarios; they are your test spec. A criterion you can't satisfy is a batched question (§4), never a silent reinterpretation.
-- **`polish` runs on every story with a design spec** before you call that story done.
+- **`polish` runs on every story with a design spec** before you call that story done. Interface work is held to `design-system` (`references/lia-design-system.md`) — load it before touching colour, type, icons or a component that might already exist.
 
 ## 3. The board and the tickets stay current as you go
 
@@ -73,6 +74,7 @@ Before marking the epic Review:
 
 ## Changelog
 
+- **0.2.1 (2026-09-02, LIAB-1206)** — cites the new `design-system` seat: its reference file is where the DS rules a builder is held to now live. Companion added; one pointer sentence; no behaviour change.
 - **0.2.0 (2026-09-02, LIAB-1165)** — §1: a ticket with no numbered criteria is handed back, never built (LIAB-1087 was built three times from a title); prep-note SHAs are re-verified against the current head and both named. §5.3: the gates run on the combined tree and name their harness — two false reds on 1 Sep 2026 came from a design-system stand-in, not the code (LIAB-1165).
 - **0.1.1 (2026-09-02, LIAB-1161)** — `lead-engineer` is `engineering-lead` — reference only: the seat's name now follows its discipline, like the other four leads. No rule changed.
 - **0.1.0 (2026-08-26, CQ voice memos + Fable 5)** — first version. `pickup` §0.5 epic mode promoted and extended: the four-part context map, question batching with best-guess-and-default, progress comments in user terms, the indexed self-check, and the hold-for-the-loop.

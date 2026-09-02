@@ -2,7 +2,7 @@
 name: design-handoff
 slug: design-handoff
 description: "How a design reaches a builder — the .dc.html prototype folder, how to read it (markup, DS helmet, the state class that lists the real interaction states), and the rule that the artefact outranks ticket prose. Use when a story carries a design spec, when opening a .dc.html, or when writing a design onto a ticket."
-version: 0.2.2
+version: 0.2.3
 created: 2026-08-26
 updated: 2026-09-02
 status: active
@@ -19,6 +19,7 @@ companions:
   - design-lead
   - error-states
   - ux-writing
+  - design-system
 maintainer: cq
 ---
 
@@ -46,7 +47,7 @@ design/<spec-name>/
   <companion docs>        build spec / prompts / handover, when the designer wrote them
 ```
 
-The `_ds/` directory name carries the **Claude Design project id** (for Toys DS work: `toys-ds-aa52a0d1-…`, matching CLAUDE.md rule 5). A `.dc.html` copied without its folder renders wrong and reads incomplete — attach or commit the folder.
+The `_ds/` directory name carries the **Claude Design project id** (for Toys DS work: `toys-ds-aa52a0d1-…`, matching CLAUDE.md rule 5). A `.dc.html` copied without its folder renders wrong and reads incomplete — attach or commit the folder. The rules the artefact was drawn to are `design-system`'s reference (`references/lia-design-system.md`); the builder reads it from the plugin, not the vault.
 
 ## 2. Reading it — the current format (both repo prototypes, verified 26 Aug 2026)
 
@@ -87,6 +88,7 @@ This seat is the **final step of the design bench** (`design-lead`'s pipeline, a
 
 ## Changelog
 
+- **0.2.3 (2026-09-02, LIAB-1206)** — cites the new `design-system` seat: its reference file is where the DS rules a builder is held to now live. Companion added; one pointer sentence; no behaviour change.
 - **0.2.2 (2026-09-02, LIAB-1161)** — `lead-engineer` is `engineering-lead` — reference only: the seat's name now follows its discipline, like the other four leads. No rule changed.
 - **0.2.1 (2026-08-28, LIAB-1004)** — names `ux-writing` back, closing the one-way link. The artefact-beats-prose rule covers the artefact's words too, which is the half `ux-writing` authors.
 - **0.2.0 (2026-08-27, CQ + LIAB-995)** — the return path written down (§5): the HTML committed into the build repo's `design/` folder or attached whole, the notes that ride with it, and this seat placed as the design bench's final step under `design-lead`.

@@ -2,7 +2,7 @@
 name: polish
 slug: polish
 description: "Hold the built interface to the design spec (the HTML artefact, which wins over prose) in design-system terms — and where Toys DS can't yet express the spec, name the acceptable gap and leave the note, never silently approximate. Use before calling any story with a design spec done."
-version: 0.1.2
+version: 0.1.3
 created: 2026-08-26
 updated: 2026-09-02
 status: active
@@ -15,6 +15,7 @@ companions:
   - build
   - review-and-merge
   - ux-writing
+  - design-system
 maintainer: cq
 ---
 
@@ -30,7 +31,7 @@ maintainer: cq
 
 1. **Open the artefact and the build side by side** — the spec is the HTML on the ticket; where prose and artefact disagree, **the artefact wins** (the standing rule, stated on the ticket).
 2. **Walk it visually, both themes.** Structure, spacing, states (empty, hover, focus, error), type, motion where specified. In toy-box work: `pnpm screenshot` (and `--toy <id>`) is how you look — a visual change you didn't look at isn't done, and a capture is evidence for one commit only.
-3. **Express everything in system terms.** Toys DS tokens by reference — no raw hex/rgb/oklch in app code; Toys DS wins over `@lia/design-system` where a token name exists in both. A spec detail achievable with existing tokens/components gets built with them, full stop.
+3. **Express everything in system terms.** Toys DS tokens by reference — no raw hex/rgb/oklch in app code; Toys DS wins over `@lia/design-system` where a token name exists in both. A spec detail achievable with existing tokens/components gets built with them, full stop. The lines a gap is named against are `design-system`'s reference (`references/lia-design-system.md`, §9 lists what this seat checks); a verdict that cannot cite a line there is grading by taste.
 
 ## 2. The gaps — named, noted, never fudged
 
@@ -49,6 +50,7 @@ Where the spec shows something the DS can't yet express:
 
 ## Changelog
 
+- **0.1.3 (2026-09-02, LIAB-1206)** — cites the new `design-system` seat: its reference file is where the DS rules a builder is held to now live. Companion added; one pointer sentence; no behaviour change.
 - **0.1.2 (2026-09-02, LIAB-1161)** — `lead-engineer` is `engineering-lead` — reference only: the seat's name now follows its discipline, like the other four leads. No rule changed.
 - **0.1.1 (2026-08-28, LIAB-1004)** — names `ux-writing` back. That seat lists this one as a companion; the link was one-way, which is the finding L2 from the LIAB-1000 review. The two halves of the same gate: this holds the screen to the spec, `ux-writing` writes what it says.
 - **0.1.0 (2026-08-26, CQ voice memos + Fable 5)** — first version. The conformance walk, system-terms rule, and the named-gap discipline with owner routing (Toys DS → Chris, DS → Dan).
