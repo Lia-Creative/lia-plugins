@@ -24,7 +24,8 @@
 // What it compares:
 //
 //   HELD    — the plugin manifest an agent is actually being served from.
-//             Auto-detected from the Claude Code plugin cache, or named with
+//             Auto-detected from Claude Code's registry + plugins tree AND
+//             Cursor's plugins tree (union, never a fallback), or named with
 //             --held <path-to-plugin.json>.
 //   CURRENT — what the marketplace serves. Read from the `release` ref of a
 //             repo clone, or named outright with --current <version>.
@@ -105,14 +106,32 @@ export function readManifest(path) {
 // machine's layout turns out to be: **a path list can only find the layouts
 // its author already imagined.**
 //
-// So: do not guess, and do not enumerate. Two sources, in order.
+// So: do not guess, and do not enumerate. Three sources, unioned — never one
+// as a fallback for another (LIAB-1168: a Cursor-installed copy under
+// `~/.cursor/plugins` was a real install the Claude-only search never saw).
 //
 //   1. `installed_plugins.json` — the registry Claude Code keeps, and the one
 //      artefact this repo has actually cited (LIAB-917 read it directly). It
-//      is the authoritative answer when it holds a record.
-//   2. A bounded SEARCH of the plugins tree for any `plugin.json` belonging to
-//      this plugin, at whatever depth it sits. A search survives a layout this
-//      author has not seen — version-partitioned, scope-partitioned or flat.
+//      is the authoritative answer when it holds a record. Cursor keeps no
+//      equivalent registry (measured 2 Sep 2026 on the LIAB-1168 Mac).
+//   2. A bounded SEARCH of `~/.claude/plugins` for any `plugin.json` belonging
+//      to this plugin, at whatever depth it sits. A search survives a layout
+//      this author has not seen — version-partitioned, scope-partitioned or
+//      flat.
+//   3. The same bounded SEARCH of `~/.cursor/plugins`. Measured layout
+//      (LIAB-1168, do not invent): cache keyed by git SHA at
+//      `cache/<marketplace-id>/lia-tools/<sha>/.claude-plugin/plugin.json`,
+//      and a marketplace clone at
+//      `marketplaces/github.com/lia-creative/lia-plugins/<sha>/lia-tools/…`.
+//      Identity is the manifest's `name: "lia-tools"`. The sibling
+//      `.cursor-plugin/plugin.json` carries no `version`; `readManifest`
+//      already returns null, so it is not double-counted.
+//
+// Each copy is tagged with an origin so a straddle is legible:
+// `claude:user` / `claude:project` from the registry record, `claude:cache` /
+// `claude:marketplace-clone` / `cursor:cache` / `cursor:marketplace-clone`
+// from the path. Marketplace clones stay in the version set — ignoring them
+// would be a silent verdict change, which this ticket does not make.
 //
 // **A machine can legitimately hold more than one version at once** (per-scope
 // or per-project installs). There is then no single "held version", and this
@@ -239,13 +258,39 @@ export function readRegistry(home = homedir()) {
   return { path, records: unique };
 }
 
-// Returns { versions: [...], source, path } — versions is every distinct
-// version this machine appears to hold. Empty means genuinely not found, which
-// is `unchecked`, never a pass.
+// Origin labels — so a straddle names *which* copy is which, not just the
+// version numbers. Registry records carry Claude's own scope; search hits
+// are labelled from the first segment under the plugins root. Unknown
+// layouts under a search root still count (the search is the point) and
+// inherit the cache label for that tree rather than inventing a third one.
+export function originFromRegistry(record) {
+  return record?.scope === 'user' ? 'claude:user' : 'claude:project';
+}
+
+export function originFromSearchPath(fullPath, searchRoot, tree) {
+  const rel = fullPath.slice(searchRoot.length).split(sep).filter(Boolean);
+  if (rel[0] === 'marketplaces') return `${tree}:marketplace-clone`;
+  return `${tree}:cache`;
+}
+
+function copyOf(version, origin, path) {
+  return { version, origin, path };
+}
+
+// Returns { versions: [...], source, path, copies } — versions is every
+// distinct version this machine appears to hold. Empty means genuinely not
+// found, which is `unchecked`, never a pass. `copies` is one entry per
+// install so `main` can print origin + path per copy; `verdict()` still
+// sees only the version strings.
 export function findHeld(explicit, home = homedir()) {
   if (explicit) {
     const version = existsSync(explicit) ? readManifestVersion(explicit) : null;
-    return { versions: version ? [version] : [], source: 'explicit', path: explicit };
+    return {
+      versions: version ? [version] : [],
+      source: 'explicit',
+      path: explicit,
+      copies: version ? [copyOf(version, 'explicit', explicit)] : [],
+    };
   }
 
   // UNION, never short-circuit. An earlier version returned on the registry
@@ -253,24 +298,41 @@ export function findHeld(explicit, home = homedir()) {
   // still holding 1.13.0 reported *green*: the exact LIAB-1052 defect, passed
   // by the guard built to catch it. The registry's shape is not guaranteed
   // across versions, which is precisely why it must not be allowed to suppress
-  // the on-disk evidence. Collect both and let oldest-wins do its job.
+  // the on-disk evidence. Collect every source and let the verdict ask
+  // whether the disagreement reaches it.
+  //
+  // Cursor is a second search root, not a fallback (LIAB-1168). A machine
+  // whose only install is under `~/.cursor/plugins` was reporting `unchecked`
+  // because this function never looked there.
   const registry = readRegistry(home);
-  const hits = searchForManifests(join(home, '.claude', 'plugins'));
+  const claudeRoot = join(home, '.claude', 'plugins');
+  const cursorRoot = join(home, '.cursor', 'plugins');
+  const claudeHits = searchForManifests(claudeRoot);
+  const cursorHits = searchForManifests(cursorRoot);
 
-  const versions = [...new Set([
-    ...registry.records.map((r) => r.version),
-    ...hits.map((h) => h.version),
-  ])];
-  if (!versions.length) return { versions: [], source: 'none', path: null };
+  const copies = [
+    ...registry.records.map((r) => copyOf(r.version, originFromRegistry(r), registry.path)),
+    ...claudeHits.map((h) => copyOf(h.version, originFromSearchPath(h.path, claudeRoot, 'claude'), h.path)),
+    ...cursorHits.map((h) => copyOf(h.version, originFromSearchPath(h.path, cursorRoot, 'cursor'), h.path)),
+  ];
+
+  const versions = [...new Set(copies.map((c) => c.version))];
+  if (!versions.length) return { versions: [], source: 'none', path: null, copies: [] };
 
   const sources = [];
   if (registry.records.length) sources.push('installed_plugins.json');
-  if (hits.length) sources.push('cache search');
+  if (claudeHits.length) sources.push('cache search');
+  if (cursorHits.length) sources.push('cursor plugins');
   return {
     versions,
     source: sources.join(' + '),
-    path: [registry.records.length ? registry.path : null, ...hits.map((h) => h.path)].filter(Boolean).join(', '),
+    path: [
+      registry.records.length ? registry.path : null,
+      ...claudeHits.map((h) => h.path),
+      ...cursorHits.map((h) => h.path),
+    ].filter(Boolean).join(', '),
     records: registry.records,
+    copies,
   };
 }
 
@@ -509,13 +571,16 @@ function selfTest() {
     plantManifest(join(a, '.claude', 'plugins', 'cache', MARKETPLACE, PLUGIN, '1.13.0', '.claude-plugin', 'plugin.json'), '1.13.0');
     const foundA = findHeld(null, a);
     if (!foundA.versions.includes('1.13.0')) failures.push('version-partitioned layout: auto-detect FAILED to find 1.13.0');
+    if (!(foundA.copies ?? []).some((c) => c.origin === 'claude:cache')) failures.push(`version-partitioned layout: expected origin claude:cache, got ${JSON.stringify(foundA.copies)}`);
     const vA = verdict(foundA.versions, '1.16.0');
     if (vA.state !== 'stale') failures.push('version-partitioned layout: the real LIAB-1052 skew was NOT caught by auto-detect');
 
     // (b) A marketplaces/ checkout — another shape not in any path list.
     const b = join(tmp, 'b');
     plantManifest(join(b, '.claude', 'plugins', 'marketplaces', MARKETPLACE, PLUGIN, '.claude-plugin', 'plugin.json'), '1.10.0');
-    if (!findHeld(null, b).versions.includes('1.10.0')) failures.push('marketplaces layout: auto-detect FAILED');
+    const foundB = findHeld(null, b);
+    if (!foundB.versions.includes('1.10.0')) failures.push('marketplaces layout: auto-detect FAILED');
+    if (!(foundB.copies ?? []).some((c) => c.origin === 'claude:marketplace-clone')) failures.push(`marketplaces layout: expected origin claude:marketplace-clone, got ${JSON.stringify(foundB.copies)}`);
 
     // (c) THE REGISTRY IS READ, and several records mean several versions.
     //     It does not *win* — `400f81d` made this a union precisely so a
@@ -708,6 +773,123 @@ function selfTest() {
     const shown = verdict(['1.9.0', '1.13.0', '1.2.0'], '1.16.0').message;
     if (!shown.includes('1.2.0, 1.9.0, 1.13.0')) failures.push('the held-version list is not sorted semver-ascending for display');
 
+    // (j) LIAB-1168 — PLANTED INSTALLS AT EACH REAL LAYOUT. A Cursor copy
+    //     under `~/.cursor/plugins` was a real install this finder never
+    //     looked for. Each layout gets its own home so hiding that plant
+    //     (or dropping the search root that reaches it) turns THIS
+    //     assertion red, not a neighbour's. Cursor has no registry: the
+    //     search is the whole finder for that tree.
+    const sha = '3fd3dede00000000000000000000000000000000';
+    const originsOf = (home) => (findHeld(null, home).copies ?? []).map((c) => c.origin);
+
+    // (j1) Claude user scope — registry record, nothing on disk.
+    const claudeUser = join(tmp, 'claude-user');
+    const claudeUserReg = join(claudeUser, '.claude', 'plugins', 'installed_plugins.json');
+    mkdirSync(dirname(claudeUserReg), { recursive: true });
+    writeFileSync(claudeUserReg, JSON.stringify({
+      version: 2,
+      plugins: { [`${PLUGIN}@${MARKETPLACE}`]: { version: '1.26.0', scope: 'user' } },
+    }));
+    const foundClaudeUser = findHeld(null, claudeUser);
+    if (!foundClaudeUser.versions.includes('1.26.0')) failures.push('claude:user plant: auto-detect FAILED to find 1.26.0');
+    if (!originsOf(claudeUser).includes('claude:user')) failures.push(`claude:user plant: expected origin claude:user, got ${JSON.stringify(originsOf(claudeUser))}`);
+    if (verdict(foundClaudeUser.versions, '1.26.0').code !== 0) failures.push('claude:user plant matching the release: expected current, not a miss');
+
+    // (j2) Claude project scope — identity in the parent key, scope from projectPath.
+    const claudeProject = join(tmp, 'claude-project');
+    const claudeProjectReg = join(claudeProject, '.claude', 'plugins', 'installed_plugins.json');
+    mkdirSync(dirname(claudeProjectReg), { recursive: true });
+    writeFileSync(claudeProjectReg, JSON.stringify({
+      version: 2,
+      plugins: { [`${PLUGIN}@${MARKETPLACE}`]: { version: '1.18.0', projectPath: '/gone/wt-liab-1168' } },
+    }));
+    const foundClaudeProject = findHeld(null, claudeProject);
+    if (!foundClaudeProject.versions.includes('1.18.0')) failures.push('claude:project plant: auto-detect FAILED to find 1.18.0');
+    if (!originsOf(claudeProject).includes('claude:project')) failures.push(`claude:project plant: expected origin claude:project, got ${JSON.stringify(originsOf(claudeProject))}`);
+
+    // (j3) Cursor cache keyed by git SHA (measured layout). Sibling
+    //      `.cursor-plugin/plugin.json` has no version and must not
+    //      double-count. Dropping the `~/.cursor/plugins` union makes
+    //      this go red — that is AC4.
+    const cursorCache = join(tmp, 'cursor-cache');
+    const cursorCacheManifest = join(
+      cursorCache, '.cursor', 'plugins', 'cache', 'lia-creative-lia-plugins', PLUGIN, sha,
+      '.claude-plugin', 'plugin.json',
+    );
+    plantManifest(cursorCacheManifest, '1.25.0');
+    const cursorPluginSibling = join(
+      cursorCache, '.cursor', 'plugins', 'cache', 'lia-creative-lia-plugins', PLUGIN, sha,
+      '.cursor-plugin', 'plugin.json',
+    );
+    mkdirSync(dirname(cursorPluginSibling), { recursive: true });
+    writeFileSync(cursorPluginSibling, JSON.stringify({ name: PLUGIN }));
+    const foundCursorCache = findHeld(null, cursorCache);
+    if (!foundCursorCache.versions.includes('1.25.0')) failures.push('cursor:cache plant: auto-detect FAILED to find 1.25.0 — is ~/.cursor/plugins in the union?');
+    if (foundCursorCache.versions.length !== 1) failures.push(`cursor:cache plant: expected 1 version (sibling without version must not count), got ${JSON.stringify(foundCursorCache.versions)}`);
+    if (!originsOf(cursorCache).includes('cursor:cache')) failures.push(`cursor:cache plant: expected origin cursor:cache, got ${JSON.stringify(originsOf(cursorCache))}`);
+    if (!foundCursorCache.source.includes('cursor plugins')) failures.push(`cursor:cache plant: expected source to name cursor plugins, got ${foundCursorCache.source}`);
+    if (verdict(foundCursorCache.versions, '1.25.0').code !== 0) failures.push('cursor:cache plant matching the release: expected current');
+    if (verdict(foundCursorCache.versions, '1.26.0').code !== 1) failures.push('cursor:cache plant behind the release: expected STALE, not unchecked-because-missed');
+
+    // (j4) Cursor marketplace clone (measured layout, depth 7 under the
+    //      search root — inside MAX_SEARCH_DEPTH, and a regression if
+    //      that bound is silently lowered).
+    const cursorMp = join(tmp, 'cursor-mp');
+    const cursorMpManifest = join(
+      cursorMp, '.cursor', 'plugins', 'marketplaces', 'github.com', 'lia-creative', 'lia-plugins', sha,
+      PLUGIN, '.claude-plugin', 'plugin.json',
+    );
+    plantManifest(cursorMpManifest, '1.25.0');
+    const foundCursorMp = findHeld(null, cursorMp);
+    if (!foundCursorMp.versions.includes('1.25.0')) failures.push('cursor:marketplace-clone plant: auto-detect FAILED to find 1.25.0');
+    if (!originsOf(cursorMp).includes('cursor:marketplace-clone')) failures.push(`cursor:marketplace-clone plant: expected origin cursor:marketplace-clone, got ${JSON.stringify(originsOf(cursorMp))}`);
+    // Marketplace clones stay in the version set. Ignoring this hit would
+    // be a silent verdict change; a clone ahead of release must still
+    // straddle when a behind copy sits beside it.
+    plantManifest(
+      join(cursorMp, '.claude', 'plugins', 'cache', MARKETPLACE, PLUGIN, '1.13.0', '.claude-plugin', 'plugin.json'),
+      '1.13.0',
+    );
+    const foundCloneKept = findHeld(null, cursorMp);
+    if (!foundCloneKept.versions.includes('1.25.0')) failures.push('marketplace clone was DROPPED from the version set');
+    if (verdict(foundCloneKept.versions, '1.16.0').code !== 2) failures.push('marketplace clone + a behind copy must still straddle (do not ignore the clone)');
+
+    // (j5) All four on one home, and an empty tree still UNCHECKED.
+    const allFour = join(tmp, 'all-four');
+    const allFourReg = join(allFour, '.claude', 'plugins', 'installed_plugins.json');
+    mkdirSync(dirname(allFourReg), { recursive: true });
+    writeFileSync(allFourReg, JSON.stringify({
+      version: 2,
+      plugins: {
+        [`${PLUGIN}@${MARKETPLACE}`]: [
+          { version: '1.26.0', scope: 'user' },
+          { version: '1.18.0', projectPath: '/gone/wt' },
+        ],
+      },
+    }));
+    plantManifest(
+      join(allFour, '.cursor', 'plugins', 'cache', 'lia-creative-lia-plugins', PLUGIN, sha, '.claude-plugin', 'plugin.json'),
+      '1.25.0',
+    );
+    plantManifest(
+      join(allFour, '.cursor', 'plugins', 'marketplaces', 'github.com', 'lia-creative', 'lia-plugins', sha, PLUGIN, '.claude-plugin', 'plugin.json'),
+      '1.24.0',
+    );
+    const foundAllFour = findHeld(null, allFour);
+    for (const origin of ['claude:user', 'claude:project', 'cursor:cache', 'cursor:marketplace-clone']) {
+      if (!originsOf(allFour).includes(origin)) failures.push(`all-four plant: missing origin ${origin} (got ${JSON.stringify(originsOf(allFour))})`);
+    }
+    if (!foundAllFour.versions.includes('1.26.0') || !foundAllFour.versions.includes('1.18.0') || !foundAllFour.versions.includes('1.25.0') || !foundAllFour.versions.includes('1.24.0')) {
+      failures.push(`all-four plant: expected 1.26.0, 1.18.0, 1.25.0, 1.24.0 — got ${JSON.stringify(foundAllFour.versions)}`);
+    }
+
+    const emptyCursor = join(tmp, 'empty-cursor');
+    mkdirSync(join(emptyCursor, '.claude', 'plugins'), { recursive: true });
+    mkdirSync(join(emptyCursor, '.cursor', 'plugins'), { recursive: true });
+    const foundEmptyCursor = findHeld(null, emptyCursor);
+    if (foundEmptyCursor.versions.length) failures.push('empty claude+cursor trees: invented a version from nothing');
+    if (verdict(foundEmptyCursor.versions, '1.16.0').code !== 2) failures.push('empty claude+cursor trees: reported something other than UNCHECKED');
+
     // (i) --held IS THE ESCAPE HATCH THE UNCHECKED MESSAGE POINTS AT, so it is
     //     tested. It was not, and ignoring it entirely left this suite green.
     const k = join(tmp, 'k', 'somewhere', 'plugin.json');
@@ -830,6 +1012,22 @@ function selfTest() {
     const b1 = run(['--held', manifest('1.16.0'), '--current', '1.16.0']);
     const b2 = run(['--held', manifest('1.16.0'), '--current', '9.9.9']);
     if (b1.status === b2.status) failures.push('CLI: --current was ignored — two different releases gave the same verdict');
+
+    // W-CURSOR: a Cursor-only home must reach main(), not just findHeld().
+    // Dropping the Cursor union leaves findHeld empty and the CLI exits 2
+    // "no install" instead of 0/1 — the same miss LIAB-1168 measured.
+    const cursorOnly = join(tmp2, 'cursor-only');
+    const cursorOnlyManifest = join(
+      cursorOnly, '.cursor', 'plugins', 'cache', 'lia-creative-lia-plugins', PLUGIN,
+      '3fd3dede00000000000000000000000000000000', '.claude-plugin', 'plugin.json',
+    );
+    mkdirSync(dirname(cursorOnlyManifest), { recursive: true });
+    writeFileSync(cursorOnlyManifest, JSON.stringify({ name: PLUGIN, version: '1.16.0' }));
+    const cursorOk = run(['--current', '1.16.0'], cursorOnly);
+    if (cursorOk.status !== 0) failures.push(`CLI: a Cursor-only current install should be ok (0), got ${cursorOk.status} — is ~/.cursor/plugins reaching main()?`);
+    if (!/cursor:cache/.test(`${cursorOk.stdout ?? ''}`)) failures.push('CLI: a Cursor-only install must print the cursor:cache origin so a straddle is legible');
+    const cursorStale = run(['--current', '9.9.9'], cursorOnly);
+    if (cursorStale.status !== 1) failures.push(`CLI: a Cursor-only install behind the release should be stale (1), got ${cursorStale.status}`);
   } finally {
     rmSync(tmp2, { recursive: true, force: true });
   }
@@ -841,7 +1039,7 @@ function selfTest() {
     process.exit(1);
   }
   console.log(
-    `self-test ok — ${scenarios.length} comparator scenarios plus 32 detector assertions. The detector is proved against layouts this script has NO path list for: version-partitioned cache, a marketplaces/ checkout, and the installed_plugins.json registry (read alongside disk, never suppressing it). Versions that disagree are judged on whether the disagreement reaches the verdict: every copy behind is STALE (certain either way), every copy current-or-ahead is ok, and only a set straddling the release is UNCHECKED. Not-always-red: an empty tree is UNCHECKED (exit 2) not a pass, a matching install is green, a foreign manifest in a directory named after us is not mistaken for ours and a home path containing our name matches nothing, a registry claiming current cannot suppress a stale copy on disk, a sibling named lia-tools-extras and a registry metadata node are not read as us, and --held is honoured. The REGISTRY is proved on three shapes and, crucially, ALONE with nothing on disk to search — the case that separates a working registry reader from an inert one, which no fixture covered while it was in fact inert. Mutation-swept: 30 deliberate reversions of this script's own rules were each confirmed to turn this suite RED (29 Aug 2026), across the comparator, the detector, the registry reader and the CLI wiring. Five did not, first time round: the marketplace half of the path fallback, the registry's node-name branch, a fixture that was green either way, and the whole of main(), which no test touched. Break it again after changing it; green here means nothing until you have watched it go red.`,
+    `self-test ok — ${scenarios.length} comparator scenarios plus detector assertions. The detector is proved against layouts this script has NO path list for: version-partitioned cache, a marketplaces/ checkout, the installed_plugins.json registry (read alongside disk, never suppressing it), and the four LIAB-1168 plants — Claude user scope, Claude project scope via projectPath, Cursor cache keyed by git SHA, Cursor marketplace clone. Cursor is a second search root, unioned, never a fallback; a Cursor-only home reaches the CLI. Versions that disagree are judged on whether the disagreement reaches the verdict: every copy behind is STALE (certain either way), every copy current-or-ahead is ok, and only a set straddling the release is UNCHECKED. Marketplace clones stay in the version set. Origin labels (claude:user / claude:project / claude:cache / claude:marketplace-clone / cursor:cache / cursor:marketplace-clone) print one line per copy. Not-always-red: an empty tree (claude and cursor) is UNCHECKED (exit 2) not a pass, a matching install is green, a foreign manifest in a directory named after us is not mistaken for ours and a home path containing our name matches nothing, a registry claiming current cannot suppress a stale copy on disk, a sibling named lia-tools-extras and a registry metadata node are not read as us, a .cursor-plugin sibling without version is not double-counted, and --held is honoured. The REGISTRY is proved on three shapes and, crucially, ALONE with nothing on disk to search — the case that separates a working registry reader from an inert one, which no fixture covered while it was in fact inert. Mutation-swept: 30 deliberate reversions of this script's own rules were each confirmed to turn this suite RED (29 Aug 2026), across the comparator, the detector, the registry reader and the CLI wiring. Five did not, first time round: the marketplace half of the path fallback, the registry's node-name branch, a fixture that was green either way, and the whole of main(), which no test touched. Break it again after changing it; green here means nothing until you have watched it go red.`,
   );
 }
 
@@ -860,7 +1058,12 @@ function main() {
   const current = arg('--current') ?? releaseVersion(arg('--repo') ?? process.cwd(), arg('--ref') ?? 'origin/release');
 
   const result = verdict(held.versions, current);
-  if (held.versions.length) console.log(`held:    ${held.versions.join(', ')}  (via ${held.source}: ${held.path})`);
+  if (held.versions.length) {
+    console.log(`held:    ${held.versions.join(', ')}  (via ${held.source})`);
+    for (const c of held.copies ?? []) {
+      console.log(`  ${c.version}  ${c.origin}${c.path ? `  ${c.path}` : ''}`);
+    }
+  }
   if (current) console.log(`current: ${current}`);
   console.log(result.message);
   process.exit(result.code);

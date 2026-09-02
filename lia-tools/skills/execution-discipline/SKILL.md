@@ -1,7 +1,7 @@
 ---
 name: execution-discipline
 description: How to execute any Lia skill or non-trivial task the way a stronger model would. Load at the start of every Lia skill run (scheduled or interactive) and any multi-step task, for any founder's agent. Covers ground-truth rules (never invent paths, Linear statuses, labels, or commands), stop conditions (what to do when reality doesn't match the skill), verification (done means evidence, per-stage accounting, verify from a cold start so the check can actually fail), judgment calibration (err toward exclusion, quote before you claim), and output discipline. Written by Fable 5 on 2026-07-03 as a distillation of its own working habits for successor models.
-version: 1.10.0
+version: 1.11.0
 created: 2026-07-03
 updated: 2026-09-02
 status: active
@@ -50,9 +50,9 @@ node scripts/check-plugin-freshness.mjs        # from a clone of Lia-Creative/li
 
 **You need that clone.** `scripts/` sits at the repo root, *outside* the shipped plugin — an installed copy carries `skills/` and its manifest, not the guards — so this command does not exist for a session that only has the plugin. **If you have no clone, you cannot run it, and the honest move is to say your version is unverified rather than to assume it is current.** That is itself the answer LIAB-1052 wants: an agent that knows it cannot check has still avoided concluding a rule does not exist.
 
-It finds your install by reading Claude Code's own `installed_plugins.json` **and** searching the plugins tree — both, never one as a fallback for the other — then compares against the `release` ref. The union is deliberate: when the registry was allowed to answer alone, a registry recording a current version over a cache still holding an old one reported *green*, which is this very defect passed by the check built to catch it.
+It finds your install by reading Claude Code's own `installed_plugins.json` **and** searching **both** plugin trees — `~/.claude/plugins` and `~/.cursor/plugins` — never one as a fallback for another, then compares against the `release` ref. Cursor keeps no `installed_plugins.json`; for a Cursor install the search is the whole finder (LIAB-1168, measured). The union is deliberate: when the registry was allowed to answer alone, a registry recording a current version over a cache still holding an old one reported *green*, which is this very defect passed by the check built to catch it. A Cursor-only machine reported `unchecked` for the same reason until the second search root existed.
 
-Three outcomes, and the third is the one that matters: **exit 0** current or ahead · **exit 1** stale · **exit 2 unchecked**. `unchecked` has its own exit code on purpose, so *"I could not find your install"* can never be read as *"you are fine"*. If you are running from a real install and still get `unchecked`, **the finder is wrong and worth a ticket** — pass `--held [path-to-plugin.json]` meanwhile. A session served from `--plugin-dir`, a clone or CI has no install to find, and that is the honest `unchecked`, not a fault.
+Three outcomes, and the third is the one that matters: **exit 0** current or ahead · **exit 1** stale · **exit 2 unchecked**. `unchecked` has its own exit code on purpose, so *"I could not find your install"* can never be read as *"you are fine"*. If you are running from a real install, nothing was found, and you still get `unchecked`, **the finder is wrong and worth a ticket** — pass `--held [path-to-plugin.json]` meanwhile. Copies found on both sides of the release are the other `unchecked`: a genuine straddle, not a miss. A session served from `--plugin-dir`, a clone or CI has no install to find, and that is the honest `unchecked`, not a fault.
 
 **A machine can hold several versions at once** (per-scope or per-project installs, or a leftover directory beside a current one). The script reports all of them, and then asks whether the disagreement actually reaches the verdict:
 
@@ -116,6 +116,7 @@ Related: `Wiki/synthesis/systems-are-learned-alone.md` — this file's "the judg
 
 ## Changelog
 
+- **1.11.0 (2026-09-02, LIAB-1168)** — §Which copy am I holding? names the Cursor search root. The finder unions Claude Code's `installed_plugins.json` with a search of `~/.claude/plugins` **and** `~/.cursor/plugins` — never one as a fallback for another. Cursor has no registry; a machine whose only install sat under `.cursor/plugins` reported `unchecked` because the search never looked there. What a seat *writes* about freshness is unchanged: once, in the AAR's Watch-outs.
 - **1.10.0 (2026-09-02, LIAB-1165)** — §Which copy am I holding? gains *say it once* — held versions and freshness go in the AAR's Watch-outs, not on every comment (ten tickets carried the line per comment; none acted on). §3 gains *name the harness in every gate table* — machine, dependency set, inherited env — after two false reds from a design-system stand-in on 1 Sep 2026 (LIAB-1165).
 - **1.9.0 (2026-09-02, LIAB-1163)** — §6 gains the universal half of the improvement loop: every run ends by naming what its skill got wrong, in the AAR's `Skill change proposed:` line, to its lead. CQ, 2 Sep 2026: *"make sure the sub agents are suggesting changes to the leads across all of the agents"* — 2 of 72 skills carried the loop, both leads; no worker seat did. Placed here because every seat loads this file first.
 - **1.8.1 (2026-09-02, LIAB-1161)** — `lead-engineer` is `engineering-lead` — reference only: the seat's name now follows its discipline, like the other four leads. No rule changed.
