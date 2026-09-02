@@ -60,12 +60,12 @@ Don't bulk-read a toy's whole folder. If a specific question needs a specific do
 - **The name is tools** (CQ, 28 Aug 2026, LIAB-935). The vault, the READMEs and these skills say tools. **The code, the `lia-toy-box` repo, `toy-contract.ts`, `src/toys/` and these skills' own `toy-*` names deliberately do not** — they change with the signing move. Seeing "toy" in code is expected, not drift.
 - **The strategy is founder-drafted, not ratified.** Six things stay open: pricing model, layer count, price band, one store vs many, the live-toy cap, permanence of the line. Never quote them as settled; a session that needs one settled stops and asks.
 - **Linear.** Team Lia Build, project Lia Tools. Labels are type + workflow only (`Bug`, `Feature`, `Improvement`, `Research`, `Experiment`, `idea`) — never epic/phase/sprint labels. Agents never mark a ticket Done; Review is the ceiling. Promotion gates live in `toy-release` and require a founder call **on the ticket**.
-- **An After Action Report, every session.** Any session that touches a toy writes one before it ends — on the ticket it worked, per `wrap-up`; the vault copy in `00 handover/` when mounted. Six lines with honest "none"s is a fine report; a missing one isn't.
-- **Open with "picking up from <handover>"** so Chris can see the thread you're continuing — and if the handover, retro tail, and the actual state of the repo/board disagree, say so before acting. A report is a claim; the board and the branch are facts.
+- **An After Action Report, every session.** Any session that touches a toy writes one before it ends — on the ticket it worked, per `wrap-up`; the vault copy in `00 handover/` when mounted. One line per section with honest "none"s is a fine report; a missing one isn't.
+- **Open with "picking up from the AAR on LIAB-xxx (date)"** so Chris can see the thread you're continuing — and if the latest After Action Report and the actual state of the repo/board disagree, say so before acting. A report is a claim; the board and the branch are facts.
 
 ## Wrapping
 
-When the session ends with state carrying forward, offer `/wrap-up` once — the After Action Report lands on the ticket and, when mounted, in the scope's `00 handover/` (thread rules per `wrap-up`, in this plugin), and `_meta/index.md` + `_meta/log.md` get their rows.
+When the session ends with state carrying forward, offer `/wrap-up` once — the After Action Report lands on the ticket and, when mounted, in the scope's `00 handover/` (thread rules per `wrap-up`, in this plugin). Index and log housekeeping is not part of the ritual any more (`wrap-up` 2.0.0).
 
 ## Changelog
 

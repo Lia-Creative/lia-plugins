@@ -44,8 +44,8 @@ maintainer: cq
 ## 1. The rules at a glance
 
 1. **One AAR per session, on the dispatch ticket.** A comment, in the template's shape — `templates/aar-template.md` in this skill, headings verbatim. Linear is the record (LIAB-820; the register). A session that touched two genuinely separate threads writes one per thread.
-2. **Every seat writes one.** Builder, reviewer, gate, lead, PM, writer — the rule that used to be `product-retro`'s is this skill's now, and it has no judgement call: *when in doubt, write it*. A routine session's AAR is six lines with honest "none"s. **Padding is the failure, not brevity.**
-3. **Signed by seat and dispatch id, never a model name.** *`engineering-lead` · dispatch `f875e891`*, not *GPT-5.6 Sol* or *cq-cursor-agent*. The seat is what the next reader routes on.
+2. **Every seat writes one.** Builder, reviewer, gate, lead, PM, writer — the rule that used to be `product-retro`'s is this skill's now, and it has no judgement call: *when in doubt, write it*. A routine session's AAR is one line per section with honest "none"s. **Padding is the failure, not brevity.**
+3. **Signed by seat and dispatch id, never a model name.** The template's closing line — *Signed: `engineering-lead` · dispatch `f875e891` · date* (or *interactive, founder driving* when there is no dispatch id), not *GPT-5.6 Sol* or *cq-cursor-agent*. The seat is what the next reader routes on.
 4. **The gap is systemic, never personal.** The cause is the ticket, the skill, the environment or the sequencing. A report that blames a session has stopped learning.
 5. **Every improvement has an owner and a home.** A ticket id · a skill or template change proposed to a named lead · a founder call. An improvement with neither is a wish. The report always ends its actions with `Skill change proposed: [skill — one line | none]` — that line is how the plugin improves (LIAB-1163).
 6. **Versions and freshness are stated once, here.** Held skill versions from changelog tops, and whether freshness was checked — in **Watch-outs**, not on every comment of the session (`execution-discipline` §Which copy am I holding?).
@@ -66,6 +66,7 @@ Unattended runs load `execution-discipline` first, per its own rule; an interact
    - **Improve → actions** — one line each, owner and home. The `Skill change proposed:` line is addressed to the lead of the seat you sat in: discovery seats → `discovery-lead`, design seats → `design-lead`, engineering and build seats → `engineering-lead`, research seats → `research-lead`, QA seats → `testing-lead`, board and process → `project-manager`, the plugin itself → `plugin-manager`.
    - **Watch-outs** — worktrees left, stale SHAs, blocked writes and what was posted on whose behalf, transcribed founder answers, versions held, freshness once.
    - **Trail** — links, not prose: PRs, comment ids, artefact paths, register entries.
+   - **Signed** — the closing line: seat, dispatch id (or *interactive, founder driving*), date.
 3. **Post it on the dispatch ticket.** If the seat cannot write to Linear, hand the verbatim text to the parent session to post *on behalf*, attributed to the seat and its dispatch id (`ready-review` §on-behalf).
 4. **The vault copy, if mounted.** Resolve the scope's folder (§4), save `aar-YYYY-MM-DD-[thread].md` with the frontmatter, then the **supersede sweep**: any still-`active` `aar-*.md` **or legacy `handover-*.md`** on the same `thread:` flips to `status: superseded`, gains `superseded_by: <this filename>`, and a banner under its H1: `> Superseded by [[<this file>]] — read that instead.` The new file records `supersedes:`. Nothing else in the vault is touched by this ritual.
 5. **Board truth.** Statuses reflect reality — the newest comment on a ticket is the live instruction, so say plainly if an earlier one is overtaken. Never Done for your own work (Review is the ceiling; `pickup` §3.5). Linear unreachable → the AAR is the file, and the next pickup posts it.
@@ -89,6 +90,7 @@ Unattended runs load `execution-discipline` first, per its own rule; an interact
 | An Operations initiative | `Operations/<Area>/handovers/` |
 | Company strategy work | `Company/Strategy/handovers/` |
 | Vault infra / cross-cutting ops | `_meta/ops/handovers/` |
+| The plugin, the marketplace, or any work with no product folder of its own | the line's `00 handover/` under `Products/Lia Tools/`, on the thread the work serves (`toys-skills-plugin` for the plugin) |
 
 The folder names outside Lia Tools keep their `handovers/` name — the files inside are `aar-*.md` from 2 Sep 2026. Torn between two homes? The folder you would file the work's outputs in. Still unsure? Ask, with two candidates and a recommendation; don't guess.
 

@@ -1,6 +1,6 @@
 # After Action Report — the template
 
-Copy the block between the rules. Keep the headings verbatim — a reader scans thirty of these by heading; a renamed section is one they cannot find. Sign it with the **seat** you sat in and the dispatch id, never a model name. Six lines with honest "none"s is a complete report for a routine session; padding is the failure, not brevity.
+Copy the block between the rules. Keep the headings verbatim — a reader scans thirty of these by heading; a renamed section is one they cannot find. Sign it on the closing line with the **seat** you sat in and the dispatch id, never a model name. One line per section with honest "none"s is a complete report for a routine session; padding is the failure, not brevity.
 
 ---
 
@@ -23,6 +23,8 @@ Copy the block between the rules. Keep the headings verbatim — a reader scans 
 **Watch-outs.** [Traps for the next agent — worktrees left (path · branch · state) · stale SHAs · blocked writes and what was posted on whose behalf · versions held: [skill x.y.z, …] from changelog tops; freshness: [checked | unchecked], said once, here.]
 
 **Trail.** [PRs · comment ids · artefacts. Decisions point at the register, never restated.]
+
+*Signed: [seat] · dispatch [id | interactive, founder driving] · YYYY-MM-DD*
 
 ---
 

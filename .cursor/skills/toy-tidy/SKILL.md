@@ -54,7 +54,7 @@ Work through these checks in order. For each finding, classify it **mechanical**
 4. **Feedback wiring.** Every `04 build/feedback/` summary links back to a meeting note. Every meeting note with a `## Bugs` section has tickets created or a proposed list recorded. Broken relative links between the pair.
 5. **Records.** Every thread in `00 handover/` has exactly one ACTIVE report — an `aar-*.md`, or a legacy `handover-*.md` no AAR has superseded; two actives on one thread is drift for `wrap-up` §3.5's pickup repair. Retro-logs and handovers are archives and read append-only — flag anything that looks rewritten, never repair a record (see the standing rule: handovers and retro entries are records; a tidy never edits another session's record).
 6. **Index + log.** Spot-check that files created since the last tidy have `_meta/index.md` rows. Missing rows are mechanical.
-7. **Freshness.** Each README's "where it's up to" line vs the date of the latest After Action Report / feedback summary. More than ~2 weeks of drift while work was clearly happening → judgment item with a suggested one-line update drawn from the retro log.
+7. **Freshness.** Each README's "where it's up to" line vs the date of the latest After Action Report / feedback summary. More than ~2 weeks of drift while work was clearly happening → judgment item with a suggested one-line update drawn from the latest After Action Report.
 8. **Frontmatter.** `author:` + `captured_by:` present on captured docs; `updated:` moved when a body materially changed.
 
 ## What fix mode may and may not do
