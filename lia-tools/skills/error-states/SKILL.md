@@ -2,9 +2,9 @@
 name: error-states
 slug: error-states
 description: "The state sweep after hi-fi — error, empty, loading and edge states hunted per flow, each one designed or explicitly ruled out with why; happy-path-only never leaves this seat as done. Use when hi-fi screens exist and the design believes itself finished, or when asked what happens when a flow goes wrong."
-version: 0.1.1
+version: 0.1.2
 created: 2026-08-27
-updated: 2026-08-28
+updated: 2026-09-02
 status: active
 triggers:
   - "/error-states"
@@ -17,6 +17,7 @@ companions:
   - design-handoff
   - design-lead
   - ux-writing
+  - design-system
 maintainer: cq
 ---
 
@@ -45,7 +46,7 @@ The flow list from `design-flows` is the checklist; every flow gets all four pas
 
 Every state found gets one of exactly two outcomes on the ticket:
 
-- **Designed** — the state drawn in `hifi-design`'s artefact, in the same on-system discipline, listed in the artefact's state class.
+- **Designed** — the state drawn in `hifi-design`'s artefact, in the same on-system discipline, listed in the artefact's state class. Expressed in the system's terms per `design-system` (`references/lia-design-system.md`) — the muted-text AA gap there is a known state, not one to re-find.
 - **Ruled out, with why** — *"offline mid-upload: not designed; the toys run local-only"* is a decision the builder can trust. Silence is neither; silence is the builder inventing.
 
 The sweep's output is the completed list, and it is what `design-lead`'s coverage verdict cites for its **States** row.
@@ -62,5 +63,6 @@ The sweep's output is the completed list, and it is what `design-lead`'s coverag
 
 ## Changelog
 
+- **0.1.2 (2026-09-02, LIAB-1206)** — cites the new `design-system` seat: its reference file is where the DS rules a builder is held to now live. Companion added; one pointer sentence; no behaviour change.
 - **0.1.1 (2026-08-28, LIAB-1004)** — names `ux-writing` back, closing the one-way link. This seat finds the states that need words; that one writes them. Every state this sweep surfaces arrives at `ux-writing` needing a string.
 - **0.1.0 (2026-08-27, CQ + LIAB-995)** — first version. The error-states step of CQ's design stage as its own seat: the four-pass sweep per flow, designed-or-ruled-out-loud as the only two outcomes, and the state class as where the sweep lands for the builder.

@@ -2,9 +2,9 @@
 name: hifi-design
 slug: hifi-design
 description: "The flows taken to hi-fi — every flow screen designed on the design system, expressed in its tokens and components, DS gaps named and routed never fudged, produced as the artefact the handoff will carry. Use when flows are ready for real screens, when asked for the hi-fi, or when a design needs to become a .dc.html or canvas artboard."
-version: 0.1.1
+version: 0.1.2
 created: 2026-08-27
-updated: 2026-08-27
+updated: 2026-09-02
 status: active
 triggers:
   - "/hifi-design"
@@ -17,6 +17,7 @@ companions:
   - error-states
   - design-handoff
   - design-lead
+  - design-system
 maintainer: cq
 ---
 
@@ -40,6 +41,8 @@ Same stance as `polish`, one stage earlier, where it's cheaper:
 - **A gap in the system is a finding with an owner** — Toys DS gaps route to Chris, `@lia/design-system` gaps to Dan — recorded on the ticket, and the screen carries the *intended* token, not an invented one. A one-off `#hex` "just for now" in the hi-fi is exactly how a design system dies one screen upstream of the build.
 - **In toys work the DS is still growing** (CQ, 26 Aug: acceptable gaps exist) — acceptable means *named and routed*, not silent.
 
+The rules this seat draws to are in `design-system` — `references/lia-design-system.md`, shipped in the plugin — read it before the first screen.
+
 ## 3. The artefact is the output
 
 Not screenshots of it, not prose about it: the folder — prototype plus its sidecars and DS snapshot — that `design-handoff` will move. Interaction behaviour worth specifying goes in the artefact's state class, where the builder is told to read it. If the work happened on a canvas, export lands it in the same folder shape.
@@ -56,5 +59,6 @@ Not screenshots of it, not prose about it: the folder — prototype plus its sid
 
 ## Changelog
 
+- **0.1.2 (2026-09-02, LIAB-1206)** — cites the new `design-system` seat: its reference file is where the DS rules a builder is held to now live. Companion added; one pointer sentence; no behaviour change.
 - **0.1.1 (2026-08-27, review round 1 on LIAB-1000)** — `design-reference` added to companions. It leans on this seat's on-system-or-named rule and was the one design-bench link left pointing only one way.
 - **0.1.0 (2026-08-27, CQ + LIAB-995)** — first version. The hi-fi step of CQ's design stage as its own seat: flows as the work list, the on-system-or-named rule carried upstream from `polish`, and the artefact (not pictures of it) as the output.

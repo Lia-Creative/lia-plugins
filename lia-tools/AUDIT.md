@@ -243,6 +243,7 @@ writing"*. Saying so explicitly is the row.
 | `6f49080` — PR #25 (28 Aug, LIAB-1008) | `file-management` |
 | the research bench (**29 Aug**, LIAB-1023) | `research-lead` · `researcher` · `research-problem` · `research-solution-space` · `research-solution-patterns` · `research-psychology` · `research-strategy` · `research-competitors` · `research-brand` · `research-ux-patterns` · `research-technology` · `research-schema-scrape` · `research-insights` |
 | the QA bench (**29 Aug**, LIAB-1024) | `testing-lead` · `test-analyst` · `tester` · `rogue` · `bug-writer` |
+| PR #[number] (**2 Sep**, LIAB-1206, Dan's session) | `design-system` — read from `Products/Design System/using-the-lia-design-system.md`, `Context/brand-v4-reference.md`, the DS repo's `CLAUDE.md` at `798c2615`, and two of Dan's standing type rules the vault guide never carried; nothing superseded, no competing copy. |
 
 **The research bench needs its second and third answers spelled out, because one
 of them looks like a port and is not.** Where it came from: CQ's LIAB-1023, the

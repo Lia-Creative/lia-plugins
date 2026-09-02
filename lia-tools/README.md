@@ -79,6 +79,7 @@ The process the skills implement is written down in [Tool shop — how a lia.too
 | Skill | The seat |
 |---|---|
 | `file-management` | Ten bright lines for anything that moves someone's own files, the person-outranks-the-tool rule, trust as a build requirement. |
+| `design-system` | The design system's rules shipped where the builder is — colour reserved, tokens by reference, the owned type weights and the section-title exception, icons bare, both themes, the licence lines that bite, the known gaps, and where a gap routes. Dan's file; Toys DS is a stub until Chris fills it. |
 
 **Build**
 
