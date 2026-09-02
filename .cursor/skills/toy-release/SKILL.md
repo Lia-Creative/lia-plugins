@@ -1,7 +1,7 @@
 ---
 name: toy-release
-description: How any agent works a toy through the Lia Tools environments — versioning a toy correctly, knowing which stage it may move, running a promotion after the founder gate, and verifying the result. Load whenever a session creates a toy, bumps a toy's version, or is asked to promote a toy to test, uat, or production. Canonical model lives in Products/Lia Tools/standards/toy-versioning-and-environments-2026-08-13.md — this skill is the runbook, not the model.
-version: 0.4.0
+description: How any agent works a toy through the Lia Tools environments — versioning a toy correctly, knowing which stage it may move, running a promotion after the founder gate, and verifying the result. Load whenever a session creates a toy, bumps a toy's version, or is asked to promote a toy to test, uat, or production. Canonical model lives in Products/Lia Tools/standards/toy-versioning-and-environments-2026-08-13.md — this skill is the runbook, not the model, except the version-bump table which is newer than the standard.
+version: 0.5.0
 created: 2026-08-13
 updated: 2026-08-28
 status: active
@@ -31,16 +31,26 @@ Chat approval is not ticket approval. The ticket is the paper trail; promotions 
 
 ## Version bumps
 
-| Event | Version action |
-|---|---|
-| New toy | `0.0.1` |
-| Internal iteration | patch: `0.0.x` |
-| Promotion to uat | minor: first uat release `0.1.0`, next `0.2.0`, … |
-| Fix shipped to uat testers | patch on the uat line: `0.1.1` |
-| Promotion to production | `1.0.0` |
-| Post-1.0 | normal semver; the register's stage field alone carries stage |
+**Take the smallest bump that is true.** The size of the change picks the digit — not the promotion, not the ceremony.
+
+| Bump | Means | For a tool |
+|---|---|---|
+| **patch** `0.4.1` | It got better. | A fix, a tweak, tuning, copy. **The default.** |
+| **minor** `0.5.0` | It does something new. | The tool gains a capability, or its job changed. |
+| **major** `2.0.0` | Something that worked stops working. | It breaks someone's saved work or a flow they rely on. |
+
+The toolbox takes the same three rows, read against the shell: a patch fixes it, a minor gives it a new capability, a major breaks a tool or someone's saved state.
+
+Two rules make the number mean something:
+
+1. **One step at a time.** From `X.Y.Z` the only legal next numbers are `X.Y.(Z+1)`, `X.(Y+1).0`, `(X+1).0.0`. No skipping.
+2. **A promotion never picks the digit.** `build → test → uat` is a stage change; the stage lives in the register. A small fix promoted to uat is a **patch**, and it stays a patch however much ceremony the promotion carries.
+
+The fixed points: a **new toy starts at `0.0.1`**; `0.x` means not yet in production; and **the promotion to production is `1.0.0`** — the single time a promotion sets a number. After that the three rows, unchanged.
 
 Never parse a version to learn a stage — read the register. Never set the manifest `version` and the register to disagreeing values in the same pass.
+
+*(Rule 2 is new on 2 Sep 2026 ([LIAB-1184](https://linear.app/lia-creative/issue/LIAB-1184), CQ). The table used to make every uat promotion a minor, so a one-line fix cost `0.1.0 → 0.2.0` and tools climbed for ceremony rather than change — dump's history is mostly this. It also had the version encoding the stage while this skill said twice that it does not; dropping it settles a contradiction rather than creating one. The same policy now governs the plugin and the toolbox: `lia-tools/README.md` §Versioning, `CLAUDE.md` rule 10. **The canonical standard has not caught up yet** — `Products/Lia Tools/standards/toy-versioning-and-environments-2026-08-13.md` still carries the old table, and repo rule 6 says the docs win, so read this as the newer call and not as licence to ignore the standard elsewhere. [LIAB-1185](https://linear.app/lia-creative/issue/LIAB-1185) closes the gap.)*
 
 ## The promotion run
 
@@ -72,7 +82,7 @@ Full conventions: `Products/Lia Tools/standards/git-and-release-conventions-2026
 
 ## Grounding
 
-- `Products/Lia Tools/standards/toy-versioning-and-environments-2026-08-13.md` — the standard (the four jam calls, 13 Aug 2026)
+- `Products/Lia Tools/standards/toy-versioning-and-environments-2026-08-13.md` — the standard (the four jam calls, 13 Aug 2026). **Its version-bump table is stale**: §Version bumps here carries the 2 Sep 2026 call and [LIAB-1185](https://linear.app/lia-creative/issue/LIAB-1185) brings the standard in line. Everything else in it stands.
 - `Products/Lia Tools/toolbox/04 build/requirements/prd-06-environments.md` + `prd-07-groups-and-register.md` — what the app and service do with what you write
 - `Products/Lia Tools/standards/toy-contract-2026-08-12.md` — the manifest `version` field
 - `Products/Lia Tools/standards/git-and-release-conventions-2026-08-13.md` — branches, commit scopes, the release PR shape, tags
@@ -80,5 +90,6 @@ Full conventions: `Products/Lia Tools/standards/git-and-release-conventions-2026
 
 ## Changelog
 
+- **0.5.0 (2026-09-02, LIAB-1184)** — the version bump table stops being a list of events and becomes a question about the change: patch it got better, minor it does something new, major something that worked stops working, moving exactly one step. **A promotion no longer picks the digit.** The old table made every uat promotion a minor, so a one-line fix cost `0.1.0 → 0.2.0` and tools climbed for ceremony — dump's history is mostly that. It also had the version encode the stage while this skill says twice that it does not ("never parse a version to learn a stage", "a tag records code, never stage"), so dropping it settles a contradiction the skill was already carrying. The toolbox gets a row for the first time: it had no version policy anywhere, appearing only as an unversioned container for a versioned tool. What survives: `0.0.1` for a new toy, `0.x` as not-yet-production, and `1.0.0` for the promotion to production — the one time a promotion sets a number. Same policy as the plugin now (`README.md` §Versioning, `CLAUDE.md` rule 10). **The canonical standard is stale until [LIAB-1185](https://linear.app/lia-creative/issue/LIAB-1185)** — flagged in the table and in Grounding rather than left for a reader to trip over, because repo rule 6 says the docs win and this is the one place that is knowingly the other way round.
 - **0.4.0 (2026-08-28, LIAB-1020)** — the line is **Lia Tools**: `Products/Lia Toys/` → `Products/Lia Tools/`, `toy box/` → `toolbox/`, `toys/` → `tools/`, and the shape is six numbered stages (`02 analysis` replaced `03 strategy`; research left tool folders; requirements live in Linear) plus the line's unnumbered `standards/` · `research/` · `design/`. Paths only — no behaviour changed.
 - **0.3.0 (2026-08-28, LIAB-1006 + LIAB-963)** — the environments PRD pointer was stale twice: the toy box renumbered `04 build/` to `04 build/` on 28 Aug (CQ, LIAB-1006), and the PRDs sit in a `requirements/` subfolder, not at the build root — verified on disk, both halves fixed. `execution-discipline` is named as the sibling seat in this plugin rather than pathed at the retired vault `_meta/skills/`. The versioning model itself is untouched; the standard in `02 analysis/` remains canonical and did not move. First entry here; earlier versions are unrecorded.

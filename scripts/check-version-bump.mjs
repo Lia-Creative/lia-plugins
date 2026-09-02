@@ -43,9 +43,21 @@
 //      means that skill's own `version:` moved in the same diff.
 //   4. THE BUMP IS CHANGELOGGED. A moved `version:` has a line naming it in
 //      that skill's `## Changelog`, and the section exists at all.
+//   5. THE BUMP MOVES EXACTLY ONE STEP (LIAB-1184). From `X.Y.Z` the only legal
+//      heads are `X.Y.(Z+1)`, `X.(Y+1).0` and `(X+1).0.0`. Alone among these
+//      five, this one is not about a broken delivery — a skipped version
+//      delivers fine. It is about the number meaning something: under rules 1-4
+//      a bump could land anywhere above the last one, so "we bumped it" was the
+//      only claim a version made. CLAUDE.md rule 10 makes the *size* a claim
+//      too — patch it got better, minor it does something new, major something
+//      that worked stops working — and a claim you can make from any number is
+//      not a claim. The two jumps in this file's own history (1.3.0 -> 1.3.3,
+//      1.19.0 -> 1.21.0) are what it looks like when nobody is reading.
 //
-// Deliberately not checked: whether a changelog line is any *good*. Presence
-// of a line naming the new version is the bar; the rest is review's job.
+// Deliberately not checked: whether a changelog line is any *good*, and whether
+// the size of a bump is the *right* size — a guard cannot read what a change
+// means. Presence of a line naming the new version is the bar, and one step is
+// the bar; judging both is review's job.
 //
 // Known boundary: the diff is `git diff <merge-base>`, which does not see
 // untracked files. In CI that is exactly right — everything on a PR head is
@@ -129,6 +141,39 @@ function compareVersions(a, b) {
   return 0;
 }
 
+// The three legal moves from a version, and nothing else (LIAB-1184). A bump
+// that jumps two patches or skips a minor leaves numbers unused and
+// unexplained, and both instances in this repo's history — 1.3.0 -> 1.3.3 and
+// 1.19.0 -> 1.21.0 — read as a hand slipping rather than a decision. Requiring
+// one step is also what makes the *size* of a bump a claim worth reading: a
+// release that may land anywhere above the last one says nothing by landing.
+//
+// Three components exactly. `1.0 -> 1.1` orders fine under compareVersions but
+// has no defined successor, so it is not silently blessed.
+function stepFrom(base, head) {
+  const b = threePart(base);
+  const h = threePart(head);
+  if (!b || !h) return null;
+  if (h[0] === b[0] && h[1] === b[1] && h[2] === b[2] + 1) return "patch";
+  if (h[0] === b[0] && h[1] === b[1] + 1 && h[2] === 0) return "minor";
+  if (h[0] === b[0] + 1 && h[1] === 0 && h[2] === 0) return "major";
+  return null;
+}
+
+function threePart(v) {
+  const core = String(v).split(/[-+]/)[0].split(".");
+  if (core.length !== 3 || core.some((p) => !/^\d+$/.test(p))) return null;
+  return core.map(Number);
+}
+
+// What the author should have typed. Null when the base has no successors to
+// name, which is its own thing worth saying rather than guessing at.
+function nextVersions(base) {
+  const b = threePart(base);
+  if (!b) return null;
+  return { patch: `${b[0]}.${b[1]}.${b[2] + 1}`, minor: `${b[0]}.${b[1] + 1}.0`, major: `${b[0] + 1}.0.0` };
+}
+
 // The skills touched by this diff, by directory name. A change anywhere under
 // a skill — its references/, its scripts/, its templates/ — is a content
 // change to that skill, which is what rule 3 governs.
@@ -190,6 +235,18 @@ function checkSkills(root, mergeBase, changed) {
       // in. If one ever does, fix the base in its own commit first.
       if (direction !== 1) {
         offences.push({ kind: "skill-unconfirmed", file: rel, detail: `version: cannot be confirmed to move forward, ${baseVersion} -> ${headVersion} — either it does not parse as numeric components, or its numeric core is unchanged while the string differs.` });
+        continue;
+      }
+      // LIAB-1184. A skill's number is read by the sessions holding it —
+      // execution-discipline tells an agent the version it holds is the top
+      // changelog entry — so a jump here is a gap in a record someone reads,
+      // not just untidy arithmetic. `execution-discipline` went 1.2.0 -> 1.8.0
+      // in one move under the old rule, and nothing anywhere says what the six
+      // skipped numbers were.
+      if (stepFrom(baseVersion, headVersion) === null) {
+        const next = nextVersions(baseVersion);
+        const legal = next ? ` — from ${baseVersion} the legal moves are ${next.patch} (patch), ${next.minor} (minor), ${next.major} (major).` : ` — use a three-component version one step above ${baseVersion}.`;
+        offences.push({ kind: "skill-skipped", file: rel, detail: `version: skips a step, ${baseVersion} -> ${headVersion}${legal}` });
         continue;
       }
     }
@@ -256,7 +313,16 @@ function check(root, base) {
   if (direction !== 1) {
     return { ok: false, kind: "unconfirmed", detail: `cannot confirm the version moved forward, ${baseVersion} -> ${headVersion}`, touched, skills, baseVersion, headVersion };
   }
-  return { ok: skills.length === 0, kind: "bumped", detail: `version ${baseVersion} -> ${headVersion} for ${touched.length} lia-tools file(s)`, touched, skills };
+  // LIAB-1184, and the last of the four to be added because it is the only one
+  // that is not about a broken delivery — a skipped version delivers perfectly
+  // well. What it breaks is the reading: the size of a bump is a claim about
+  // what changed, and a bump free to land anywhere makes no claim at all.
+  const step = stepFrom(baseVersion, headVersion);
+  if (step === null) {
+    return { ok: false, kind: "skipped", detail: `version skips a step, ${baseVersion} -> ${headVersion}`, touched, skills, baseVersion, headVersion };
+  }
+  const bumped = touchedSkills(changed).length;
+  return { ok: skills.length === 0, kind: "bumped", step, detail: `lia-tools ${baseVersion} -> ${headVersion} (${step}), ${touched.length} file(s), ${bumped} skill(s)`, touched, skills };
 }
 
 const list = (offences) => offences.map(({ file, detail }) => `  ${file}\n    ${detail}\n`).join("");
@@ -278,6 +344,17 @@ function report(outcome) {
     console.error(`  A decrease delivers exactly the way an increase does — the served version changed — so every\n  install would silently roll back to an older build with nothing anywhere saying so. This is what a\n  bad conflict resolution looks like, and the guard cannot tell it from a deliberate one.\n`);
     console.error(`  → Set "version" in ${MANIFEST} above ${outcome.baseVersion}.\n`);
     console.error(`  → A genuine rollback is the release force-push in lia-tools/README.md §Roll back, not a lower number on main.\n`);
+  } else if (outcome.kind === "skipped") {
+    const next = nextVersions(outcome.baseVersion);
+    console.error(`lia-tools version SKIPS a step: ${outcome.baseVersion} -> ${outcome.headVersion}\n`);
+    console.error(`  A bump moves exactly one step, so the number stays a record of what the release was. This one\n  leaves the versions between unused and unexplained.\n`);
+    console.error(`  → Either your base is stale — update it and CI recomputes from the new base\n`);
+    if (next) {
+      console.error(`  → Or set "version" in ${MANIFEST} to ${next.patch} (patch: it got better) · ${next.minor} (minor: it does\n    something new) · ${next.major} (major: something that worked stops working)\n`);
+    } else {
+      console.error(`  → Or use a three-component version exactly one step above ${outcome.baseVersion} in ${MANIFEST}\n`);
+    }
+    console.error(`  → The policy is lia-tools/README.md §Versioning (CLAUDE.md rule 10).\n`);
   } else if (outcome.kind === "unconfirmed") {
     console.error(`lia-tools version cannot be confirmed to move FORWARD: ${outcome.baseVersion} -> ${outcome.headVersion}\n`);
     console.error(`  Either it does not parse as numeric components, or its numeric core did not change while the\n  string did. A machine sees only that the served version changed, so it fetches either way — which is\n  the same harm as a decrease, arrived at differently.\n`);
@@ -291,10 +368,16 @@ function report(outcome) {
     const of = (kind) => skills.filter((s) => s.kind === kind);
     const nobump = [...of("skill-no-bump"), ...of("skill-no-version"), ...of("skill-regressed"), ...of("skill-unconfirmed")];
     const nolog = [...of("skill-no-changelog"), ...of("skill-no-changelog-line")];
+    const skipped = of("skill-skipped");
     if (nobump.length) {
       console.error(`Skills changed without their own version moving (${nobump.length}) — CLAUDE.md rule 3, first half:\n`);
       console.error(list(nobump));
       console.error(`  → Bump version: in the skill's frontmatter.\n`);
+    }
+    if (skipped.length) {
+      console.error(`Skills whose version skips a step (${skipped.length}) — CLAUDE.md rule 10:\n`);
+      console.error(list(skipped));
+      console.error(`  → Move one step. A version nobody can reason from is the thing the number exists to prevent.\n`);
     }
     if (nolog.length) {
       console.error(`Version bumps with nothing in the changelog (${nolog.length}) — CLAUDE.md rule 3, second half:\n`);
@@ -463,6 +546,67 @@ function selfTest() {
         mutate: () => { write("lia-tools/skills/fresh/SKILL.md", skill("0.1.0")); bump("1.1.0"); },
         expect: { ok: true, kind: "bumped", skills: [] },
       },
+      // LIAB-1184. The shape this repo actually produced twice, reproduced from
+      // its own history: 1.19.0 -> 1.21.0 left 1.20.0 unused, and 1.3.0 -> 1.3.3
+      // skipped two patches. Both were green.
+      {
+        name: "manifest skips a minor",
+        mutate: () => { write("lia-tools/skills/demo/SKILL.md", skill("0.2.0")); bump("1.2.0"); },
+        expect: { ok: false, kind: "skipped", skills: [] },
+      },
+      {
+        name: "manifest skips patches",
+        mutate: () => { write("lia-tools/skills/demo/SKILL.md", skill("0.2.0")); bump("1.0.3"); },
+        expect: { ok: false, kind: "skipped", skills: [] },
+      },
+      {
+        // Moving two components at once is the shape that reads as a bump and
+        // is not one: 1.1.1 is forward of 1.0.0 by every earlier rule.
+        name: "manifest moves a minor and a patch at once",
+        mutate: () => { write("lia-tools/skills/demo/SKILL.md", skill("0.2.0")); bump("1.1.1"); },
+        expect: { ok: false, kind: "skipped", skills: [] },
+      },
+      {
+        name: "manifest skips a major",
+        mutate: () => { write("lia-tools/skills/demo/SKILL.md", skill("0.2.0")); bump("3.0.0"); },
+        expect: { ok: false, kind: "skipped", skills: [] },
+      },
+      {
+        // The must-stay-green control for the top of the range: a major is a
+        // legal step, and this guard must never be the reason nobody takes one.
+        // 1.x has held for 26 releases; that should be a decision, not a cage.
+        name: "a major bump is one step",
+        mutate: () => { write("lia-tools/skills/demo/SKILL.md", skill("0.2.0")); bump("2.0.0"); },
+        expect: { ok: true, kind: "bumped", skills: [] },
+      },
+      {
+        name: "a skill's own version skips a step",
+        mutate: () => { write("lia-tools/skills/demo/SKILL.md", skill("0.4.0")); bump("1.0.1"); },
+        expect: { ok: false, kind: "bumped", skills: ["skill-skipped"] },
+      },
+      {
+        // 0.1.0 -> 1.0.0 is a major, which is one step. The pre-1.0 skills are
+        // where this matters — a toy reaching production takes exactly this
+        // move, and it must not read as a jump.
+        name: "a skill going 0.x to 1.0.0 is one step",
+        mutate: () => { write("lia-tools/skills/demo/SKILL.md", skill("1.0.0")); bump("1.0.1"); },
+        expect: { ok: true, kind: "bumped", skills: [] },
+      },
+      {
+        // Double-digit again, this time as a step rather than an ordering:
+        // 0.9.0 -> 0.10.0 is one minor, and an implementation that reasoned
+        // about digits rather than numbers would call it a skip.
+        name: "0.9.0 -> 0.10.0 is one minor step, not a skip",
+        mutate: () => {
+          write("lia-tools/skills/demo/SKILL.md", skill("0.9.0"));
+          git(dir, "add", "-A");
+          git(dir, "-c", "user.email=guard@self.test", "-c", "user.name=guard", "commit", "-qm", "skill at 0.9.0");
+          write("lia-tools/skills/demo/SKILL.md", skill("0.10.0"));
+          bump("1.0.1");
+        },
+        expect: { ok: true, kind: "bumped", skills: [] },
+        rewind: true,
+      },
     ];
 
     const scenariosNeedingRewind = new Set(scenarios.filter((s) => s.rewind).map((s) => s.name));
@@ -493,7 +637,7 @@ function selfTest() {
       for (const line of failures) console.error(line);
       return 1;
     }
-    console.log(`self-test ok — ${scenarios.length} scenarios: no-bump caught, backwards-bump CAUGHT (manifest and skill), not-provably-forward caught on BOTH (unparseable, and a changed string with an unchanged core), skill-version-left-behind and a removed version: caught, a changelog line that only heads an entry accepted (prose mentions rejected), 1.9.0 -> 1.10.0 confirmed forward, bump-and-changelog and root-only and new-skill left green, unreadable manifest reported as unchecked`);
+    console.log(`self-test ok — ${scenarios.length} scenarios: no-bump caught, backwards-bump CAUGHT (manifest and skill), not-provably-forward caught on BOTH (unparseable, and a changed string with an unchanged core), skill-version-left-behind and a removed version: caught, a changelog line that only heads an entry accepted (prose mentions rejected), 1.9.0 -> 1.10.0 confirmed forward, SKIPPED STEPS CAUGHT on both (a skipped minor, skipped patches, a minor-and-patch at once, a skipped major, and a skill jumping) while a major, a 0.x -> 1.0.0 and 0.9.0 -> 0.10.0 stay green, bump-and-changelog and root-only and new-skill left green, unreadable manifest reported as unchecked`);
     return 0;
   } finally {
     rmSync(dir, { recursive: true, force: true });

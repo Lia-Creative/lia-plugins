@@ -249,6 +249,50 @@ so there is no longer a surface to run that probe against. The reasoning above
 stands on its own — it never depended on Cowork — but the option is gone as well
 as unwanted.
 
+## Versioning
+
+**Take the smallest bump that is true.** One policy, and it governs all three
+things this line ships — the plugin, a tool, the toolbox — so an agent moving
+between them is never guessing at a different convention
+([LIAB-1184](https://linear.app/lia-creative/issue/LIAB-1184), CQ, 2 Sep 2026).
+
+| Bump | Means | The test |
+|---|---|---|
+| **patch** `1.21.1` | It got better. | A fix, a tweak, tuning, wording. **The default.** |
+| **minor** `1.22.0` | It does something new. | A capability added, or the thing's job changed. |
+| **major** `2.0.0` | Something that worked stops working. | Someone already using it has to change what they do. |
+
+Read one artifact at a time:
+
+| | patch | minor | major |
+|---|---|---|---|
+| **the plugin** | an existing skill improved | the roster changed, or a skill's job did | an install breaks |
+| **a tool** | a fix or tweak | the tool gains a capability | it breaks someone's saved work |
+| **the toolbox** | a fix or tweak to the shell | the shell gains a capability | it breaks a tool or saved state |
+
+Two rules make the number mean something:
+
+1. **One step at a time.** From `X.Y.Z` the only legal next numbers are
+   `X.Y.(Z+1)`, `X.(Y+1).0`, `(X+1).0.0`. No skipping. CI enforces this
+   (`scripts/check-version-bump.mjs`) for the plugin and every skill in it.
+2. **A promotion never picks the digit.** Moving a tool `build → test → uat` is
+   a stage change, and the stage lives in the release register. The version says
+   what changed in the code, and nothing else.
+
+**The one exception:** `0.x` means not yet in production, and the promotion to
+production is `1.0.0`. That is the single time a promotion sets a number.
+
+**Why this is written down at all.** Nothing used to say how *big* a bump should
+be — the rules said *bump it* and the guard only checked the number moved
+forward, so habit filled the gap. The plugin went `1.0.0 → 1.21.0` in 26
+releases, 21 of them minors, never a major; a one-line wording fix and a whole
+new bench of skills cost the same digit. On the tools side the table forced a
+minor on **every** uat promotion, so small improvements burned minors for
+ceremony rather than for change. A version free to land anywhere above the last
+one only ever claimed *a release happened*. The size is the claim now, and rule
+1 is what stops it being unreadable: the two jumps in this repo's own history,
+`1.19.0 → 1.21.0` and `1.3.0 → 1.3.3`, left numbers nobody can account for.
+
 ## How a change publishes
 
 **One surface, one artifact.** Claude Code is the only channel this plugin
@@ -263,7 +307,7 @@ machine runs** — the marketplace serves `lia-tools` from the `release` ref
 (LIAB-986). The stop between a bad merge and the whole team is the promotion
 step below, and the way back out is the rollback next to it.
 
-1. Edit the skill **here**, bump the skill's `version:` frontmatter with a changelog line, and bump this plugin's version in `.claude-plugin/plugin.json`. The plugin bump is not bookkeeping: **machines only receive an update when the version field changes**, so a promotion without a bump delivers to nobody. CI fails any PR touching `lia-tools/**` without one (`scripts/check-version-bump.mjs` — the version-vs-SHA call went to keeping the explicit version, enforced, 26 Aug 2026). If the change touches `skills/`, also run `node scripts/sync-cursor-skills.mjs` so the Cursor mirror under `.cursor/skills/` matches — CI fails the PR when that mirror drifts.
+1. Edit the skill **here**, bump the skill's `version:` frontmatter with a changelog line, and bump this plugin's version in `.claude-plugin/plugin.json` — **[§Versioning](#versioning) above says how big**, and the answer is usually a patch. The plugin bump is not bookkeeping: **machines only receive an update when the version field changes**, so a promotion without a bump delivers to nobody. CI fails any PR touching `lia-tools/**` without one (`scripts/check-version-bump.mjs` — the version-vs-SHA call went to keeping the explicit version, enforced, 26 Aug 2026). If the change touches `skills/`, also run `node scripts/sync-cursor-skills.mjs` so the Cursor mirror under `.cursor/skills/` matches — CI fails the PR when that mirror drifts.
 2. PR, review, merge. CI runs four guards on the PR — frontmatter, roster, version-bump, and the freshness detector's self-test. The merge lands on `main` and reaches nobody yet.
 
    *(The fourth guard is the odd one out: `scripts/check-plugin-freshness.mjs` gates nothing. It answers a question an **agent** has — which copy of these skills am I holding? — by comparing the install on this machine against what `release` serves, and it reports `unchecked` (exit 2) rather than a pass when it cannot tell, because "I could not find your install" must never read as "you are fine". It needs a clone; `scripts/` sits outside the shipped plugin. What to do with each answer is in `execution-discipline` §Which copy am I holding? — [LIAB-1052](https://linear.app/lia-creative/issue/LIAB-1052).)*

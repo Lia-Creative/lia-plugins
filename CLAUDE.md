@@ -172,6 +172,29 @@ someone asked.
    the top of that file are a record of a moment, not a live list: add to the
    section below them, never edit them.
 
+10. **Take the smallest bump that is true, and move exactly one step.** The
+    policy is [lia-tools/README.md](lia-tools/README.md#versioning) — **patch**
+    it got better, **minor** it does something new, **major** something that
+    worked stops working — and it governs all three things this line ships: the
+    plugin, a tool, the toolbox. From `X.Y.Z` the only legal next numbers are
+    `X.Y.(Z+1)`, `X.(Y+1).0`, `(X+1).0.0`.
+
+    This is rule 3 finishing its own sentence. Rule 3 makes a version *move*;
+    nothing said how far, so habit answered: `1.0.0 → 1.21.0` in 26 releases, 21
+    of them minors, never a major, a wording fix costing the same digit as a new
+    bench of skills. A bump free to land anywhere above the last one claims only
+    that a release happened. **The size is a claim about the change** — which is
+    why the one-step half matters as much as the table: `1.19.0 → 1.21.0` and
+    `1.3.0 → 1.3.3` are both in this repo's history, and neither can be read.
+
+    The guard (`scripts/check-version-bump.mjs`) enforces the step for the
+    plugin and its skills. **It cannot enforce the table** — no check can read
+    what a change *means* — so that half is a review question, and it is
+    outside the guard entirely for tools and the toolbox, whose versions live in
+    `lia-toy-box` ([LIAB-1188](https://linear.app/lia-creative/issue/LIAB-1188)).
+    A promotion never picks the digit; a stage lives in the release register.
+    The one exception: `0.x` is not-yet-production, and production is `1.0.0`.
+
 Roster and what belongs: [lia-tools/README.md](lia-tools/README.md). The
 audit trail of which copy won, why, and what was retired:
 [lia-tools/AUDIT.md](lia-tools/AUDIT.md).
