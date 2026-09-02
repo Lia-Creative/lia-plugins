@@ -20,15 +20,15 @@ Every rule is written as something a builder can act on. Where a rule has a know
 | Name | Light | Dark | Tailwind | Role |
 |---|---|---|---|---|
 | **Brand Blue** | `#0044F9` | `#3C6EFD` | `bg-primary` / `text-primary` | The one CTA colour. The only colour a primary action takes. |
-| Orange | `#F97316` | | `bg-lia-orange` | Accent — content only |
-| Magenta | `#C663D6` | | `bg-lia-magenta` | Accent — content only |
-| Gold | `#FACC15` | | `bg-lia-gold` | Accent — content only |
-| Brick | `#B91C1C` | | `bg-lia-brick` | Accent — content only |
-| Pink | `#F0ABFC` | | `bg-lia-pink` | Accent — content only |
-| Sky | `#BAE6FD` | | `bg-lia-sky` | Accent — content only |
-| Pale | `#FEF08A` | | `bg-lia-pale` | Accent — content only |
+| Orange | `#F97316` | same | `bg-lia-orange` | Accent — content only |
+| Magenta | `#C663D6` | same | `bg-lia-magenta` | Accent — content only |
+| Gold | `#FACC15` | same | `bg-lia-gold` | Accent — content only |
+| Brick | `#B91C1C` | same | `bg-lia-brick` | Accent — content only |
+| Pink | `#F0ABFC` | same | `bg-lia-pink` | Accent — content only |
+| Sky | `#BAE6FD` | same | `bg-lia-sky` | Accent — content only |
+| Pale | `#FEF08A` | same | `bg-lia-pale` | Accent — content only |
 
-The hex values are for recognising a colour, not for typing one — see §2.
+The hex values are for recognising a colour, not for typing one — see §2. Brand Blue has a light and a dark value because `--primary` is declared once per theme (§2); the accents resolve to their fixed `-600` step in both themes, so they are mode-independent and need no dark override.
 
 ### Neutrals — the workhorses
 
@@ -68,8 +68,8 @@ primitive ramp            →  semantic CSS var  →  Tailwind theme name  →  
 ```
 
 - **Raw colour literals live only in the primitive layer** — `--neutral-*` / `--lia-*` in the DS's `globals.css`. Nowhere else, in any repo.
-- **Every semantic token is an alias to a primitive.** `--primary: var(--lia-blue-600)`. Never a literal inlined into a semantic; never a semantic aliasing another semantic.
-- **Consumers do not re-declare the DS's tokens.** The tokens arrive via `@import "@lia/design-system/globals.css"`; an app that re-declares `--primary` has forked the system.
+- **Every semantic token is an alias to a primitive.** `--primary: var(--lia-blue-600)`. Never a literal inlined into a semantic; never a semantic aliasing another semantic. **The semantics are declared twice — in `:root` (light) and in `.dark` — and each declaration aliases its own primitive.** That is how one token, `--primary`, is `#0044F9` on the light ground and `#3C6EFD` on the dark one with no literal anywhere outside the primitive layer.
+- **Consumers do not re-declare the DS's tokens.** The tokens arrive via `@import "@lia/design-system/globals.css"`; an app that re-declares `--primary` has forked the system. **One sanctioned exception:** §8's light-scoped `--muted-foreground` override, held only until the DS fix lands and removed then.
 - **A consumer never edits a token.** A colour change is a change to the primitive in the DS, propagated by `pnpm update`; it is Dan's PR, not the app's.
 
 ## 3. Type
@@ -82,7 +82,7 @@ primitive ramp            →  semantic CSS var  →  Tailwind theme name  →  
 
 - **Headings are Martina Plantijn Regular (400). Size carries hierarchy, not weight.** There is no Martina Medium or Bold — none was bought. A heading that "needs bold" needs a larger size.
 - **Only the weights above exist.** `@font-face` is scoped to the owned weights with `font-synthesis-weight: none`, so an unowned weight (`font-medium`/500, `font-bold` on Martina) **silently falls back** rather than faux-bolding — the design will look right in one place and wrong in another with no error. Söhne emphasis is `font-semibold` (Halbfett 600); quiet UI and serif titles are `font-normal`. A design that needs a weight not listed needs a licence purchase first, never a CSS workaround.
-- **Martina carries the voice, Söhne runs the interface — with the section-title exception.** A section title at the H1/H2/H4 levels stays Martina *even on a functional surface*: the title is brand voice, the dense content beneath it is interface. Implemented as the `.surface-ui` scope in the DS. This resolved a real drift where card UI text had fallen through to the serif default; watch for the reverse drift too, where a section title on a dense screen gets set in Söhne.
+- **Martina carries the voice, Söhne runs the interface — with the section-title exception.** A section title at the H1/H2/H4 levels stays Martina *even on a functional surface* (the ruling names those three levels; H3 is not named — treat an H3 section title as a question for Dan, not as a rule either way): the title is brand voice, the dense content beneath it is interface. Implemented as the `.surface-ui` scope in the DS. This resolved a real drift where card UI text had fallen through to the serif default; watch for the reverse drift too, where a section title on a dense screen gets set in Söhne.
 - **No widows or orphans.** The last line of a heading or paragraph is never one lone word. Set it once at the base level — `text-wrap: balance` on headings, `text-wrap: pretty` on body copy — so nobody hand-fixes strings. For word pairs that must never break under any wrap (a brand name, a number and its unit, a name and a title) bind them with `&nbsp;`. This is a copywriting rule as much as a layout rule: when writing copy, read the last line. (Dan, 2026-06-10, a standing rule across all work.)
 - **Punctuation is typographic.** Real apostrophes and quotes (’ “ ”), a real ellipsis (…), a real em dash (—) in user-facing copy. No straight quotes. Tooling trap: never run `perl -0pi` over UTF-8 source to convert them — it double-encodes; use the editor or Python with an explicit `utf-8` encoding. (Lia v4, 2026-06-24.)
 - **Fallback stacks are OS faces only** — `Charter, Georgia` / `"Helvetica Neue", Arial` / `ui-monospace` — chosen on measured width delta against the real Klim faces. Do not add a Google Fonts fallback; that is the mistake that once made Storybook the only place a fallback rendered (fixed 2026-08-17).
@@ -92,11 +92,11 @@ primitive ramp            →  semantic CSS var  →  Tailwind theme name  →  
 **Consume the DS. Do not fork it.** `@lia/design-system` is a git dependency (`github:Lia-Creative/lia-design-system-v4`), the same package name v3 used. v4 is Dan's lane.
 
 - **Never re-roll a DS component.** Compose the real `Card`, `Badge`, `Button`, `Dialog`; never a hand-rolled div that imitates one, never a copy of a component's JSX into the app. The render-suite refactor on LIAB-373 is the standard.
-- **Check Storybook before declaring a gap** — `https://lia-design-system-v4.vercel.app` shows every component live. The commonest "gap" is an unfamiliar token or a component that was there all along.
+- **Check Storybook before declaring a gap** — `https://lia-design-system-v4.vercel.app` shows every component live. The commonest "gap" is an unfamiliar token or a component that was there all along. Storybook is the DS's own preview: it serves the real faces under the DS repo's own arrangement (`KLIM_FONTS_TOKEN`, `--strict`), which is Dan's licence call for that one surface — a place to look, never a pattern for how a product serves fonts (§7 governs that).
 - **The v4 public surface (LIAB-373):** Accordion · Alert · Avatar · Badge · Button · Card · Checkbox · Dialog · Input · Label · RadioGroup · Select · Separator · Slider · Sonner · Switch · Table · Tabs · Textarea · Tooltip — plus `Logo`, `BarChartFigure` (shadcn Chart + Recharts), and the block-print icon layer. Import from the barrel: `import { Button, Card, Logo } from "@lia/design-system"`.
 - **Polymorphism is the Base UI `render` prop** (`<TooltipTrigger render={<Button … />} />`), never a wrapper component and never prop-spreading to mimic one.
 - **`dark:` variants in a component are allowed only when the semantic token cannot carry the difference** (an opacity tweak, a ring contrast). The default is that the token carries it.
-- **A gap is named and routed, never patched in the app** (§10). An app-local shim is allowed only when genuinely needed, scoped, and marked for removal.
+- **A gap is named and routed, never patched in the app** (§10). The one allowance: an app-local shim, only when genuinely needed, scoped, and marked for removal — and named on the ticket as a gap, so it is a finding with an owner rather than a quiet fork.
 - **Squircles and pill CTAs** are the v4 shape language; they come from the components, not from per-screen radius values.
 
 ## 5. Icons
@@ -124,7 +124,7 @@ The Klim faces are licensed (order 26061276, 30 Jun 2026: Desktop, Web on `lia.b
 
 ## 8. Known gaps — named so nobody discovers them twice
 
-- **`--muted-foreground` fails WCAG AA** (≈ 4.05:1 on card, 3.81:1 on page; AA is 4.5:1). Dan's lane, LIAB-319. An app may hold a **light-scoped** override (→ olive-600) until the DS source fix lands. Do not rely on muted text passing AA, and do not "fix" it by picking a darker literal.
+- **`--muted-foreground` fails WCAG AA** (≈ 4.05:1 on card, 3.81:1 on page; AA is 4.5:1). Dan's lane, LIAB-319. An app may hold a **light-scoped** override (→ olive-600, a token, not a literal) until the DS source fix lands — the one exception to §2's re-declare rule, and it comes out when the fix ships. Do not rely on muted text passing AA, and do not "fix" it by picking a darker literal.
 - **Two console warnings originate in the DS Button and are expected, not the app's bug:** the paper-feel `Math.random()` hydration mismatch, and the Base UI `nativeButton` warning. Do not spend a ticket on them.
 - **Ink's exact value is disputed** (§1). Use the token.
 
@@ -150,7 +150,7 @@ The conformance pass names a gap against one of these lines, or passes. A `polis
 
 - **`@lia/design-system` gap → Dan.** On the ticket: what the spec shows, what was built instead, which token or component is missing; label `specialist:design-system` (the board's label — it means *the gap is Dan's*). Check Storybook first.
 - **Toys DS gap → Chris.** See §11.
-- **Never fork or patch either system in the product repo.** Never hand-pair, never re-declare, never a "just for now" literal — that is how a design system dies one screen upstream of the build.
+- **Never fork or patch either system in the product repo.** Never hand-pair, never re-declare, never a "just for now" literal — that is how a design system dies one screen upstream of the build. The two named exceptions, and only these: §8's light-scoped `--muted-foreground` override, and §4's scoped shim marked for removal — both recorded on the ticket as gaps.
 
 ## 11. Toys DS — a stub, and the rule that holds until it is written
 
