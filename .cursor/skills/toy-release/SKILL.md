@@ -1,9 +1,9 @@
 ---
 name: toy-release
 description: How any agent works a toy through the Lia Tools environments — versioning a toy correctly, knowing which stage it may move, running a promotion after the founder gate, and verifying the result. Load whenever a session creates a toy, bumps a toy's version, or is asked to promote a toy to test, uat, or production. Canonical model lives in Products/Lia Tools/standards/toy-versioning-and-environments-2026-08-13.md — this skill is the runbook, not the model.
-version: 0.4.0
+version: 0.5.0
 created: 2026-08-13
-updated: 2026-08-28
+updated: 2026-09-02
 status: active
 maintainer: cq
 author: cq
@@ -52,7 +52,7 @@ After the gate is confirmed **on the ticket**:
 4. Insert the register row (`toy_releases`: toy_id, version, stage, `git_ref`, promoted_at, promoted_by, notes). Insert, never update — history is the promotion log. `git_ref` is the tag from step 3. Your `promoted_by` is your agent id; the founder who gated is in the notes.
 5. **Verify both directions:** a test account of the target group sees the toy on refresh; an account of the group below does not. A promotion without this check is not done.
 6. **Distribution reality check:** the group only truly has the toy once a build containing it is on their machines. **With the updater live** (decision 26 — Electron's standard updater on Cloudflare R2, `LIAB-700`): publish the build to the feed and machines take it on next launch; the closing comment records the published version. **Before it's live:** run the `LIAB-673`/`675` pipeline if the run's scope includes distribution, and if not, say plainly in the closing comment that the register is updated but builds are not yet on machines. Never let a register write alone read as *the panel has it*.
-7. Close out: Linear comment on the promotion ticket (version, stage, tag, register row, verification evidence, distribution status) → ticket to **Review, never Done** → `_meta/log.md` entry → retro entry in the toy's `00 handover/retro-log.md`.
+7. Close out: Linear comment on the promotion ticket (version, stage, tag, register row, verification evidence, distribution status) → ticket to **Review, never Done** → `_meta/log.md` entry → the session's After Action Report per `wrap-up`, on the promotion ticket.
 
 ## Git, in one breath
 
@@ -80,5 +80,6 @@ Full conventions: `Products/Lia Tools/standards/git-and-release-conventions-2026
 
 ## Changelog
 
+- **0.5.0 (2026-09-02, LIAB-1162)** — the retro entry is the After Action Report: one per session, as a comment on the dispatch ticket per `wrap-up` 2.0.0, the vault copy in `00 handover/` when mounted; retro-logs are archives.
 - **0.4.0 (2026-08-28, LIAB-1020)** — the line is **Lia Tools**: `Products/Lia Toys/` → `Products/Lia Tools/`, `toy box/` → `toolbox/`, `toys/` → `tools/`, and the shape is six numbered stages (`02 analysis` replaced `03 strategy`; research left tool folders; requirements live in Linear) plus the line's unnumbered `standards/` · `research/` · `design/`. Paths only — no behaviour changed.
 - **0.3.0 (2026-08-28, LIAB-1006 + LIAB-963)** — the environments PRD pointer was stale twice: the toy box renumbered `04 build/` to `04 build/` on 28 Aug (CQ, LIAB-1006), and the PRDs sit in a `requirements/` subfolder, not at the build root — verified on disk, both halves fixed. `execution-discipline` is named as the sibling seat in this plugin rather than pathed at the retired vault `_meta/skills/`. The versioning model itself is untouched; the standard in `02 analysis/` remains canonical and did not move. First entry here; earlier versions are unrecorded.

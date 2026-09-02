@@ -2,7 +2,7 @@
 name: pickup
 slug: pickup
 description: "How anyone takes on a Linear ticket — the dispatch rule (a prompt is a pointer), the reading order (ticket, parents, blockers, context doc), what each status means, and the hand-back path for rejected work. Use when picking up or handing back a single ticket; a whole epic loads build instead."
-version: 0.10.1
+version: 0.11.0
 created: 2026-08-12
 updated: 2026-09-02
 status: active
@@ -31,7 +31,6 @@ companions:
   - story-writer
   - task-writer
   - wrap-up
-  - product-retro
 maintainer: cq
 ---
 
@@ -108,7 +107,7 @@ What you're usually after:
 | What was decided and why | the product's build plan, in `01 planning/` or `Outputs/` |
 | How it's put together | the ADR in `Products/Platform/ADRs/`, then the product's `02 analysis/` |
 | The founder's actual words | the source recording page, quoted rather than paraphrased |
-| What the last session hit | the retro-log tail, and the ACTIVE handover if there is one (`wrap-up` owns those) |
+| What the last session hit | the latest After Action Report on the ticket, then the ACTIVE `aar-*.md` in the scope's `00 handover/` (`wrap-up` owns both); `handover-*.md` and `retro-log.md` files are archives |
 
 **The dated note wins over the undated one. The file wins over what you remember.** Conventions here change monthly.
 
@@ -144,7 +143,7 @@ What you're usually after:
 - Load `execution-discipline` first. It's the judgment layer and it isn't restated here.
 - Move the ticket to the status that's true. **Never close your own work** — if you built or reviewed it, that's the approver's.
 - **Open a PR and hold at Review.** In epic mode (`build`), the engineering lead reviews and loops with you, then merges. Standalone, a fresh review checks it, and the lead whose lane the work sits in lands it — any lead seat may, in its own lane (`review-and-merge` §5.6). **Either way it is never you.**
-- Append a retro entry before you finish — as a comment on the ticket you were dispatched at; to the product's retro-log too when the vault is mounted. `product-retro` owns the shape.
+- Write the After Action Report before you finish — one comment on the ticket you were dispatched at, in `wrap-up`'s template; the vault copy too when the vault is mounted. `wrap-up` owns the shape.
 
 ---
 
@@ -197,14 +196,14 @@ Comment on the ticket, then move to another one. A blocked ticket said out loud 
 | `ready-review` | Gating it ready before anything downstream spends work on it. |
 | `project-manager` | The dispatch and the board — the seat that sent you this ticket. |
 | `engineering-lead` (`build-prep` · `ticket-review` · `review-and-merge`) | The other end: prep before you start, the pickability check at dispatch, and the review loop when you hold. The merge is any lead's, in its own lane. |
-| `wrap-up` | Ending a session and resuming your own thread later. Different axis: across time, same person. |
+| `wrap-up` | Ending a session with the After Action Report, and resuming your own thread later from it. Different axis: across time, same person. |
 | `execution-discipline` | How to execute anything well once you've started. |
-| `product-retro` | The mandatory retro entry. |
 
 ---
 
 ## Changelog
 
+- **0.11.0 (2026-09-02, LIAB-1162)** — the retro entry is the After Action Report: one per session, as a comment on the dispatch ticket per `wrap-up` 2.0.0, the vault copy in `00 handover/` when mounted; retro-logs are archives. §3's table, §4's closing step and the seam table repointed; `product-retro` (now a pointer) leaves `companions:`.
 - **0.10.1 (2026-09-02, LIAB-1161)** — `lead-engineer` is `engineering-lead` — reference only: the seat's name now follows its discipline, like the other four leads. No rule changed.
 - **0.10.0 (2026-08-28, LIAB-1025)** — who lands a standalone ticket is now *the lead whose lane the work sits in*, pointing at `review-and-merge` §5.6 rather than at the orchestrator (a seat split up on 26 Aug) and a closed `LIAB-861`. **Never you** is unchanged. This skill was outside the ticket's list of seats and stated the merge rule anyway — the exact drift `LIAB-861` existed to kill.
 - **0.9.0 (2026-08-28, LIAB-1020)** — the line is **Lia Tools**: `Products/Lia Toys/` → `Products/Lia Tools/`, `toy box/` → `toolbox/`, `toys/` → `tools/`, and the shape is six numbered stages (`02 analysis` replaced `03 strategy`; research left tool folders; requirements live in Linear) plus the line's unnumbered `standards/` · `research/` · `design/`. Paths only — no behaviour changed.

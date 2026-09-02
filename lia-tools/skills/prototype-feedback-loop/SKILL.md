@@ -2,9 +2,9 @@
 name: prototype-feedback-loop
 slug: prototype-feedback-loop
 description: "Turn a founder's video walkthrough of a prototype into a structured, linkable record — the stage-appropriate gate first, then the distilled doc that splits build-this-straight from needs-a-jam, chapter marks from the srt, and the frame-attached tickets when the round calls for them. Use when a founder records feedback on a build or design and the reaction needs to become something the team can act on."
-version: 0.6.0
+version: 0.7.0
 created: 2026-07-07
-updated: 2026-08-27
+updated: 2026-09-02
 status: active
 triggers:
   - "/prototype-feedback-loop"
@@ -15,7 +15,7 @@ triggers:
   - "feedback loop for this prototype"
 companions:
   - toy-feedback-ingest
-  - product-retro
+  - wrap-up
   - ticket-builder
   - backlog-grooming
   - wrap-up
@@ -67,7 +67,7 @@ maintainer: cq
 4. **Chapter marks from the `.srt`.** Grep it for the first line of each section's opening sentence to get its timestamp; don't eyeball a long paste. Use the marks for a footnote in the doc and, when the recording is being posted, a drafted description (chapters, one line each, pointing back at the written doc).
 5. **File the raw transcripts beside the doc**, named to match, and fix every path that referenced their old home.
 6. **Housekeeping** — the product README's doc map, `_meta/index.md`, `_meta/log.md`.
-7. **Retro** — one entry per `product-retro`, named `feedback round N` so it is findable among the build entries.
+7. **After Action Report** — per `wrap-up`, on the round's ticket, its orientation line naming `feedback round N` so it is findable among the build reports.
 8. **Hand back** — a short summary, the drafted description if there is a video, and the open items the founder still owns.
 
 ## 3. Video-first variant — frame-attached tickets
@@ -102,10 +102,11 @@ When the input is a **raw video file** with no transcript, and the output should
 - `toy-jam` — where "needs a jam" items go, and how the decisions come back.
 - `ticket-builder` — the shape of anything this produces on the board.
 - `backlog-grooming` — the sweep after a round dumps a batch of tickets.
-- `product-retro` — the entry every round appends.
+- `wrap-up` — the After Action Report every round ends with.
 
 ## Changelog
 
+- **0.7.0 (2026-09-02, LIAB-1162)** — the retro entry is the After Action Report: one per session, as a comment on the dispatch ticket per `wrap-up` 2.0.0, the vault copy in `00 handover/` when mounted; retro-logs are archives.
 - **0.6.0 (2026-08-27, LIAB-997)** — lands in the plugin. Stage gate promoted to section 1 where `toy-feedback-ingest` reads it; vault `_meta/skills/` pointers replaced with the seats that carry the work; filing routed to `toy-feedback-ingest` for toys; ticket shape deferred to `ticket-builder` instead of restating a per-product convention.
 - **0.5.0 (2026-08-01, CQ)** — the stage-appropriate-feedback gate, after a structure-stage wireframe was scored against a hi-fi rubric.
 - **0.4.0 (2026-07-08, Luke)** — the video-first variant: local transcription, frame grabs attached to tickets, preserve-before-building.

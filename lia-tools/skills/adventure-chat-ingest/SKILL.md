@@ -12,9 +12,9 @@ description: >-
   conversation with a person (not a product walkthrough — that's
   toy-feedback-ingest). Person-first, not product-first: the unit of work is
   the human, and every downstream page cites the chat.
-version: 0.3.0
+version: 0.4.0
 created: 2026-08-19
-updated: 2026-08-28
+updated: 2026-09-02
 status: active
 maintainer: cq
 author: cq
@@ -93,7 +93,7 @@ Candidate patterns → entries (or evidence added to existing entries) in `03 in
 2. Row in `_meta/internal-videos.md` §Log.
 3. `_meta/index.md` — the chat note + any new pages.
 4. `_meta/log.md` — one `ingest` entry, **appended at the bottom of the file**.
-5. Retro entry in the **line** retro-log (`Products/Lia Tools/00 handover/retro-log.md`) — discovery is line-level work. If the chat also produced per-toy feedback, that toy's retro-log gets its own entry per `toy-feedback-ingest`.
+5. The session's After Action Report per `wrap-up` — on the ticket the ingest was dispatched at; discovery is line-level work, so the vault copy (when mounted) goes in the line's `00 handover/`. Per-toy feedback the chat produced is named in the same report, not a second one.
 
 ## Step 10 — Report back
 
@@ -108,5 +108,6 @@ Short: the chat note path, profile created/updated, problems created/fed, scenar
 
 ## Changelog
 
+- **0.4.0 (2026-09-02, LIAB-1162)** — the retro entry is the After Action Report: one per session, as a comment on the dispatch ticket per `wrap-up` 2.0.0, the vault copy in `00 handover/` when mounted; retro-logs are archives.
 - **0.3.0 (2026-08-28, LIAB-1020)** — the line is **Lia Tools**: `Products/Lia Toys/` → `Products/Lia Tools/`, `toy box/` → `toolbox/`, `toys/` → `tools/`, and the shape is six numbered stages (`02 analysis` replaced `03 strategy`; research left tool folders; requirements live in Linear) plus the line's unnumbered `standards/` · `research/` · `design/`. Paths only — no behaviour changed.
 - **0.2.0 (2026-08-28, LIAB-1006 + LIAB-963)** — where a chat wanders into product feedback, the hand-off names `04 build/feedback/`: the line gained a `03 design/` stage on 28 Aug and build moved up one. The `execution-discipline` load line names the sibling seat in this plugin rather than the retired vault `_meta/skills/` path. `02 discovery/`, the line-level home this skill writes into, is unaffected by the renumber. First entry here; earlier versions are unrecorded.

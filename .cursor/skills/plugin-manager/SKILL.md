@@ -2,7 +2,7 @@
 name: plugin-manager
 slug: plugin-manager
 description: "The lia-plugins marketplace's own seat — skill-change review and merges, the promotion to release and the rollback back, version and frontmatter hygiene, the pins and renames watched. Use when a skill PR needs reviewing or landing, a merge needs promoting to machines, a bad build needs rolling back, or the roster needs a hygiene pass."
-version: 0.4.1
+version: 0.4.2
 created: 2026-08-27
 updated: 2026-09-02
 status: active
@@ -41,7 +41,7 @@ maintainer: cq
 | A `lia-tools/**` change is drafted | The guards, locally, before the PR: frontmatter + version-bump, self-tests first |
 | An upstream pin should move | A PR moving the `sha` — root README §Sources; the pin never floats |
 | The roster smells stale | The hygiene pass: descriptions present, versions truthful against changelogs, retired names still in `renames` |
-| A bench retro proposes a skill or template change | The bench's lead raises the PR; this seat runs the `review-and-merge` loop and lands it — with the version bump, the changelog line and the provenance row the repo rules require |
+| A seat's After Action Report proposes a skill or template change | The bench's lead raises the PR; this seat runs the `review-and-merge` loop and lands it — with the version bump, the changelog line and the provenance row the repo rules require |
 
 ## The standing rules — each one paid for on 26 Aug 2026
 
@@ -62,6 +62,7 @@ maintainer: cq
 
 ## Changelog
 
+- **0.4.2 (2026-09-02, LIAB-1162)** — the moments row's trigger is a seat's After Action Report, not a bench retro (`wrap-up` 2.0.0) — reference only.
 - **0.4.1 (2026-09-02, LIAB-1161)** — `lead-engineer` is `engineering-lead` — reference only: the seat's name now follows its discipline, like the other four leads. No rule changed.
 - **0.4.0 (2026-08-29, LIAB-1023 + LIAB-1024)** — a moments row for the loop the new benches depend on: a bench retro that proposes a skill or template change raises a PR through its lead, and this seat lands it under the ordinary rules. Both bench tickets ask their agents to *"suggest improvements to their skills and templates and raise [PRs] to the plugins manager"*; the seat already said content comes from the benches, so this names the moment rather than adding a rule.
 - **0.3.0 (2026-08-28, LIAB-1030)** — rule 2 says *why* verifying a real install is not a formality: auto-update does not deliver here. `DISABLE_AUTOUPDATER=1` is set in the desktop session environment and the plugin pass returns on it before the marketplace's `autoUpdate` flag is read, so both settings read correct while nothing updates. Scoped to CLI and desktop: cloud and web sessions provision fresh each time and are unaffected, so an update seen there says nothing about a laptop. Measured, not inferred — 1.6.1 installed against a released 1.8.0, and the gate found in the shipped code.
