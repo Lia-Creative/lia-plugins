@@ -172,6 +172,41 @@ someone asked.
    the top of that file are a record of a moment, not a live list: add to the
    section below them, never edit them.
 
+10. **Take the smallest bump that is true, and move exactly one step.** The
+    policy is [lia-tools/README.md](lia-tools/README.md#versioning) — **patch**
+    it got better, **minor** it does something new, **major** something that
+    worked stops working — and it governs all three things this line ships: the
+    plugin, a tool, the toolbox. From `X.Y.Z` the only legal next numbers are
+    `X.Y.(Z+1)`, `X.(Y+1).0`, `(X+1).0.0`.
+
+    This is rule 3 finishing its own sentence. Rule 3 makes a version *move*;
+    nothing said how far, so habit answered — and **the size is a claim about
+    the change**, which is why the one-step half matters as much as the table.
+    The README carries the measurements and the two unreadable jumps that paid
+    for it; they are not restated here.
+
+    **A number is not yours until it lands.** The guard also refuses a version
+    the base ref already serves: two branches picking the same one merge with no
+    conflict, because both wrote the same string, and deliver nothing. That is
+    not a hypothetical — it happened repeatedly on the branch that added this
+    rule, in a single afternoon, twice while its CI was green. **It catches this on the next run, not continuously:**
+    GitHub does not re-run a PR's checks when the base moves, so a green tick
+    can be stale about exactly this.
+
+    The guard (`scripts/check-version-bump.mjs`) checks the step and the
+    collision for the plugin and its skills, on every run it gets. **It cannot enforce the table** —
+    no check can read what a change *means* — so that half is a review question,
+    and it is outside the guard entirely for tools and the toolbox, whose
+    versions live in `lia-toy-box`
+    ([LIAB-1188](https://linear.app/lia-creative/issue/LIAB-1188)).
+
+    **Two clauses that are about tools only**, and mean nothing for the plugin
+    or a skill: a promotion never picks the digit, because a tool's stage lives
+    in its release register; and `0.x` is not-yet-production, with production
+    being `1.0.0` and a breaking change below it taking the minor. A skill at
+    `0.3.1` is not a draft — 69 of the 73 in this plugin are `0.x` and every one
+    of them is live.
+
 Roster and what belongs: [lia-tools/README.md](lia-tools/README.md). The
 audit trail of which copy won, why, and what was retired:
 [lia-tools/AUDIT.md](lia-tools/AUDIT.md).

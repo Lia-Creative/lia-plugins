@@ -9,7 +9,7 @@ and shipped — as 73 skills it can load and run.
 You do not memorise the process. You install the plugin, and the process is
 already in the room.
 
-**Manual version 1.1 · Plugin version 1.27.0 · 2 September 2026**
+**Manual version 1.2 · Plugin version 1.28.0 · 2 September 2026**
 
 > **Hit a word you don't know?** Section 13 defines the five that matter —
 > worktree, frontmatter, squash merge, Given/When/Then, CI. Nothing else in here
@@ -642,6 +642,21 @@ one of those is editing a copy that goes nowhere.
    version numbers in this repository have lied before.
 5. **Bump the plugin version** in `lia-tools/.claude-plugin/plugin.json`. Without
    this, your change reaches nobody.
+
+   **How big?** Take the smallest bump that is true, and move exactly one step.
+
+   | | |
+   |---|---|
+   | **patch** | It got better — a fix, a tweak, wording. **Most changes.** |
+   | **minor** | It does something new — a skill added, retired, or given a new job. |
+   | **major** | Something that worked stops working. |
+
+   Nothing else is legal: move **exactly one step** from whatever the plugin is
+   on now — the patch digit up by one, or the minor up by one with the patch
+   back to zero, or the major up by one with both back to zero. If the guard says your number is already served,
+   somebody released while you were working — **merge `main` in and take one
+   step from what they landed**, rather than reaching for a bigger number. The
+   full policy, and why it exists, is `lia-tools/README.md` §Versioning.
 6. **Sync the Cursor copy** if you touched anything under `skills/`:
 
    ```
@@ -703,6 +718,7 @@ ticket number in each row is where the reasoning lives.
 
 | Version | Date | What changed |
 |---|---|---|
+| **1.28.0** | 2 Sep 2026 | One versioning policy for the plugin, the tools and the toolbox: take the smallest bump that is true, move exactly one step, and never let a promotion pick the digit. Before this, nothing said how *big* a bump should be, so habit answered — 21 minors in 26 releases, a wording fix priced like a new bench of skills. CI now also refuses a number the base already serves, which it caught it repeatedly on its own branch. (LIAB-1184) |
 | **1.27.0** | 2 Sep 2026 | This manual. The plugin got a document written for a person rather than for an agent, and `plugin-manager` got the rule that keeps it true. (LIAB-1181) |
 | **1.26.0** | 2 Sep 2026 | Dispatch and hygiene: a dead session's work is salvaged by rule rather than abandoned, every worktree is accounted for, and a red that is not yours gets named as one. Plus the Cursor mirror's self-test now actually exercises the sync, so it can go red. (LIAB-1165, LIAB-1169) |
 | **1.25.0** | 2 Sep 2026 | One review per head, not two. A commit that already carries a verdict is never cold-reviewed again, a base-only move gets a re-check rather than a fresh review, and a landing goes through the pull request. Measured: ten of twenty-three tickets had been reviewed cold twice on the same commit, and four of those pairs disagreed. (LIAB-1164) |
