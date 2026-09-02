@@ -344,6 +344,7 @@ answer is that it describes and never owns: where the manual and the skills
 disagree, the skills win and the manual gets fixed. `plugin-manager` rule 9 is
 where that is enforced, and this is the record that it was decided rather than
 drifted into.
+
 ## Renamed — the same content under its discipline's name (LIAB-1161)
 
 A rename is a new directory, so rule 9 asks its question here too. The answer is
