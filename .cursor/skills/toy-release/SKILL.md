@@ -37,7 +37,7 @@ Chat approval is not ticket approval. The ticket is the paper trail; promotions 
 |---|---|---|
 | **patch** `0.4.1` | It got better. | A fix, a tweak, tuning, copy. **The default.** |
 | **minor** `0.5.0` | It does something new. | The tool gains a capability, or its job changed. |
-| **major** `1.0.0` | Something that worked stops working. | It breaks someone's saved work or a flow they rely on. |
+| **major** | Something that worked stops working. | It breaks someone's saved work or a flow they rely on. **Below `1.0.0` this takes the minor** — see the fixed points. |
 
 The toolbox takes the same three rows, read against the shell: a patch fixes it, a minor gives it a new capability, a major breaks a tool or someone's saved state.
 

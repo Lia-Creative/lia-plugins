@@ -327,7 +327,7 @@ function check(root, base) {
   } catch {
     // No manifest at the base: the plugin is being introduced, there is no
     // installed version to signal against.
-    return { ok: skills.length === 0, kind: "new", detail: `${MANIFEST} does not exist at ${base}`, skills };
+    return { ok: skills.length === 0, kind: "new", detail: `${MANIFEST} does not exist at the merge-base with ${base}`, skills };
   }
 
   let headVersion;
@@ -418,7 +418,7 @@ function report(outcome) {
     console.error(`  → A genuine rollback is the release force-push in lia-tools/README.md §Roll back, not a lower number on main.\n`);
   } else if (outcome.kind === "taken") {
     const next = nextVersions(outcome.tipVersion);
-    console.error(`lia-tools version ${outcome.headVersion} is ALREADY SERVED by ${outcome.tipVersion === outcome.headVersion ? "the base" : "a newer base"}: ${MANIFEST} is ${outcome.tipVersion} on the base ref\n`);
+    console.error(`lia-tools version ${outcome.headVersion} is NOT ABOVE what the base ref serves: ${MANIFEST} is ${outcome.tipVersion} on ${base}\n`);
     console.error(`  Rules 1 and 2 ask whether this branch moved the number. They pass — against the base you forked\n  from. Someone landed since, and this number is spoken for, so merging changes nothing a machine can\n  see: same served version, no fetch, and the repo saying a release happened.\n`);
     console.error(`  → Merge the base branch in, then take one step from ${outcome.tipVersion}:\n`);
     if (next) {

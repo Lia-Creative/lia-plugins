@@ -2,6 +2,11 @@
 
 The one plugin for building lia.tools products — the toys, the toy box and the site — and the process that goes with them.
 
+**Reading this as a person, not as an agent? Start with [MANUAL.md](MANUAL.md).**
+This file is the roster and the runbook; the manual is the onboarding — what the
+plugin is, how the stages and benches hand work on, how to install and update it
+on each surface, where feedback goes, and the changelog in plain language.
+
 **This directory is the source of truth for the skills it carries.** Canonical moved here from the Lia Vault's `_meta/skills/` on 26 Aug 2026 ([LIAB-919](https://linear.app/lia-creative/issue/LIAB-919)): a vault that build machines cannot mount is a poor distribution channel, and every packaged copy taken from it is a copy that drifts. Edit a skill here, or don't edit it.
 
 The process the skills implement is written down in [Tool shop — how a lia.tools product gets built](https://linear.app/lia-creative/document/tool-shop-how-a-liatools-product-gets-built-4a9cfacc41c8). The ticket shapes are [How a Lia Toys ticket is shaped](https://linear.app/lia-creative/document/how-a-lia-toys-ticket-is-shaped-a5d28e39709b). Both live in Linear, deliberately — a build agent has Linear and this plugin, and needs nothing else.
@@ -281,16 +286,24 @@ Three rules make the number mean something:
    sat — someone else's release took the number you were reaching for. The guard
    names the moved base and the fix is to merge it in, not to pick a bigger
    number: choosing one from a stale fork point is exactly how a version
-   collides. This is not rare. The branch that added these rules hit it **five
-   times in one afternoon**, twice while CI was still running.*
+   collides. This is not rare — the branch that added these rules hit it **four
+   times in one afternoon**, once while CI was still running.*
 
 2. **A promotion never picks the digit.** Moving a tool `build → test → uat` is
    a stage change, and the stage lives in the release register. The version says
    what changed in the code, and nothing else.
-3. **A number is not yours until it lands.** CI also refuses a version the base
-   ref already serves. Two branches that pick the same one merge with **no
-   conflict** — both wrote the same string — and the result delivers nothing:
-   same served version, no fetch, and the repo claiming a release happened.
+3. **A number is not yours until it lands.** The guard also refuses a version
+   the base ref already serves. Two branches that pick the same one merge with
+   **no conflict** — both wrote the same string — and the result delivers
+   nothing: same served version, no fetch, and the repo claiming a release
+   happened.
+
+   *Read that as "on the next run", not "CI has you covered". GitHub does not
+   re-run a pull request's checks when the base moves, so a PR can sit green
+   while the number it claims is already gone — measured twice on this rule's
+   own branch. A push, an **Update branch**, or a manual re-run is what asks the
+   question again. The one case the rule exists for is the one that produces no
+   new run on its own.*
 
 **Rule 2 is about tools only.** A skill and the plugin have no stages and no
 register, so nothing there ever picks a digit for them. Rules 1 and 3 apply to
@@ -330,9 +343,11 @@ machine runs** — the marketplace serves `lia-tools` from the `release` ref
 step below, and the way back out is the rollback next to it.
 
 1. Edit the skill **here**, bump the skill's `version:` frontmatter with a changelog line, and bump this plugin's version in `.claude-plugin/plugin.json` — **[§Versioning](#versioning) above says how big**, and the answer is usually a patch. The plugin bump is not bookkeeping: **machines only receive an update when the version field changes**, so a promotion without a bump delivers to nobody. CI fails any PR touching `lia-tools/**` without one (`scripts/check-version-bump.mjs` — the version-vs-SHA call went to keeping the explicit version, enforced, 26 Aug 2026). If the change touches `skills/`, also run `node scripts/sync-cursor-skills.mjs` so the Cursor mirror under `.cursor/skills/` matches — CI fails the PR when that mirror drifts.
-2. PR, review, merge. CI runs four guards on the PR — frontmatter, roster, version-bump, and the freshness detector's self-test. The merge lands on `main` and reaches nobody yet.
+2. PR, review, merge. CI runs **five** jobs on the PR — `frontmatter`, `version-bump`, `roster`, `cursor-skills-mirror` and `freshness`. The merge lands on `main` and reaches nobody yet.
 
-   *(The fourth guard is the odd one out: `scripts/check-plugin-freshness.mjs` gates nothing. It answers a question an **agent** has — which copy of these skills am I holding? — by comparing the install on this machine against what `release` serves, and it reports `unchecked` (exit 2) rather than a pass when it cannot tell, because "I could not find your install" must never read as "you are fine". It needs a clone; `scripts/` sits outside the shipped plugin. What to do with each answer is in `execution-discipline` §Which copy am I holding? — [LIAB-1052](https://linear.app/lia-creative/issue/LIAB-1052).)*
+   *(This said **four** and omitted `cursor-skills-mirror` until 2 Sep 2026 — the job landed with the Cursor mirror in PR #41 and this sentence was not updated with it. Caught by the LIAB-1181 review, against `.github/workflows/skills.yml` rather than against this prose. Prose about a check goes stale the moment the check changes: `execution-discipline` 1.8.0 records the same lesson from the other side.)*
+
+   *(`freshness` is the odd one out: `scripts/check-plugin-freshness.mjs` gates nothing. It answers a question an **agent** has — which copy of these skills am I holding? — by comparing the install on this machine against what `release` serves, and it reports `unchecked` (exit 2) rather than a pass when it cannot tell, because "I could not find your install" must never read as "you are fine". It needs a clone; `scripts/` sits outside the shipped plugin. What to do with each answer is in `execution-discipline` §Which copy am I holding? — [LIAB-1052](https://linear.app/lia-creative/issue/LIAB-1052).)*
 3. **Promote.** One command, from any clone:
 
    ```

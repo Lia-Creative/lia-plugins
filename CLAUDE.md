@@ -188,11 +188,13 @@ someone asked.
     **A number is not yours until it lands.** The guard also refuses a version
     the base ref already serves: two branches picking the same one merge with no
     conflict, because both wrote the same string, and deliver nothing. That is
-    not a hypothetical — it happened five times on the branch that added this
-    rule, in one afternoon.
+    not a hypothetical — it happened four times on the branch that added this
+    rule, in one afternoon. **It catches this on the next run, not continuously:**
+    GitHub does not re-run a PR's checks when the base moves, so a green tick
+    can be stale about exactly this.
 
-    The guard (`scripts/check-version-bump.mjs`) enforces the step and the
-    collision for the plugin and its skills. **It cannot enforce the table** —
+    The guard (`scripts/check-version-bump.mjs`) checks the step and the
+    collision for the plugin and its skills, on every run it gets. **It cannot enforce the table** —
     no check can read what a change *means* — so that half is a review question,
     and it is outside the guard entirely for tools and the toolbox, whose
     versions live in `lia-toy-box`
