@@ -2,9 +2,9 @@
 name: schema-manager
 slug: schema-manager
 description: "Map the core entities of a problem across three layers — shared typed code is the truth, the Linear map is the directory, the vault holds the analysis and never a field list. Use when a scenario or feature touches data, when an entity crosses a tool seam and needs a contract in code, when tools need to talk to each other, or when asked what data moves where."
-version: 0.3.0
+version: 0.3.1
 created: 2026-08-26
-updated: 2026-08-28
+updated: 2026-09-02
 status: active
 triggers:
   - "/schema-manager"
@@ -68,7 +68,7 @@ For each scenario `scenario-builder` hands over (or any feature entering design)
 1. **List every entity the walk touches** — the things with identity (a clip, an account, a chart, a release) — and **every variable** — the values that move (a stage, a version, a timestamp, a setting).
 2. **For each, check the map first.** Exists → cite the entry (and note the new consumer on it). New → define it: one line of what it is, its variables with types/constraints, where it lives (which store, which side of the IPC boundary, server or local), and who reads/writes it.
 3. **Draw the connections** — what produces it, what consumes it, which seam it crosses (toy ↔ shell, app ↔ account service, tool ↔ tool). The Connections discipline is atom 14's fields 3/4/7 applied product-wide.
-4. **Flag the collisions loudly.** Two features defining the same concept differently is a finding for the lead engineer (`architecture`), not something to paper over with a third name.
+4. **Flag the collisions loudly.** Two features defining the same concept differently is a finding for the engineering lead (`architecture`), not something to paper over with a third name.
 
 ## 2. What an entry looks like
 
@@ -96,6 +96,7 @@ Short, citing, connective. The map is a directory, not a spec dump.
 
 ## Changelog
 
+- **0.3.1 (2026-09-02, LIAB-1161)** — `lead-engineer` is `engineering-lead` — reference only: the seat's name now follows its discipline, like the other four leads. No rule changed.
 - **0.3.0 (2026-08-28, LIAB-1020)** — the line is **Lia Tools**: `Products/Lia Toys/` → `Products/Lia Tools/`, `toy box/` → `toolbox/`, `toys/` → `tools/`, and the shape is six numbered stages (`02 analysis` replaced `03 strategy`; research left tool folders; requirements live in Linear) plus the line's unnumbered `standards/` · `research/` · `design/`. Paths only — no behaviour changed.
 - **0.2.0 (2026-08-28, CQ + LIAB-1008)** — the three layers made explicit (shared typed code is the truth, Linear is the directory, the vault is the reasoning) with the only-code-carries-a-field-list rule that keeps them from becoming three truths. Adds the forward step: an entity crossing a tool seam gets its contract in shared code as part of the story that introduces it, with the seam question asked at design time so a builder never decides it. Answers the half of [LIAB-322](https://linear.app/lia-creative/issue/LIAB-322) that a map alone could not.
 - **0.1.0 (2026-08-26, CQ voice memos + Fable 5)** — first version. The central map, its Linear home, the code-wins seam, and the scenario-walking method.

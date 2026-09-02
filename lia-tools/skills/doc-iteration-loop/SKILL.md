@@ -2,9 +2,9 @@
 name: doc-iteration-loop
 slug: doc-iteration-loop
 description: "Turn a doc epic's backlog into the next iteration of the document — waves from the blocked-by DAG, draft then fresh-eyes gate then revise, snapshot before drafting, the founder's lock at the end. Use when a founder document needs its next version built, when a review distillation has become a backlog, or when asked to run the doc loop or a wave."
-version: 0.3.0
+version: 0.4.0
 created: 2026-07-11
-updated: 2026-08-28
+updated: 2026-09-02
 status: active
 maintainer: cq
 triggers:
@@ -75,7 +75,7 @@ The execution order and the gate rubric are build scaffolding, not strategy. The
 
 ## Housekeeping
 
-Per Lia `CLAUDE.md`: log runs in `_meta/log.md` (Lia docs) or the founder vault's ops log (personal docs); update the relevant index; if the doc lives in `Products/<Product>/`, append the product retro entry. Skill changes bump the version and land in the changelog — **in the plugin**, which is canonical since 26 Aug 2026 (LIAB-919); the vault's `_meta/skills/doc-iteration-loop/` copy is frozen.
+Per Lia `CLAUDE.md`: log runs in `_meta/log.md` (Lia docs) or the founder vault's ops log (personal docs); update the relevant index; if the doc lives in `Products/<Product>/`, the session's After Action Report (`wrap-up` 2.0.0) names it — retro-logs are archives since 2 Sep 2026. Skill changes bump the version and land in the changelog — **in the plugin**, which is canonical since 26 Aug 2026 (LIAB-919); the vault's `_meta/skills/doc-iteration-loop/` copy is frozen.
 
 ## Tiering a strategy doc (from the Chris strategy, 2026-07-12)
 
@@ -89,6 +89,7 @@ Do not make a doc per function (a "numbers doc", a "formats doc") - that rebuild
 
 ## Changelog
 
+- **0.4.0 (2026-09-02, LIAB-1162)** — the housekeeping step's *append the product retro entry* becomes the session's After Action Report per `wrap-up` 2.0.0; retro-logs are archives. Caught at review of PR #45 — this line had been misread as a non-hit in the sweep.
 - **0.3.0 (2026-08-28, LIAB-1028)** — lands in the plugin, on CQ's call. Adds the `description:` frontmatter it never had: it is what a session's skill listing shows and what auto-triggering runs on, so without one the skill was invisible to the sessions meant to load it (repo rule 2, and CI would have refused it). Repoints the two templates and the ticket prompt off retired `_meta/skills/` paths — a plugin install has no way to reach them (the LIAB-963 class) — onto the house `[this skill]/` form. §Housekeeping now says the plugin is canonical and the vault copy is frozen. **The method is unchanged**: the waves, the gate rubric, the three-loop cap and the founder's lock are all as written.
 
   Two further defects came with the source (four in total, with the missing description and the unreachable paths above) and were repaired here rather than carried in. **The vault copy's frontmatter said `version: 0.1.0` while its changelog's newest entry was `0.2.0`** — one skill, two answers, which is the precise failure `CLAUDE.md` rule 3 exists to stop and which this repo's version guard now catches (LIAB-1016). This entry is therefore **0.3.0**, following the changelog rather than the frontmatter. And **21 escaped apostrophes** — a backslash before every `'`, so a loading session reads the backslash — were sitting in the source: 14 in `SKILL.md`, 4 in `gate-rubric.md`, 3 in `ticket-prompt.md`, none in `execution-order.md`. Repaired. The copy itself was byte-faithful — `cmp` clean before any edit — so both defects are the vault's, not the port's.

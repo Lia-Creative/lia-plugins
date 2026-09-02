@@ -4,7 +4,7 @@
 //
 // Why this exists (LIAB-1052), measured 29 Aug 2026: a lead was dispatched to
 // run the orchestration chain that LIAB-1044 had merged an hour earlier. The
-// skill loader served it `lead-engineer` 0.2.0 — the version with no §The
+// skill loader served it `lead-engineer` 0.2.0 (the seat now called `engineering-lead`) — the version with no §The
 // chain and no rules 10 or 11. **The orchestration mandate was invisible to
 // the exact seat built to run it**, and both build agents independently hit
 // the same thing. The installed cache topped out at 1.13.0 while `main` was

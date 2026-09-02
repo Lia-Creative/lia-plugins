@@ -1,6 +1,6 @@
 {
   "name": "lia-tools",
-  "version": "1.22.0",
+  "version": "1.24.0",
   "description": "For building lia.tools products — the toys, the toy box and the site — and the process that goes with them: how an epic, its stories and its tasks get written, how work is gated ready, how it's picked up, built, reviewed and merged, and how a run is orchestrated. One install, one version, nothing to reconcile.",
   "author": {
     "name": "Lia Creative"

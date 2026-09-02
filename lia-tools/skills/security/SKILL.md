@@ -2,9 +2,9 @@
 name: security
 slug: security
 description: "Check work against security and data-compliance basics as it moves — no secret toward a client bundle, secrets by location only, RLS discipline, personal data marked and minimal; a shell that grows one real case at a time, gaps named not skipped. Use when a change touches secrets, auth, personal data, a bundle, or a signing path."
-version: 0.1.0
+version: 0.1.1
 created: 2026-08-26
-updated: 2026-08-26
+updated: 2026-09-02
 status: active — deliberately a shell
 triggers:
   - "/security"
@@ -12,7 +12,7 @@ triggers:
   - "does this leak anything"
   - "data compliance check"
 companions:
-  - lead-engineer
+  - engineering-lead
   - review-and-merge
   - schema-manager
 maintainer: cq
@@ -20,7 +20,7 @@ maintainer: cq
 
 # Security — checked along the way, not discovered at the end
 
-**What this is.** The lead engineer's security and data-compliance check, run as work moves — at build prep (does the plan touch anything sensitive?), in the review loop (did the diff?), and at QA. **This is a shell on purpose** (CQ, 26 Aug 2026: *"this will be a shell early on but will expand as we go"*): it carries the rules Lia has already paid for, and it grows one real case at a time — never by speculative policy.
+**What this is.** The engineering lead's security and data-compliance check, run as work moves — at build prep (does the plan touch anything sensitive?), in the review loop (did the diff?), and at QA. **This is a shell on purpose** (CQ, 26 Aug 2026: *"this will be a shell early on but will expand as we go"*): it carries the rules Lia has already paid for, and it grows one real case at a time — never by speculative policy.
 
 ---
 
@@ -49,4 +49,5 @@ A new rule enters when a real case pays for it — a finding in review, an advis
 
 ## Changelog
 
+- **0.1.1 (2026-09-02, LIAB-1161)** — `lead-engineer` is `engineering-lead` — reference only: the seat's name now follows its discipline, like the other four leads. No rule changed.
 - **0.1.0 (2026-08-26, CQ voice memos + Fable 5)** — the shell: six earned rules (bundle rule, secrets locations, argv leaks, RLS floor, personal-data marking, dist checks), the three checkpoints, and the grow-by-real-case rule.
