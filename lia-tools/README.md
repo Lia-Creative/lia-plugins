@@ -286,8 +286,9 @@ Three rules make the number mean something:
    sat — someone else's release took the number you were reaching for. The guard
    names the moved base and the fix is to merge it in, not to pick a bigger
    number: choosing one from a stale fork point is exactly how a version
-   collides. This is not rare — the branch that added these rules hit it **four
-   times in one afternoon**, once while CI was still running.*
+   collides. This is not rare — the branch that added these rules hit it
+   **repeatedly**, once while CI was still running. No number is given here on
+   purpose: the count went stale twice while this sentence was being corrected.*
 
 2. **A promotion never picks the digit.** Moving a tool `build → test → uat` is
    a stage change, and the stage lives in the release register. The version says

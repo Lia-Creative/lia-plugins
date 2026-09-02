@@ -35,9 +35,9 @@ Chat approval is not ticket approval. The ticket is the paper trail; promotions 
 
 | Bump | Means | For a tool |
 |---|---|---|
-| **patch** `0.4.1` | It got better. | A fix, a tweak, tuning, copy. **The default.** |
-| **minor** `0.5.0` | It does something new. | The tool gains a capability, or its job changed. |
-| **major** | Something that worked stops working. | It breaks someone's saved work or a flow they rely on. **Below `1.0.0` this takes the minor** — see the fixed points. |
+| **patch** | It got better. | A fix, a tweak, tuning, copy. **The default.** |
+| **minor** | It does something new. | The tool gains a capability, or its job changed. |
+| **major** | Something that worked stops working. | It breaks someone's saved work or a flow they rely on. **A breaking change below `1.0.0` takes the minor instead** — see below. |
 
 The toolbox takes the same three rows, read against the shell: a patch fixes it, a minor gives it a new capability, a major breaks a tool or someone's saved state.
 
@@ -46,15 +46,17 @@ Two rules make the number mean something:
 1. **One step at a time.** From `X.Y.Z` the only legal next numbers are `X.Y.(Z+1)`, `X.(Y+1).0`, `(X+1).0.0`. No skipping.
 2. **A promotion never picks the digit.** `build → test → uat` is a stage change; the stage lives in the register. A small fix promoted to uat is a **patch**, and it stays a patch however much ceremony the promotion carries.
 
+**Worked, because this is the question that gets asked:** a tool at `0.4.0` gets one small fix and is promoted `test → uat` on a founder's gate. It becomes **`0.4.1`**. The fix is a patch; the promotion adds nothing. It would have been `0.5.0` before 2 Sep 2026, and that is the habit this rule replaces.
+
 The fixed points: a **new toy starts at `0.0.1`**; `0.x` means not yet in production; and **the promotion to production is `1.0.0`** — the single time a promotion sets a number. After that the three rows, unchanged.
 
-**Below `1.0.0`, a breaking change takes the minor** — the ordinary semver convention, and the only answer available: one step from `0.4.1` reaches `1.0.0`, which is reserved above, so a pre-production break has nowhere else to go. It is also the right shape: nobody outside the uat group is relying on a `0.x` tool yet, which is the whole meaning of `0.x`.
+**Below `1.0.0`, a breaking change — and only a breaking change — takes the minor** — the ordinary semver convention, and the only answer available: one step from `0.4.1` reaches `1.0.0`, which is reserved above, so a pre-production break has nowhere else to go. It is also the right shape: nobody outside the uat group is relying on a `0.x` tool yet, which is the whole meaning of `0.x`. **This changes nothing else about a `0.x` tool** — an ordinary fix is still a patch, `0.4.1 → 0.4.2`, and the three rows above apply as written.
 
 **An epic's version is not a tool's version.** `epic-builder` names a chunk of value `charts 1.0`, then `charts 1.1` — that is a name for a slice of work, and it never sets what the manifest says. A `charts 1.0` epic can land as a patch on a tool sitting at `0.3.4`. Under the old table the two roughly co-moved, because every uat promotion was a minor; they do not any more, so read them as separate numbering schemes that happen to share a shape.
 
 Never parse a version to learn a stage — read the register. Never set the manifest `version` and the register to disagreeing values in the same pass.
 
-*(Both rules are new on 2 Sep 2026 ([LIAB-1184](https://linear.app/lia-creative/issue/LIAB-1184), CQ) — the old table had no step rule and made every uat promotion a minor, so a one-line fix cost `0.1.0 → 0.2.0` and tools climbed for ceremony rather than change. It also had the version encode the stage while this skill says twice that it does not; dropping that settles a contradiction rather than creating one. Same policy as the plugin and the toolbox: `lia-tools/README.md` §Versioning, `CLAUDE.md` rule 10. The canonical standard has not caught up — see Grounding.)*
+*(Both rules are new on 2 Sep 2026 ([LIAB-1184](https://linear.app/lia-creative/issue/LIAB-1184), CQ) — the old table had no step rule, and it let the promotion pick the digit — so a one-line fix cost `0.1.0 → 0.2.0` and tools climbed for ceremony rather than change. That is retired; rule 2 above is what holds now. It also had the version encode the stage while this skill says twice that it does not; dropping that settles a contradiction rather than creating one. Same policy as the plugin and the toolbox: `lia-tools/README.md` §Versioning, `CLAUDE.md` rule 10. The canonical standard has not caught up — see Grounding.)*
 
 ## The promotion run
 

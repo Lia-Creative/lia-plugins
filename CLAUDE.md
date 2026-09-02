@@ -188,8 +188,8 @@ someone asked.
     **A number is not yours until it lands.** The guard also refuses a version
     the base ref already serves: two branches picking the same one merge with no
     conflict, because both wrote the same string, and deliver nothing. That is
-    not a hypothetical — it happened four times on the branch that added this
-    rule, in one afternoon. **It catches this on the next run, not continuously:**
+    not a hypothetical — it happened repeatedly on the branch that added this
+    rule, in a single afternoon, twice while its CI was green. **It catches this on the next run, not continuously:**
     GitHub does not re-run a PR's checks when the base moves, so a green tick
     can be stale about exactly this.
 
