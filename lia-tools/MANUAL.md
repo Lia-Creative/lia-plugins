@@ -9,7 +9,7 @@ and shipped — as 73 skills it can load and run.
 You do not memorise the process. You install the plugin, and the process is
 already in the room.
 
-**Manual version 1.1 · Plugin version 1.26.0 · 2 September 2026**
+**Manual version 1.1 · Plugin version 1.27.0 · 2 September 2026**
 
 > **Hit a word you don't know?** Section 13 defines the five that matter —
 > worktree, frontmatter, squash merge, Given/When/Then, CI. Nothing else in here
@@ -703,7 +703,8 @@ ticket number in each row is where the reasoning lives.
 
 | Version | Date | What changed |
 |---|---|---|
-| **1.26.0** | 2 Sep 2026 | This manual. The plugin got a document written for a person rather than for an agent, and `plugin-manager` got the rule that keeps it true. (LIAB-1181) |
+| **1.27.0** | 2 Sep 2026 | This manual. The plugin got a document written for a person rather than for an agent, and `plugin-manager` got the rule that keeps it true. (LIAB-1181) |
+| **1.26.0** | 2 Sep 2026 | Dispatch and hygiene: a dead session's work is salvaged by rule rather than abandoned, every worktree is accounted for, and a red that is not yours gets named as one. Plus the Cursor mirror's self-test now actually exercises the sync, so it can go red. (LIAB-1165, LIAB-1169) |
 | **1.25.0** | 2 Sep 2026 | One review per head, not two. A commit that already carries a verdict is never cold-reviewed again, a base-only move gets a re-check rather than a fresh review, and a landing goes through the pull request. Measured: ten of twenty-three tickets had been reviewed cold twice on the same commit, and four of those pairs disagreed. (LIAB-1164) |
 | **1.24.0** | 2 Sep 2026 | The improvement loop reached all seven leads. Every seat now ends its report by naming what the skill it ran got wrong; before this, two benches out of seven did. (LIAB-1163) |
 | **1.23.0** | 2 Sep 2026 | The close-out became one After Action Report on the ticket — intended against actual, the gap and why, sustain and improve — replacing five different retro shapes and, on eight tickets, none at all. (LIAB-1162) |
