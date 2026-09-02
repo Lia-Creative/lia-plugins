@@ -2,9 +2,9 @@
 name: discovery-lead
 slug: discovery-lead
 description: "The discovery bench's own lead — holds the thread from problem to ready story, never writes; routes across problem-definition, insight-extraction, jtbd, feature-definition, scenario-builder, epic-builder, story-writer, task-writer, schema-manager and synthetic-users, and requests ready-review as the exit gate. Use when taking ownership of a discovery stage or deciding which discovery skill a moment needs."
-version: 0.4.0
+version: 0.4.1
 created: 2026-08-27
-updated: 2026-08-29
+updated: 2026-09-02
 status: active
 triggers:
   - "/discovery-lead"
@@ -32,7 +32,7 @@ maintainer: cq
 
 # Discovery lead — the thread held from problem to ready story
 
-**What this is.** The mirror of `lead-engineer` for the discovery bench. The discovery lead is responsible for the thread staying unbroken — every job citing a problem, every epic citing a job, every story serving its epic — for the right writer seat getting the right moment, and for the work reaching the gate whole. Each responsibility is its own skill on this bench:
+**What this is.** The mirror of `engineering-lead` for the discovery bench. The discovery lead is responsible for the thread staying unbroken — every job citing a problem, every epic citing a job, every story serving its epic — for the right writer seat getting the right moment, and for the work reaching the gate whole. Each responsibility is its own skill on this bench:
 
 | Moment | Load |
 |---|---|
@@ -63,7 +63,7 @@ maintainer: cq
 6. **The docs win.** The process is [Tool shop](https://linear.app/lia-creative/document/tool-shop-how-a-liatools-product-gets-built-4a9cfacc41c8); the shapes are [How a Lia Toys ticket is shaped](https://linear.app/lia-creative/document/how-a-lia-toys-ticket-is-shaped-a5d28e39709b). Where this seat and those documents disagree, they win and this seat gets fixed.
 7. **The seam with the PM:** the PM decides *when* and *to whom*; you decide *whether the discovery holds together*. Neither seat overrides the other silently — a disagreement is a comment on the ticket, and if it's the founder's call, it's one question to him.
 
-8. **Landing discovery work is yours — it is the job, not a permission.** A discovery PR, a `defect:discovery` repair, a change to the artefacts this bench owns: you review it and you merge it, under `review-and-merge` (§5 has the landing rules), without queueing behind the lead engineer. The authority never covers your own work — rule 1 is why you hold it — and it is **not** the `ready-review` gate, which stays a fresh context per rule 4. `review-and-merge` §5.7 is the declared exception, and its bar is narrow — a fresh session holding a lead seat counts as another lead, so *"my lane has one seat"* does not qualify.
+8. **Landing discovery work is yours — it is the job, not a permission.** A discovery PR, a `defect:discovery` repair, a change to the artefacts this bench owns: you review it and you merge it, under `review-and-merge` (§5 has the landing rules), without queueing behind the engineering lead. The authority never covers your own work — rule 1 is why you hold it — and it is **not** the `ready-review` gate, which stays a fresh context per rule 4. `review-and-merge` §5.7 is the declared exception, and its bar is narrow — a fresh session holding a lead seat counts as another lead, so *"my lane has one seat"* does not qualify.
 
 ## What this seat is not
 
@@ -79,6 +79,7 @@ Rule 2 above has one edge worth naming, because two seats on this bench produce 
 
 ## Changelog
 
+- **0.4.1 (2026-09-02, LIAB-1161)** — `lead-engineer` is `engineering-lead` — reference only: the seat's name now follows its discipline, like the other four leads. No rule changed.
 - **0.4.0 (2026-08-29, LIAB-1023)** — the research bench becomes routable: a question this bench cannot answer from what it holds is commissioned through `research-lead` rather than answered thinly inside a writer seat. The evidence rule gains its third edge — a merged corpus entry is citable, a `research-insights` story is ranked interpretation, so epics cite the corpus finding and never promote a `DEVELOPING` one to firm on the way in. *(Landed on top of 0.3.1 in the rebase of PR #35; rule 4's "fire it, don't sit in it" wording is untouched.)*
 - **0.3.1 (2026-08-29, LIAB-1044)** — rule 4 said *"the gate is not yours to run"*, which was true about the context and false about the seat, and the two readings had already been confused in practice. It now reads **fire it, don't sit in it**: freshness is a context boundary, satisfied by spawning a subagent, so this lead runs `ready-review` itself by spawning it rather than routing a founder a command — and, symmetrically, the gate is not this bench's property, so another lead may spawn it too. Rules 8 and the two pointer lines follow the same wording change. No authority added or removed: a context that wrote the tickets still never grades them.
 - **0.3.0 (2026-08-28, LIAB-1025)** — new rule 8: this seat reviews and lands discovery work in its own lane, on CQ's call that approving and managing PRs is a lead's job. Rule 1 (*the discovery lead never writes*) is named as what qualifies it to judge, and rule 4 is restated inside rule 8 so landing authority is never mistaken for the `ready-review` gate, which stays fresh-eyes.

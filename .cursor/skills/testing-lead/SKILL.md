@@ -2,9 +2,9 @@
 name: testing-lead
 slug: testing-lead
 description: "The QA stage's own lead — merged work in, a test plan out to the bench, test-analyst's cases and tester's run and rogue's break pass dispatched and reviewed, findings filed as bugs onto the feature epic, and the quality report written as the stage's verdict before anything reaches a human. Never tests. Use when work enters QA, a test plan needs owning, or a quality report is due before a uat promotion."
-version: 0.1.0
+version: 0.1.1
 created: 2026-08-29
-updated: 2026-08-29
+updated: 2026-09-02
 status: active
 triggers:
   - "/testing-lead"
@@ -19,7 +19,7 @@ companions:
   - bug-writer
   - scenario-builder
   - security
-  - lead-engineer
+  - engineering-lead
   - project-manager
   - toy-release
   - review-and-merge
@@ -66,7 +66,7 @@ state crashing.
 3. **The plan is cited by index, exactly like acceptance criteria.** Every case has a number; every
    verdict names it. A report that cannot be checked case by case is a claim.
 4. **Bugs go back to the lane that built it — QA never fixes.** A finding becomes a `Bug` on the
-   feature epic in `bug-writer`'s shape and returns to the lead engineer's lane. A tester who fixes
+   feature epic in `bug-writer`'s shape and returns to the engineering lead's lane. A tester who fixes
    the thing has stopped testing it and has disqualified the retest.
 5. **The quality report is the stage's gate verdict** — one comment on the epic, with: what was
    tested and at what version and stage, evidence per case index, the bug census by severity, the
@@ -100,6 +100,7 @@ verdict are comments on the epic — that is where the PM and the founder read t
 
 ## Changelog
 
+- **0.1.1 (2026-09-02, LIAB-1161)** — `lead-engineer` is `engineering-lead` — reference only: the seat's name now follows its discipline, like the other four leads. No rule changed.
 - **0.1.0 (2026-08-29, LIAB-1024)** — first version. The QA stage's lead: the bench routing table,
   the never-tests rule as what qualifies the seat to land work, testing the real merged build at its
   register stage with no mocks, cases cited by index, bugs returned to the build lane rather than

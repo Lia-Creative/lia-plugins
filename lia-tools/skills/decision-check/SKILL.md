@@ -2,9 +2,9 @@
 name: decision-check
 slug: decision-check
 description: "Pressure-test one decision before it is committed — name the incentive pulling toward the fast answer, state that answer plainly, surface the cost it hides, test reversibility, and check what it is optimising for. Use when someone says pressure-test this, should we do X or Y, what are we trading, are we rushing this, or is about to commit to a call worth slowing down."
-version: 0.1.0
+version: 0.1.1
 created: 2026-08-28
-updated: 2026-08-28
+updated: 2026-09-02
 status: active
 triggers:
   - "/decision-check"
@@ -16,7 +16,7 @@ triggers:
 companions:
   - execution-discipline
   - architecture
-  - lead-engineer
+  - engineering-lead
 maintainer: cq
 ---
 
@@ -52,4 +52,5 @@ maintainer: cq
 
 ## Changelog
 
+- **0.1.1 (2026-09-02, LIAB-1161)** — `lead-engineer` is `engineering-lead` — reference only: the seat's name now follows its discipline, like the other four leads. No rule changed.
 - **0.1.0 (2026-08-28, LIAB-1028)** — lands in the plugin, on CQ's call, **de-personalised in the same pass rather than moved as-is.** The `cq` 0.5.0 original ran on *"Chris's slow-brain check"*, triggered on *"when Chris says"*, and closed with *"don't make the decision for Chris"* — a straight port would have put one founder's habit in a shared roster and quietly made his judgment everyone's default. The five checks are unchanged because the failure they catch is not personal; the framing is now the seat, and the 13 May reset is kept as attributed provenance rather than as the operating instruction. Added: the *nothing traded means it is a task* test, the both-directions note on reversibility, and §What this seat is not. Personal-bundle copy at `cq` 0.5.0 (`chris vault/00 inbox/_agent/cq-install/cq.plugin`, 28 Jul 2026) is superseded, not synced from.

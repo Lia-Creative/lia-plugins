@@ -325,6 +325,15 @@ re-checking should mount it and confirm before relying on the path. LIAB-996 had
 been parked on the premise that a claude.ai upload cannot be read from a
 filesystem, which is true of the upload and false of this artifact.
 
+## Renamed — the same content under its discipline's name (LIAB-1161)
+
+A rename is a new directory, so rule 9 asks its question here too. The answer is
+that nothing competed: the content moved whole and its changelog says so.
+
+| Skill | Where it came from | What it superseded | How that was established |
+|---|---|---|---|
+| `engineering-lead` | `lead-engineer` 0.6.0 (lineage `a886164`), renamed 2 Sep 2026 so the seat is named by its discipline like the other four leads | nothing — same content, continued as 0.7.0; `lead-engineer/` stays one release as a pointer, the `orchestrate` precedent | `git log --follow lia-tools/skills/engineering-lead/SKILL.md` |
+
 ## When a row is owed
 
 **Every PR that adds a skill owes its row here, in that PR.** Not afterwards, and
