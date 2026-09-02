@@ -4,12 +4,12 @@
 
 Lia Tools is a plugin for Claude Code. It gives an AI agent the whole Lia build
 process — how a piece of work is discovered, designed, built, reviewed, tested
-and shipped — as 72 skills it can load and run.
+and shipped — as 73 skills it can load and run.
 
 You do not memorise the process. You install the plugin, and the process is
 already in the room.
 
-**Manual version 1.0 · Plugin version 1.22.0 · 2 September 2026**
+**Manual version 1.1 · Plugin version 1.26.0 · 2 September 2026**
 
 > **Hit a word you don't know?** Section 13 defines the five that matter —
 > worktree, frontmatter, squash merge, Given/When/Then, CI. Nothing else in here
@@ -54,7 +54,7 @@ standard you do.
 
 ### What You Get
 
-Seventy-two skills, grouped into benches. A bench is a team: one lead that
+Seventy-three skills, grouped into benches. A bench is a team: one lead that
 decides and routes, and the specialist seats that do the work.
 
 | Bench | What it covers | Seats |
@@ -65,11 +65,11 @@ decides and routes, and the specialist seats that do the work.
 | **Design** | Reference, exploration, flows, hi-fi screens, error states, the words | 8 |
 | **Engineering** | Architecture, acceptance criteria, build prep, review and merge, security | 7 |
 | **Judgment and recon** | Screen capture, teardown, voice, decisions, the discipline every seat loads first | 7 |
-| **Build** | The builder's seat, polish, pickup, wrap-up, the retro | 5 |
+| **Build** | The builder's seat, polish, pickup, and the wrap-up that writes the report | 4 |
 | **QA** | Test plans, cases, the hostile pass, bug filing | 5 |
 | **Management** | The project manager, the marketplace's own seat | 2 |
 | **Category standards** | What a whole class of tool is held to, whatever the story is | 1 |
-| **A pointer** | `orchestrate`, kept as a signpost after it split in two | 1 |
+| **Pointers** | `orchestrate`, `lead-engineer` and `product-retro` — superseded names kept as signposts so older tickets and handovers still resolve | 3 |
 
 The full roster, seat by seat, is in
 [`lia-tools/README.md`](README.md#whats-in-it).
@@ -281,7 +281,7 @@ That is the whole idea. You brought a sentence; the standard was already there.
 | `/lia-tools:ticket-builder` | You need a ticket, an epic or a story written properly. |
 | `/lia-tools:build` | You are building something and want the builder's discipline. |
 | `/lia-tools:review-and-merge` | A pull request is up and needs reviewing. |
-| `/lia-tools:wrap-up` | You are finishing for the day and want a handover written. |
+| `/lia-tools:wrap-up` | You are finishing a session. It writes the After Action Report. |
 | `/lia-tools:toy-pickup` | You are starting any session on the Lia Toys line. |
 
 You do not have to type any of them. Skills also trigger on plain language —
@@ -444,6 +444,12 @@ review that has not disposed of anything.
 `not met` has no exits at all. It hands back, and it is disposed of only when the
 fix lands and the same reviewer passes it on the new head.
 
+**One review per head.** Before grading anything, a reviewer checks whether that
+exact commit already carries a verdict. If it does, it is not reviewed cold a
+second time — the only way onto it is the same reviewer who graded it before.
+Two cold reviews of one commit cost two contexts and, measured over five days in
+late August, disagreed with each other four times in ten.
+
 ### Who Merges
 
 **Any lead, in its own lane. Never their own work.**
@@ -593,25 +599,26 @@ at different speeds.
 
 | Loop | Runs when | What it produces |
 |---|---|---|
-| **The session retro** | Every session that touched a product, without exception | One short entry in that product's retro log — what happened, what it cost, what it taught. Not a judgment call about whether it was worth writing; the sessions that skip it are exactly the ones whose lessons go missing. |
+| **The After Action Report** | Every session, without exception | One report as a comment on the ticket the session worked: what was intended, what actually happened, why they differed, what to sustain, what to improve. Every seat writes one — builder, reviewer, gate, lead, PM. A routine session's is one line per section with honest "none"s; padding is the failure, not brevity. The next session on that thread reads it before starting. |
 | **The QA loop** | After every merge | Findings become Bug tickets on the feature epic, filed in one shape, deduplicated, so the lane that built the work sees them in context. |
-| **The bench improvement loop** | When the research or testing bench learns something in its retro — **those two only, today** | A pull request against the skill itself, raised by that bench's lead, landed through the plugin manager. |
+| **The improvement loop** | Every run of every skill | Each After Action Report carries a `Skill change proposed:` line naming what the skill it ran got wrong or left it guessing, addressed to that seat's lead, who raises the pull request. *None* is an answer; silence is not. |
 | **The founder walkthrough** | When Chris records a walkthrough of a build | The stage gate first, then the record, then tickets attached to the exact frames the feedback is about. |
 | **The jam** | When decisions have piled up that need a human conversation | One agenda from every open item, and afterwards the decisions written back into strategy docs and Linear. |
 
 ### Where You Fit
 
-The first two run whether you do anything or not. The third is the one that needs
-you: **if a skill got something wrong, say so.** That is the entire input to the
-loop that improves the plugin.
+The first two run whether you do anything or not. The third now runs on every
+session too — but it only catches what an *agent* noticed. **If a skill got
+something wrong for you, say so.** A person's confusion is the one signal no
+agent's report contains.
 
-> **Note:** Read the third row narrowly. The clause that makes a bench propose
-> its own fixes is written into two of the seven leads — research and testing —
-> and nowhere else, so for every other bench that loop does not run yet.
-> Widening it to every seat is in flight as
-> [LIAB-1163](https://linear.app/lia-creative/issue/LIAB-1163/the-improvement-loop).
-> **Until it lands, a person noticing and filing is the only reliable path**, which
-> is why section 9 matters more than it looks.
+> **Note:** The improvement loop went from two benches to every seat on 2 September
+> 2026 ([LIAB-1163](https://linear.app/lia-creative/issue/LIAB-1163/the-improvement-loop)),
+> and the per-session retro became the After Action Report the day before
+> ([LIAB-1162](https://linear.app/lia-creative/issue/LIAB-1162/after-action-reports)).
+> Both are new. **An automatic loop that has run for a day is not yet a loop you
+> should rely on** — section 9 still matters, because a person noticing is the
+> path with a track record.
 
 ---
 
@@ -696,7 +703,11 @@ ticket number in each row is where the reasoning lives.
 
 | Version | Date | What changed |
 |---|---|---|
-| **1.22.0** | 2 Sep 2026 | This manual. The plugin got a document written for a person rather than for an agent, and `plugin-manager` got the rule that keeps it true. (LIAB-1181) |
+| **1.26.0** | 2 Sep 2026 | This manual. The plugin got a document written for a person rather than for an agent, and `plugin-manager` got the rule that keeps it true. (LIAB-1181) |
+| **1.25.0** | 2 Sep 2026 | One review per head, not two. A commit that already carries a verdict is never cold-reviewed again, a base-only move gets a re-check rather than a fresh review, and a landing goes through the pull request. Measured: ten of twenty-three tickets had been reviewed cold twice on the same commit, and four of those pairs disagreed. (LIAB-1164) |
+| **1.24.0** | 2 Sep 2026 | The improvement loop reached all seven leads. Every seat now ends its report by naming what the skill it ran got wrong; before this, two benches out of seven did. (LIAB-1163) |
+| **1.23.0** | 2 Sep 2026 | The close-out became one After Action Report on the ticket — intended against actual, the gap and why, sustain and improve — replacing five different retro shapes and, on eight tickets, none at all. (LIAB-1162) |
+| **1.22.0** | 2 Sep 2026 | `lead-engineer` became `engineering-lead`, so the seat is named by its discipline like the other four leads. A pointer stays for one release so older tickets still resolve. (LIAB-1161) |
 | **1.21.0** | 1 Sep 2026 | Cursor can load the roster. `.cursor/skills/` became a real-file copy of the skills, because Cursor does not follow symlinks into a skills tree. **No ticket** — landed as [PR #41](https://github.com/Lia-Creative/lia-plugins/pull/41) with no LIAB number, the only released version without one. |
 | **1.19.0** | 1 Sep 2026 | Recorded that the `release` branch stays unprotected on purpose, so rollback stays one command. (LIAB-994) |
 | **1.18.0** | 31 Aug 2026 | What the orchestration chain's first real run taught: a lead must block on each beat rather than backgrounding it, an agent must be able to tell which version of a skill it holds, and re-dispatching a quiet agent is how two sessions end up in one worktree. (LIAB-1051, LIAB-1052, LIAB-1053) |
@@ -725,7 +736,12 @@ ticket number in each row is where the reasoning lives.
 | **1.1.0** | 26 Aug 2026 | Tool shop 1.1 — every seat filled, and stories moved to the Given/When/Then shape (see section 13). (LIAB-950, LIAB-949) |
 | **1.0.0** | 26 Aug 2026 | The plugin exists, and this repository became the source of truth for its skills — canonical moved out of the vault, because a vault build machines cannot mount is a poor distribution channel. (LIAB-919, LIAB-920) |
 
-> **Note:** Version numbers 1.3.1, 1.3.2 and 1.20.0 were never served — each was
+> **Note:** 1.21.0 in the row above is the last version this manual did not ship
+> with. Everything from 1.22.0 down landed on 2 September while this manual was
+> in review — which is exactly the drift `plugin-manager` rule 9 exists to catch,
+> arriving before the rule had shipped.
+>
+> Version numbers 1.3.1, 1.3.2 and 1.20.0 were never served — each was
 > superseded on its own branch before it could be promoted. 1.20.0 says so in its
 > own commit: *"PR #43 took 1.19.0. Rebase + re-bump so version-bump CI can
 > pass."* None of the three appears anywhere in the history of either `main` or

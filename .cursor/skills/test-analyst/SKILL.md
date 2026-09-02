@@ -2,9 +2,9 @@
 name: test-analyst
 slug: test-analyst
 description: "Turn a story's frozen acceptance criteria and walked scenarios into the executable case set — one case per criterion plus the seams, each with concrete steps, real inputs and a decidable expected result, cited back to the criterion index it covers. Writes cases, never runs them. Use when a test plan needs its cases written."
-version: 0.1.0
+version: 0.1.1
 created: 2026-08-29
-updated: 2026-08-29
+updated: 2026-09-02
 status: active
 triggers:
   - "/test-analyst"
@@ -77,10 +77,11 @@ set deliberately does not reach. You never merge it, and you never run it.
 - **Not test code.** Automated tests are Build's, written with the feature. These are the cases the
   QA stage executes against the real build.
 - **Not the criteria's author.** A criterion that cannot be turned into a decidable case is a finding
-  for `testing-lead` to raise with the lead engineer's lane — never quietly reinterpreted here.
+  for `testing-lead` to raise with the engineering lead's lane — never quietly reinterpreted here.
 
 ## Changelog
 
+- **0.1.1 (2026-09-02, LIAB-1161)** — `lead-engineer` is `engineering-lead` — reference only: the seat's name now follows its discipline, like the other four leads. No rule changed.
 - **0.1.0 (2026-08-29, LIAB-1024)** — first version. The bench's writing seat: a case is steps plus
   concrete inputs plus a decidable expected result, indexed and traced to its criterion both ways;
   coverage is the criteria then the seams (state after, second run, interruption) rather than a

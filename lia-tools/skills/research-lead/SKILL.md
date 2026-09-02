@@ -2,9 +2,9 @@
 name: research-lead
 slug: research-lead
 description: "The research bench's own lead — a commission arrives as questions on a ticket, a research plan goes out, one researcher session is dispatched per domain, research PRs are reviewed for source quality and merged in this lane, then the corpus is handed to research-insights and its story reviewed before a human reads it. Never researches. Use when commissioning research, owning a research plan, or reviewing a corpus or an insight story."
-version: 0.1.0
+version: 0.2.0
 created: 2026-08-29
-updated: 2026-08-29
+updated: 2026-09-02
 status: active
 triggers:
   - "/research-lead"
@@ -40,7 +40,7 @@ skill on this bench:
 | A research PR is up | `review-and-merge` — the loop, then the landing, in this lane |
 | The corpus answers the plan | Hand to `research-insights` — the log, the ranking, the story |
 | An insight story PR is up | Review it against the corpus: every claim traceable, facts and developing insights marked apart |
-| The bench learned something in a retro | An improvement PR to the skill or its template, landed through `plugin-manager` |
+| A seat's After Action Report proposes a skill or template change | This lead raises the improvement PR to the skill or its templates; `plugin-manager` lands it (`wrap-up` §1.5) |
 
 **Why it exists.** CQ, 28 Aug 2026 ([LIAB-1023](https://linear.app/lia-creative/issue/LIAB-1023)):
 *"empower a team of agents to gather contextual research across anything we're working on"* — with a
@@ -105,6 +105,8 @@ dispatched at bench work will not have these skills (README, *the one gap worth 
 
 ## Changelog
 
+- **0.2.0 (2026-09-02, LIAB-1163)** — the improvement loop reaches this lead: a seat's After Action Report ends with `Skill change proposed:` (`wrap-up` §1.5), and the row here says this lead raises that PR and `plugin-manager` lands it. CQ, 2 Sep 2026: *"make sure the sub agents are suggesting changes to the leads across all of the agents"* — measured, only `research-lead` and `testing-lead` carried the row. The row is now the standard wording every lead carries.
+- **0.1.1 (2026-09-02, LIAB-1162)** — the trigger for a skill-change PR is a seat's After Action Report, not a retro (`wrap-up` 2.0.0) — reference only.
 - **0.1.0 (2026-08-29, LIAB-1023)** — first version. The research bench's lead: the routing table
   across the shared method, the ten domain seats and the insights seat; the never-researches rule as
   what qualifies the seat to merge; the source bar enforced at review; the return path from insights;

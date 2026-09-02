@@ -2,9 +2,9 @@
 name: acceptance-criteria
 slug: acceptance-criteria
 description: "Review discovery and write the final goal-oriented acceptance criteria — numbered Given/When/Then frozen as the contract, [Graded at Review] for judgement calls, Delivery checks split out, 3–7 per story held loudly. Use when scenarios and design are ready and the criteria need freezing before build."
-version: 0.1.0
+version: 0.1.1
 created: 2026-08-26
-updated: 2026-08-26
+updated: 2026-09-02
 status: active
 triggers:
   - "/acceptance-criteria"
@@ -23,7 +23,7 @@ maintainer: cq
 
 # Acceptance criteria — the goal, frozen as numbered scenarios
 
-**What this is.** The lead engineer reviews the discovery — the story, its walked scenarios, the design — and writes the **final, goal-oriented acceptance criteria the build is run and reviewed against**. This is the freeze point: after this pass the criteria are the contract, cited by index by the builder (as the test spec) and by `review-and-merge` (as the defect rubric). One artefact, four readers.
+**What this is.** The engineering lead reviews the discovery — the story, its walked scenarios, the design — and writes the **final, goal-oriented acceptance criteria the build is run and reviewed against**. This is the freeze point: after this pass the criteria are the contract, cited by index by the builder (as the test spec) and by `review-and-merge` (as the defect rubric). One artefact, four readers.
 
 **Why it exists.** CQ, 26 Aug 2026: *"they review the discovery and write goal oriented acceptance criteria used as part of the build — consider the dan north work."* The form is LIAB-949's P2/P3, installed across the docs the same day; the canonical anatomy is Dan North's ([the article](https://dannorth.net/blog/whats-in-a-story/); vault concept page `Wiki/concepts/user-stories.md`).
 
@@ -47,4 +47,5 @@ maintainer: cq
 
 ## Changelog
 
+- **0.1.1 (2026-09-02, LIAB-1161)** — `lead-engineer` is `engineering-lead` — reference only: the seat's name now follows its discipline, like the other four leads. No rule changed.
 - **0.1.0 (2026-08-26, CQ voice memos + Fable 5)** — first version. The freeze pass: scenarios → numbered G/W/T, the two probes, [Graded at Review], the Delivery-checks split, the 3–7 line held loudly.

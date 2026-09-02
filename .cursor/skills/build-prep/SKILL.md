@@ -2,9 +2,9 @@
 name: build-prep
 slug: build-prep
 description: "Write the how-to-build notes onto a designed story — real paths verified against the repo, patterns to follow, traps, the full resolvable-path rule (files, services, accounts/connectors with identities) — under the criteria, never instead of them. Use when prepping an epic or story for a build dispatch."
-version: 0.1.0
+version: 0.1.1
 created: 2026-08-26
-updated: 2026-08-26
+updated: 2026-09-02
 status: active
 triggers:
   - "/build-prep"
@@ -23,7 +23,7 @@ maintainer: cq
 
 # Build prep — the notes on how to build it
 
-**What this is.** The third layer of the ticket, written by the lead engineer once the criteria are frozen: **discovery says what it needs to do, design expresses how a person experiences it, build prep tells the agent how to build it.** Notes for the build — real paths, the patterns to follow, what to reuse, the traps — landing *under* the user criteria, never instead of them.
+**What this is.** The third layer of the ticket, written by the engineering lead once the criteria are frozen: **discovery says what it needs to do, design expresses how a person experiences it, build prep tells the agent how to build it.** Notes for the build — real paths, the patterns to follow, what to reuse, the traps — landing *under* the user criteria, never instead of them.
 
 **Why it exists.** CQ, 26 Aug 2026. And it was paid for before it was named: an audit found 84% of "dev ready" tickets needed rewrites because they referenced non-existent files, phantom tables and imaginary helpers. This seat is `orchestrate` 0.2.0's §4.5, promoted to its own skill and sharpened by atom 14's Dev Ready machinery.
 
@@ -52,4 +52,5 @@ maintainer: cq
 
 ## Changelog
 
+- **0.1.1 (2026-09-02, LIAB-1161)** — `lead-engineer` is `engineering-lead` — reference only: the seat's name now follows its discipline, like the other four leads. No rule changed.
 - **0.1.0 (2026-08-26, CQ voice memos + Fable 5)** — first version. `orchestrate` §4.5 promoted to a seat, plus atom 14's earned rules: resolvable paths (files/services/accounts), hydration precondition, hints-are-advisory.

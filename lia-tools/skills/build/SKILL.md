@@ -2,9 +2,9 @@
 name: build
 slug: build
 description: "The builder's seat for a whole epic — context from tickets/design/prep-notes/schema-map (never the vault), plan mode first with the plan posted to tickets, story-by-story on one branch, questions batched, progress in user terms, indexed self-check, one PR, hold for the review loop. Use when dispatched at an epic to build."
-version: 0.1.0
+version: 0.1.1
 created: 2026-08-26
-updated: 2026-08-26
+updated: 2026-09-02
 status: active
 triggers:
   - "/build"
@@ -25,7 +25,7 @@ maintainer: cq
 
 **Lineage.** `pickup` 0.7.0's epic mode, promoted to its own seat (26 Aug 2026) and extended with the batching, progress and self-check disciplines. `pickup` remains the front door for taking on work and handing it back; this is the seat you sit in once a build is yours.
 
-**Your context is exactly four things, and none of them is the vault:** the tickets (the epic, its stories, the frozen numbered criteria and Delivery checks), the design artefacts on them (which win over prose), the lead engineer's build-prep notes, and the [schema map](https://linear.app/lia-creative/document/schema-map-liatools-7c33b96fb34b). If something you need isn't in those, that's a gap to raise (§4) — never a licence to guess, and never a reason to go hunting in places the next builder won't have.
+**Your context is exactly four things, and none of them is the vault:** the tickets (the epic, its stories, the frozen numbered criteria and Delivery checks), the design artefacts on them (which win over prose), the engineering lead's build-prep notes, and the [schema map](https://linear.app/lia-creative/document/schema-map-liatools-7c33b96fb34b). If something you need isn't in those, that's a gap to raise (§4) — never a licence to guess, and never a reason to go hunting in places the next builder won't have.
 
 ---
 
@@ -63,7 +63,7 @@ Before marking the epic Review:
 1. **Self-check every criterion and Delivery check, by index** — run what can be run, state the result. Anything you can't verify is **named as unverified with why** — never passed on intention.
 2. **Read back what you wrote.** Files, migrations, docs — opened, not assumed.
 3. **The gates you'd fail anyway:** lint, typecheck, tests, the repo's own checks — green before Review, or the red explained on the ticket.
-4. **One PR up, epic to Review, and hold in-session for the loop** — the lead engineer reviews and feeds back *to you*; fix, recommit, answer with evidence on the new head. **You never merge, and you never move anything to Done.**
+4. **One PR up, epic to Review, and hold in-session for the loop** — the engineering lead reviews and feeds back *to you*; fix, recommit, answer with evidence on the new head. **You never merge, and you never move anything to Done.**
 
 ## What this seat is not
 
@@ -73,4 +73,5 @@ Before marking the epic Review:
 
 ## Changelog
 
+- **0.1.1 (2026-09-02, LIAB-1161)** — `lead-engineer` is `engineering-lead` — reference only: the seat's name now follows its discipline, like the other four leads. No rule changed.
 - **0.1.0 (2026-08-26, CQ voice memos + Fable 5)** — first version. `pickup` §0.5 epic mode promoted and extended: the four-part context map, question batching with best-guess-and-default, progress comments in user terms, the indexed self-check, and the hold-for-the-loop.
