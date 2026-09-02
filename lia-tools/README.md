@@ -275,6 +275,13 @@ Two rules make the number mean something:
 1. **One step at a time.** From `X.Y.Z` the only legal next numbers are
    `X.Y.(Z+1)`, `X.(Y+1).0`, `(X+1).0.0`. No skipping. CI enforces this
    (`scripts/check-version-bump.mjs`) for the plugin and every skill in it.
+
+   *The commonest way to see this red is a base that moved while your branch
+   sat — someone else's release took the number you were reaching for. The
+   guard says so by name and the fix is to merge the base branch in, not to
+   pick a bigger number: picking one from a stale fork point is exactly how a
+   version collides. Seen live on this rule's own PR twenty minutes after it
+   opened.*
 2. **A promotion never picks the digit.** Moving a tool `build → test → uat` is
    a stage change, and the stage lives in the release register. The version says
    what changed in the code, and nothing else.

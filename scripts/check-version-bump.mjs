@@ -319,7 +319,24 @@ function check(root, base) {
   // what changed, and a bump free to land anywhere makes no claim at all.
   const step = stepFrom(baseVersion, headVersion);
   if (step === null) {
-    return { ok: false, kind: "skipped", detail: `version skips a step, ${baseVersion} -> ${headVersion}`, touched, skills, baseVersion, headVersion };
+    // *Why* it is red matters more than that it is red, and the commonest cause
+    // is not a typo — it is a base that moved while the branch sat. Then the
+    // numbers "skipped" are releases that already happened, and successors
+    // computed from the merge-base name one that is already taken. Measured on
+    // this rule's own PR within twenty minutes of opening it: main went
+    // 1.21.0 -> 1.23.0 mid-review, and advice derived from the fork point said
+    // "use 1.22.0", which was gone. Handing someone a taken number is how
+    // 1.19.0 -> 1.21.0 happens, so the guard would have been teaching the
+    // defect it exists to catch.
+    let tipVersion = null;
+    try {
+      tipVersion = JSON.parse(git(root, "show", `${base}:${MANIFEST}`)).version;
+    } catch {
+      // No readable manifest on the base ref: nothing to say about staleness,
+      // and the plain message below is still true.
+    }
+    if (tipVersion === baseVersion) tipVersion = null;
+    return { ok: false, kind: "skipped", detail: `version skips a step, ${baseVersion} -> ${headVersion}`, touched, skills, baseVersion, headVersion, tipVersion };
   }
   const bumped = touchedSkills(changed).length;
   return { ok: skills.length === 0, kind: "bumped", step, detail: `lia-tools ${baseVersion} -> ${headVersion} (${step}), ${touched.length} file(s), ${bumped} skill(s)`, touched, skills };
@@ -345,14 +362,20 @@ function report(outcome) {
     console.error(`  → Set "version" in ${MANIFEST} above ${outcome.baseVersion}.\n`);
     console.error(`  → A genuine rollback is the release force-push in lia-tools/README.md §Roll back, not a lower number on main.\n`);
   } else if (outcome.kind === "skipped") {
-    const next = nextVersions(outcome.baseVersion);
+    const stale = outcome.tipVersion;
+    const from = stale ?? outcome.baseVersion;
+    const next = nextVersions(from);
     console.error(`lia-tools version SKIPS a step: ${outcome.baseVersion} -> ${outcome.headVersion}\n`);
-    console.error(`  A bump moves exactly one step, so the number stays a record of what the release was. This one\n  leaves the versions between unused and unexplained.\n`);
-    console.error(`  → Either your base is stale — update it and CI recomputes from the new base\n`);
-    if (next) {
-      console.error(`  → Or set "version" in ${MANIFEST} to ${next.patch} (patch: it got better) · ${next.minor} (minor: it does\n    something new) · ${next.major} (major: something that worked stops working)\n`);
+    if (stale) {
+      console.error(`  Your base moved. ${MANIFEST} is ${stale} on the base ref, not the ${outcome.baseVersion} this\n  branch forked from, so the numbers in between are releases that already happened — and\n  ${outcome.headVersion} may be taken as well.\n`);
+      console.error(`  → Merge the base branch in first. That is the fix, not a workaround: the numbers below are\n    computed from ${from}, and picking one without merging is how a version collides.\n`);
     } else {
-      console.error(`  → Or use a three-component version exactly one step above ${outcome.baseVersion} in ${MANIFEST}\n`);
+      console.error(`  A bump moves exactly one step, so the number stays a record of what the release was. This one\n  leaves the versions between unused and unexplained.\n`);
+    }
+    if (next) {
+      console.error(`  → Set "version" in ${MANIFEST} to ${next.patch} (patch: it got better) · ${next.minor} (minor: it does\n    something new) · ${next.major} (major: something that worked stops working)\n`);
+    } else {
+      console.error(`  → Use a three-component version exactly one step above ${from} in ${MANIFEST}\n`);
     }
     console.error(`  → The policy is lia-tools/README.md §Versioning (CLAUDE.md rule 10).\n`);
   } else if (outcome.kind === "unconfirmed") {
@@ -378,6 +401,7 @@ function report(outcome) {
       console.error(`Skills whose version skips a step (${skipped.length}) — CLAUDE.md rule 10:\n`);
       console.error(list(skipped));
       console.error(`  → Move one step. A version nobody can reason from is the thing the number exists to prevent.\n`);
+      console.error(`  → If the manifest above reports a moved base, these are the same cause: merge the base branch\n    in and each skill recomputes against what actually landed.\n`);
     }
     if (nolog.length) {
       console.error(`Version bumps with nothing in the changelog (${nolog.length}) — CLAUDE.md rule 3, second half:\n`);
@@ -550,6 +574,39 @@ function selfTest() {
       // its own history: 1.19.0 -> 1.21.0 left 1.20.0 unused, and 1.3.0 -> 1.3.3
       // skipped two patches. Both were green.
       {
+        // The stale-base path, measured live on this rule's own PR within
+        // twenty minutes of opening it. main moved 1.0.0 -> 1.2.0 while the
+        // branch sat; the branch, having noticed, set 1.3.0 — one step above
+        // what actually landed, three above where it forked. Red, and the
+        // report must blame the moved base: successors named from the fork
+        // point would offer 1.1.0, which main has already used.
+        name: "base moved while the branch sat",
+        mutate: () => {
+          git(dir, "checkout", "-q", "-b", "sidebranch");
+          git(dir, "checkout", "-q", "main");
+          write("lia-tools/skills/demo/SKILL.md", skill("0.2.0"));
+          bump("1.2.0");
+          git(dir, "add", "-A");
+          git(dir, "-c", "user.email=guard@self.test", "-c", "user.name=guard", "commit", "-qm", "main moves to 1.2.0");
+          git(dir, "checkout", "-q", "sidebranch");
+          write("lia-tools/skills/demo/SKILL.md", skill("0.2.0"));
+          bump("1.3.0");
+        },
+        // `tip` is asserted, not just the kind: without it this fixture is red
+        // either way — the base check already returns "skipped" here — and a
+        // fixture that cannot tell the fix from the bug is the third failure in
+        // CLAUDE.md §Make the check fail on purpose, repeated.
+        expect: { ok: false, kind: "skipped", skills: [], tip: "1.2.0" },
+        restore: () => {
+          git(dir, "reset", "-q", "--hard");
+          git(dir, "clean", "-qfd");
+          git(dir, "checkout", "-q", "main");
+          git(dir, "reset", "-q", "--hard", baseCommit);
+          git(dir, "branch", "-qD", "sidebranch");
+          git(dir, "clean", "-qfd");
+        },
+      },
+      {
         name: "manifest skips a minor",
         mutate: () => { write("lia-tools/skills/demo/SKILL.md", skill("0.2.0")); bump("1.2.0"); },
         expect: { ok: false, kind: "skipped", skills: [] },
@@ -611,7 +668,7 @@ function selfTest() {
 
     const scenariosNeedingRewind = new Set(scenarios.filter((s) => s.rewind).map((s) => s.name));
     const failures = [];
-    for (const { name, mutate, expect } of scenarios) {
+    for (const { name, mutate, expect, restore } of scenarios) {
       mutate();
       // Intent-to-add, so a *new* fixture file appears in `git diff` the way a
       // committed one does in CI. Without this, the two scenarios that add a
@@ -622,12 +679,19 @@ function selfTest() {
       git(dir, "add", "-A", "-N");
       const outcome = check(dir, "main");
       if (expect && scenariosNeedingRewind.has(name)) rewindTo(baseCommit);
+      // A scenario that moves refs or branches puts them back itself. Without
+      // this the fixture leaks into every scenario after it, and the one that
+      // needs it (a moved base) is exactly the one whose leak would make later
+      // scenarios compare against the wrong main.
+      if (restore) restore();
       const kinds = (outcome.skills ?? []).map((s) => s.kind).sort();
       // Kind is asserted, not just ok/red: a no-bump reported as unreadable
       // (or the reverse) is the guard being red for the wrong reason, which
       // is how a deleted core check hides behind a crashing one.
-      if (outcome.ok !== expect.ok || outcome.kind !== expect.kind || String(kinds) !== String([...expect.skills].sort())) {
-        failures.push(`  ${name}: expected ${expect.ok ? "green" : "red"}/${expect.kind}/[${expect.skills}], got ${outcome.ok ? "green" : "red"}/${outcome.kind}/[${kinds}] (${outcome.detail})`);
+      const tipMismatch = "tip" in expect && (outcome.tipVersion ?? null) !== expect.tip;
+      if (outcome.ok !== expect.ok || outcome.kind !== expect.kind || String(kinds) !== String([...expect.skills].sort()) || tipMismatch) {
+        const tipSaid = "tip" in expect ? `, tip ${outcome.tipVersion ?? "not detected"} (wanted ${expect.tip})` : "";
+        failures.push(`  ${name}: expected ${expect.ok ? "green" : "red"}/${expect.kind}/[${expect.skills}], got ${outcome.ok ? "green" : "red"}/${outcome.kind}/[${kinds}]${tipSaid} (${outcome.detail})`);
       }
       reset();
     }
@@ -637,7 +701,7 @@ function selfTest() {
       for (const line of failures) console.error(line);
       return 1;
     }
-    console.log(`self-test ok — ${scenarios.length} scenarios: no-bump caught, backwards-bump CAUGHT (manifest and skill), not-provably-forward caught on BOTH (unparseable, and a changed string with an unchanged core), skill-version-left-behind and a removed version: caught, a changelog line that only heads an entry accepted (prose mentions rejected), 1.9.0 -> 1.10.0 confirmed forward, SKIPPED STEPS CAUGHT on both (a skipped minor, skipped patches, a minor-and-patch at once, a skipped major, and a skill jumping) while a major, a 0.x -> 1.0.0 and 0.9.0 -> 0.10.0 stay green, bump-and-changelog and root-only and new-skill left green, unreadable manifest reported as unchecked`);
+    console.log(`self-test ok — ${scenarios.length} scenarios: no-bump caught, backwards-bump CAUGHT (manifest and skill), not-provably-forward caught on BOTH (unparseable, and a changed string with an unchanged core), skill-version-left-behind and a removed version: caught, a changelog line that only heads an entry accepted (prose mentions rejected), 1.9.0 -> 1.10.0 confirmed forward, SKIPPED STEPS CAUGHT on both (a skipped minor, skipped patches, a minor-and-patch at once, a skipped major, a skill jumping, and a base that moved under the branch) while a major, a 0.x -> 1.0.0 and 0.9.0 -> 0.10.0 stay green, bump-and-changelog and root-only and new-skill left green, unreadable manifest reported as unchecked`);
     return 0;
   } finally {
     rmSync(dir, { recursive: true, force: true });
