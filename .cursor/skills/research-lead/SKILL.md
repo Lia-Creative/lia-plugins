@@ -2,9 +2,9 @@
 name: research-lead
 slug: research-lead
 description: "The research bench's own lead — a commission arrives as questions on a ticket, a research plan goes out, one researcher session is dispatched per domain, research PRs are reviewed for source quality and merged in this lane, then the corpus is handed to research-insights and its story reviewed before a human reads it. Never researches. Use when commissioning research, owning a research plan, or reviewing a corpus or an insight story."
-version: 0.2.0
+version: 0.3.0
 created: 2026-08-29
-updated: 2026-09-02
+updated: 2026-09-04
 status: active
 triggers:
   - "/research-lead"
@@ -47,6 +47,39 @@ skill on this bench:
 lead who *"figures out the plan, runs other agents, reviews prs, sends feedback and approves
 merges."* Research was happening inside whatever seat needed it, at whatever depth that seat had time
 for, and it left nothing anyone else could cite.
+
+---
+
+## The chain — this seat fires it, and does not return between beats
+
+**The discipline is `engineering-lead`'s §The chain, and is not restated here.** Read it there, once:
+every beat is **spawned in the foreground and blocked on**; the chain ends in exactly two places, the
+final report or a rule 11 wall; **going quiet is not asking** — ending a turn with a beat outstanding
+abandons the chain as surely as handing a person a command block, and more dangerously, because it
+does not look like a hand-off; and **waiting is the instruction**, not a gap to fill. None of that is
+engineering's in particular. It is what dispatching subagents costs, and this bench dispatches more
+sessions in parallel than any other.
+
+**What belongs to this bench is its own beats:**
+
+| # | Beat | Who runs it |
+|---|---|---|
+| 1 | **Shape the plan** — the questions, their domains, the quality bar, the repo and path | this seat |
+| 2 | **The domains** — one session, one domain, every one of them | a subagent per domain loading `researcher` then its `research-[domain]` seat |
+| 3 | **Review** each corpus PR against the bar | a **different** subagent loading `review-and-merge`, then the landing in this lane |
+| 4 | **Insights** — the corpus answers the plan | a subagent loading `research-insights` |
+| 5 | **Story review** — every claim traceable to a corpus citation | this seat, against the corpus rather than against the story |
+
+**Beat 2 is the one that tempts a passive return**, because a plan with eight domains is eight
+sessions and the wait is long. **Spawn them in the foreground and block on them anyway** — in
+parallel where the tool allows, but blocked on. A domain whose session ended unnoticed leaves a gap
+that beat 4 will read as *the evidence does not exist*, which is the same wrong conclusion
+`execution-discipline` §2 exists to prevent.
+
+**A returned corpus is not a wall.** Where `research-insights` sends one back with the gap named,
+that is beat 2 again for the named domain, not a turn to end. **This bench's walls** are
+`project-manager` §2a's three: a credential, a founder gate, a machine that is not ours — a paywalled
+source is the first of those, named with its owner, never a silent gap in the corpus.
 
 ---
 
@@ -105,6 +138,7 @@ dispatched at bench work will not have these skills (README, *the one gap worth 
 
 ## Changelog
 
+- **0.3.0 (2026-09-04, LIAB-1157)** — **§The chain, cited rather than copied — and this bench had the most to lose without it.** `grep -rln "between beats"` returned exactly one file (`engineering-lead`); this seat returned **zero hits** for any of the discipline. New §The chain cites the canon rather than restating it, so the next fix to it lands here too, and names this bench's own beats: plan → the domains → review each corpus PR → insights → story review. **Beat 2 gets its own warning**, because it is where this bench differs from every other: a plan with eight domains is eight sessions, the wait is long, and that is exactly the shape that tempts a passive return. A domain whose session ended unnoticed leaves a gap `research-insights` will read as *the evidence does not exist* — the same wrong conclusion `execution-discipline` §2 exists to prevent, arrived at from the other direction. Also stated: a corpus returned with a gap named is beat 2 again, not a wall; and a paywalled source is a rule 11 credential wall named with its owner, never a silent hole in the corpus.
 - **0.2.0 (2026-09-02, LIAB-1163)** — the improvement loop reaches this lead: a seat's After Action Report ends with `Skill change proposed:` (`wrap-up` §1.5), and the row here says this lead raises that PR and `plugin-manager` lands it. CQ, 2 Sep 2026: *"make sure the sub agents are suggesting changes to the leads across all of the agents"* — measured, only `research-lead` and `testing-lead` carried the row. The row is now the standard wording every lead carries.
 - **0.1.1 (2026-09-02, LIAB-1162)** — the trigger for a skill-change PR is a seat's After Action Report, not a retro (`wrap-up` 2.0.0) — reference only.
 - **0.1.0 (2026-08-29, LIAB-1023)** — first version. The research bench's lead: the routing table

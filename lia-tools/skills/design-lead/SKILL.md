@@ -2,9 +2,9 @@
 name: design-lead
 slug: design-lead
 description: "The design stage owned end to end — ready stories in, then exploration, flows, hi-fi, error states, and the handover out, each step its own seat; the lead checks every step is covered before tickets reach the engineering lead for build prep. Use when taking ownership of a design stage or deciding which design skill a moment needs."
-version: 0.4.0
+version: 0.5.0
 created: 2026-08-27
-updated: 2026-09-02
+updated: 2026-09-04
 status: active
 triggers:
   - "/design-lead"
@@ -47,6 +47,28 @@ maintainer: cq
 
 ---
 
+## The chain — this seat fires it, and does not return between beats
+
+**The discipline is `engineering-lead`'s §The chain, and is not restated here.** Read it there, once: every beat is **spawned in the foreground and blocked on**; the chain ends in exactly two places, the final report or a rule 11 wall; **going quiet is not asking** — ending a turn with a beat outstanding abandons the chain as surely as handing a person a command block, and more dangerously, because it does not look like a hand-off; and **waiting is the instruction**, not a gap to fill. None of that is engineering's in particular. It is what dispatching subagents costs, and this bench dispatches.
+
+**What belongs to this bench is its own beats:**
+
+| # | Beat | Who runs it |
+|---|---|---|
+| 1 | **Reference** — what good looks like, where reference is worth mining | a subagent loading `design-reference` |
+| 2 | **Explore** the directions before anything is drawn | a subagent loading `design-exploration` |
+| 3 | **Flows** — the chosen direction as clear flows | a subagent loading `design-flows` |
+| 4 | **Screens** at hi-fi, on the design system | a subagent loading `hifi-design` |
+| 5 | **The sweep** — the happy path believes itself finished | a **different** subagent loading `error-states`; the one that drew it is the worst judge of what it left out |
+| 6 | **Coverage gate** — §2 below, before the engineering lead preps the build | this seat |
+| 7 | **Handoff** — notes and the artefact onto the ticket or into the repo | a subagent loading `design-handoff` |
+
+**Beat 6 is this seat's own and does not get delegated** — it is the judgement that qualifies the seat, and §2 is how it is run.
+
+**This bench's walls** are `project-manager` §2a's three, the same as everywhere: a credential, a founder gate, a machine that is not ours. **A missing requirement is not a wall** — it is a question back to `discovery-lead` (§1), asked and answered mid-chain rather than a turn ended.
+
+---
+
 ## 1. Taking the reqs — what this stage starts from
 
 The reqs come in through the discovery gate: **a story that has not passed `ready-review` is not design's yet.** Starting cold, read the epic, its stories, the scenarios and the job they serve — the scenarios are the design's requirements list, and the job's outcome is what every screen answers to. A req the stories don't carry is a question back to `discovery-lead`, not an assumption drawn into a screen.
@@ -82,8 +104,9 @@ A step not covered is a dispatch, not a footnote. **Skipping a step is deliberat
 
 ## Changelog
 
+- **0.5.0 (2026-09-04, LIAB-1157)** — **§The chain, and a changelog that was reading backwards.** `grep -rln "between beats"` returned exactly one file — `engineering-lead` — while this seat and three other leads dispatch subagents and carried none of the discipline. LIAB-1051 fixed the seat where the failure happened to land, not the class: going quiet with a beat outstanding is a property of dispatching, not of engineering. New §The chain **cites** `engineering-lead`'s canon rather than restating it, so the next fix to it lands here too, and names this bench's own seven beats — reference → explore → flows → hi-fi → the sweep → the coverage gate → handoff — because the discipline is shared and the beats are not. Beat 5 goes to a *different* subagent than beat 4, and beat 6 is this seat's own. **Separately: this changelog was ordered oldest-first**, so its top entry read `0.1.0` while the file was at 0.3.0 — and `execution-discipline` §Which copy am I holding? tells an agent the top entry *is* the version it holds, since frontmatter is not served. The in-band signal was therefore wrong on this file, in the exact way LIAB-1052 exists to stop. Reordered newest-first to match every other skill; no entry's text was altered.
 - **0.4.0 (2026-09-02, LIAB-1163)** — the improvement loop reaches this lead: a seat's After Action Report ends with `Skill change proposed:` (`wrap-up` §1.5), and the row here says this lead raises that PR and `plugin-manager` lands it. CQ, 2 Sep 2026: *"make sure the sub agents are suggesting changes to the leads across all of the agents"* — measured, only `research-lead` and `testing-lead` carried the row. Also fixes a routing gap found in the audit: `ux-writing` sits on the design bench in the README and this table never routed to it — a design lead following its own table would never dispatch the seat that writes the interface copy. `ux-writing` and `plugin-manager` join `companions:`.
 - **0.3.1 (2026-09-02, LIAB-1161)** — `lead-engineer` is `engineering-lead` — reference only: the seat's name now follows its discipline, like the other four leads. No rule changed.
-- **0.1.0 (2026-08-27, CQ + LIAB-995)** — first version. The design stage as an owned bench: CQ's step list (reqs, exploration, flows, hi-fi, error states, handover, HTML back) each a seat, with the coverage verdict as the stage's exit gate.
-- **0.2.0 (2026-08-27, CQ + LIAB-1000)** — `design-reference` added to the bench and to the **Direction** row of the coverage gate: reference that informed a direction is cited, not remembered.
 - **0.3.0 (2026-08-28, LIAB-1025)** — new rule 7: this seat reviews and lands design work in its own lane, on CQ's call that approving and managing PRs is a lead's job rather than a permission. Rule 1 (*the design lead does not design*) is named as the thing that qualifies the seat to judge, so the widening reads as a duty redistributed, not a gate loosened.
+- **0.2.0 (2026-08-27, CQ + LIAB-1000)** — `design-reference` added to the bench and to the **Direction** row of the coverage gate: reference that informed a direction is cited, not remembered.
+- **0.1.0 (2026-08-27, CQ + LIAB-995)** — first version. The design stage as an owned bench: CQ's step list (reqs, exploration, flows, hi-fi, error states, handover, HTML back) each a seat, with the coverage verdict as the stage's exit gate.
