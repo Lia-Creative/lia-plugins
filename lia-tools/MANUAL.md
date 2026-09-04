@@ -9,7 +9,7 @@ and shipped — as 73 skills it can load and run.
 You do not memorise the process. You install the plugin, and the process is
 already in the room.
 
-**Manual version 1.2 · Plugin version 1.28.0 · 2 September 2026**
+**Manual version 1.3 · Plugin version 1.29.0 · 4 September 2026**
 
 > **Hit a word you don't know?** Section 13 defines the five that matter —
 > worktree, frontmatter, squash merge, Given/When/Then, CI. Nothing else in here
@@ -310,7 +310,7 @@ Discovery  →  Design  →  Build  →  Review  →  QA  →  Done
 | **Design** | Reference gathered, directions explored, flows walked, screens drawn on the design system, error and empty states swept, the words written. | The design lead confirms every step of every flow is covered before the engineer preps the build. |
 | **Build** | Acceptance criteria frozen, build notes written, then one agent builds in its own worktree and opens a pull request. | `ticket-review` asks one question before dispatch: could an agent start this without asking anything? |
 | **Review** | A different agent grades the work against every acceptance criterion by index, with evidence. | Every criterion disposed of, on the current head, by someone who did not write it. |
-| **QA** | The merged build is tested as a person will meet it — planned cases first, then a deliberately hostile pass. | The quality report. Findings become Bug tickets on the feature epic. |
+| **QA** | The merged build is tested as a person will meet it — planned cases first, then a deliberately hostile pass. | The quality report. Findings become Bug tickets on the feature epic. A case that could not be run is counted and disposed of — an undisposed blocked case is not a pass. |
 | **Done** | The project manager moves it, on the QA verdict. | — |
 
 **Research runs sideways, not in sequence.** Any stage can commission it. A
@@ -396,6 +396,11 @@ The chain ends in one of two places: the final report, or a wall it names out
 loud. There is no third. Ending a turn with a beat still running abandons the
 chain just as surely as asking permission does — and more dangerously, because it
 does not look like a hand-off to anyone.
+
+**The six beats above are engineering's; the discipline is every lead's.** Design,
+discovery, research and QA each run their own beats the same way — spawned in the
+foreground, blocked on, ending in a report or a named wall — and each lead's skill
+lists that bench's own beats.
 
 ### A Worked Example
 
@@ -721,6 +726,7 @@ ticket number in each row is where the reasoning lives.
 
 | Version | Date | What changed |
 |---|---|---|
+| **1.29.0** | 4 Sep 2026 | The chain discipline reached every lead, not just engineering's: design, discovery, research and QA each name their own beats and cite the one canon, so the next fix to it lands everywhere instead of being re-learned four times. QA also gained a pass condition it never had — a test case that could not be run is now counted and disposed of, where before a quality report could go green over cases nobody ran. (LIAB-1157, LIAB-1158) |
 | **1.28.1** | 2 Sep 2026 | The freshness detector looks under `~/.cursor/plugins` as well as Claude Code's tree, so a machine with a real Cursor install is no longer reported as having none. (LIAB-1168) |
 | **1.28.0** | 2 Sep 2026 | One versioning policy for the plugin, the tools and the toolbox: take the smallest bump that is true, move exactly one step, and never let a promotion pick the digit. Before this, nothing said how *big* a bump should be, so habit answered — 21 minors in 26 releases, a wording fix priced like a new bench of skills. CI now also refuses a number the base already serves, which it caught it repeatedly on its own branch. (LIAB-1184) |
 | **1.27.0** | 2 Sep 2026 | This manual. The plugin got a document written for a person rather than for an agent, and `plugin-manager` got the rule that keeps it true. (LIAB-1181) |

@@ -2,9 +2,9 @@
 name: discovery-lead
 slug: discovery-lead
 description: "The discovery bench's own lead — holds the thread from problem to ready story, never writes; routes across problem-definition, insight-extraction, jtbd, feature-definition, scenario-builder, epic-builder, story-writer, task-writer, schema-manager and synthetic-users, and requests ready-review as the exit gate. Use when taking ownership of a discovery stage or deciding which discovery skill a moment needs."
-version: 0.5.0
+version: 0.6.0
 created: 2026-08-27
-updated: 2026-09-02
+updated: 2026-09-04
 status: active
 triggers:
   - "/discovery-lead"
@@ -55,6 +55,28 @@ maintainer: cq
 
 ---
 
+## The chain — this seat fires it, and does not return between beats
+
+**The discipline is `engineering-lead`'s §The chain, and is not restated here.** Read it there, once: every beat is **spawned in the foreground and blocked on**; the chain ends in exactly two places, the final report or a rule 11 wall; **going quiet is not asking** — ending a turn with a beat outstanding abandons the chain as surely as handing a person a command block, and more dangerously, because it does not look like a hand-off; and **waiting is the instruction**, not a gap to fill. None of that is engineering's in particular. It is what dispatching subagents costs, and this bench dispatches.
+
+**What belongs to this bench is its own beats.** Discovery is commissioned at a question, not at a fixed pipeline, so a run takes the beats its commission needs — in this order, and never skipping the gate:
+
+| # | Beat | Who runs it |
+|---|---|---|
+| 1 | **Pull the patterns**, where a pile of raw material exists | a subagent loading `insight-extraction` |
+| 2 | **Formalise the problem** | a subagent loading `problem-definition` |
+| 3 | **Name the job** and map its requirements | a subagent loading `jtbd` |
+| 4 | **Shape it** — the context, and what the world already does | a subagent loading `feature-definition` |
+| 5 | **Walk the flow** with concrete inputs | a subagent loading `scenario-builder` |
+| 6 | **Write it** — the epic, then its stories and tasks | a subagent per artefact, loading `epic-builder`, `story-writer` or `task-writer` |
+| 7 | **Gate** — the exit check on what beat 6 produced | a **different** subagent loading `ready-review`, spawned into a fresh context (rule 4) |
+
+**Commissioning evidence is a beat, not an escape.** Where beat 3 or 4 needs evidence nobody here holds, `research-lead`'s bench is dispatched and **blocked on** exactly like any other beat — a commission is not a reason to end the turn.
+
+**This bench's walls** are `project-manager` §2a's three, the same as everywhere: a credential, a founder gate, a machine that is not ours. A question the sources already answer is not a wall — it is beat work.
+
+---
+
 ## The standing rules — the seat itself
 
 1. **You hold the whole discovery picture, and that is the point.** The problem map, the jobs, the open epics, the decisions register — every writer seat sees one artefact; you see whether they connect. You lose that view the moment you start writing — **the discovery lead never writes.** A gap you could fill in a minute is a dispatch to a writer seat, not a paragraph you add: a session that shaped the frame will defend it.
@@ -81,6 +103,7 @@ Rule 2 above has one edge worth naming, because two seats on this bench produce 
 
 ## Changelog
 
+- **0.6.0 (2026-09-04, LIAB-1157)** — **§The chain, cited rather than copied.** `grep -rln "between beats"` returned exactly one file — `engineering-lead` — and a search of this seat for any of the discipline (*between beats*, *foreground*, *the chain ends*) returned **zero hits**, as it did for `design-lead`, `research-lead` and `testing-lead`. LIAB-1051 fixed the seat where the failure landed, not the class; a lead going quiet with a beat outstanding is a property of dispatching subagents, which all five do. New §The chain **cites** `engineering-lead`'s canon for the discipline — one copy, so the next fix to it reaches every lead — and names this bench's own beats, because discovery's are not build → review → merge. Two things this bench needed said that engineering's wording does not cover: discovery is commissioned at a question rather than run as a fixed pipeline, so a run **takes the beats its commission needs and never skips the gate**; and **commissioning `research-lead` is a beat, blocked on like any other**, not a reason to end the turn. Appended before §The standing rules; nothing renumbered.
 - **0.5.0 (2026-09-02, LIAB-1163)** — the improvement loop reaches this lead: a seat's After Action Report ends with `Skill change proposed:` (`wrap-up` §1.5), and the row here says this lead raises that PR and `plugin-manager` lands it. CQ, 2 Sep 2026: *"make sure the sub agents are suggesting changes to the leads across all of the agents"* — measured, only `research-lead` and `testing-lead` carried the row. `plugin-manager` joins `companions:`.
 - **0.4.1 (2026-09-02, LIAB-1161)** — `lead-engineer` is `engineering-lead` — reference only: the seat's name now follows its discipline, like the other four leads. No rule changed.
 - **0.4.0 (2026-08-29, LIAB-1023)** — the research bench becomes routable: a question this bench cannot answer from what it holds is commissioned through `research-lead` rather than answered thinly inside a writer seat. The evidence rule gains its third edge — a merged corpus entry is citable, a `research-insights` story is ranked interpretation, so epics cite the corpus finding and never promote a `DEVELOPING` one to firm on the way in. *(Landed on top of 0.3.1 in the rebase of PR #35; rule 4's "fire it, don't sit in it" wording is untouched.)*
